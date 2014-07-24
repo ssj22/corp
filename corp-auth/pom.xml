@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+	<groupId>net.corp</groupId>
+	<artifactId>corp</artifactId>
+	<version>1.0.0</version>
+  </parent>	
+  <groupId>net.corp.auth</groupId>
+  <artifactId>corp-auth</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0.0</version>
+  <name>corp-auth</name>
+  <url>http://maven.apache.org</url>
+
+  <dependencies>
+  	<dependency>
+      <groupId>net.corp.core</groupId>
+      <artifactId>corp-core</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-core</artifactId>
+		<version>${spring.security.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-taglibs</artifactId>
+	    <version>${spring.security.version}</version>
+    </dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-config</artifactId>
+		<version>${spring.security.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-web</artifactId>
+		<version>${spring.security.version}</version>
+	</dependency>
+  </dependencies>
+</project>
