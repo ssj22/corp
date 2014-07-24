@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>HotMix Plant</title>
+    <link rel="stylesheet" href="resources/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="resources/css/ng-grid.css" />
+    <link rel="stylesheet" href="resources/css/jquery.ui.theme.css" />
+    <link rel="stylesheet" href="resources/css/ng-quick-date.css" />
+	<link rel="stylesheet" href="resources/css/style.css" />
+    <style type="text/css">
+        .ngRow.selected {
+            background-color: #fbec88;
+        }
+        
+        @media screen {
+		  #printSection {
+		      display: none;
+		  }
+		}
+		
+		@media print {
+		  body * {
+		    visibility:hidden;
+		  }
+		  #printSection, #printSection * {
+		    visibility:visible;
+		  }
+		  #printSection {
+		    position:absolute;
+		    left:0;
+		    top:0;
+		  }
+		}
+	</style>        
+	<!-- <style type="text/css" media="print">
+    	* { display: none; }
+    </style> -->
+
+</head>
+<body ng-cloak="">
+	<div class="navbar navbar-inverse navbar-fixed-top">
+	    <div class="container">
+	        <div class="navbar-header">
+	            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	                <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+	            </button><a class="navbar-brand" href="#">Hotmix</a>
+	        </div>
+	        <div class="navbar-collapse collapse">
+	            <ul id="myTab" ng-controller="ViewCtrl" ng-class="tabClass">
+	                <li ng-repeat="tab in tabs" ng-class="{active:isTabActive('/' + tab.tabName)}" has-permission="{{tab.tabPermission}}" ng-click="loadTab(tab.tabOrder)"><a href="#{{tab.tabName}}" data-toggle="tab">{{tab.tabName}}</a></li>
+	            </ul>
+	            <form class="navbar-form navbar-right">
+	                <span class="label label-default">Welcome {{loginuser.fullName}} !</span>
+	                <!-- <div class="form-group">
+	                    <input type="text" placeholder="Enter Text" class="form-control">
+	                </div>
+	                <button type="submit" class="btn btn-success">Search</button>
+	                 -->
+	                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	                <a href="j_spring_security_logout" class="btn btn-primary btn-md">
+					  <span class="glyphicon glyphicon-log-out"></span> Logout
+					</a>
+				</form>
+	        </div><!--/.navbar-collapse -->
+	    </div>
+	</div>
+	<div class="jumbotron">
+	    <div class="container tab-content">
+	        <div class="tab-pane fade active in">
+	            <ng-view>
+	                </ng-view>
+	            
+	        </div>
+	    </div>
+	</div>
+	<div id="footerPanel" align="center" ng-controller="ViewCtrl">
+		<div class="panel panel-default" ng-show="showfoooter">
+			<div class="panel-heading">
+			    <h3 class="panel-title materialHeaderCount">
+			    	Total Count: {{counts[0].totalCount}}
+			    	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			    	<span class="label label-default">In</span>
+			    	<span class="label label-success">{{counts[0].totalInCount}}</span>
+			    	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; , &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			    	<span class="label label-default">Out</span>
+			    	<span class="label label-warning">{{counts[0].totalOutCount}}</span>
+			    </h3>
+			</div>
+			<div class="panel-body materialCount">
+			<div class="row">
+		  		<div class="col-sm-6 col-md-4">
+		  			<div class="panel panel-default">
+		  				<div class="panel-heading">
+						    <h3 class="panel-title materialCount">Today : 
+						    	<span class="label label-default">In</span>
+						    	<span class="label label-success">{{counts[0].todayInCount}}</span>
+						    	&nbsp;&nbsp;&nbsp;&nbsp;
+						    	<span class="label label-default">Out</span>
+								<span class="label label-warning">{{counts[0].todayOutCount}}</span>
+							</h3>	
+						</div>
+		  			</div>
+		  		</div>
+		  		<div class="col-sm-6 col-md-4">
+		  			<div class="panel panel-default">
+		  				<div class="panel-heading">
+						    <h3 class="panel-title materialCount">Week : 
+						    	<span class="label label-default">In</span>
+						    	<span class="label label-success">{{counts[0].weekInCount}}</span>
+						    	&nbsp;&nbsp;&nbsp;&nbsp;
+						    	<span class="label label-default">Out</span>
+								<span class="label label-warning">{{counts[0].weekOutCount}}</span>
+							</h3>	
+						</div>
+		  			</div>
+		  		</div>
+		  		<div class="col-sm-6 col-md-4">
+		  			<div class="panel panel-default">
+		  				<div class="panel-heading">
+						    <h3 class="panel-title materialCount">Month : 
+						    	<span class="label label-default">In</span>
+						    	<span class="label label-success">{{counts[0].monthInCount}}</span>
+						    	&nbsp;&nbsp;&nbsp;&nbsp;
+						    	<span class="label label-default">Out</span>
+								<span class="label label-warning">{{counts[0].monthOutCount}}</span>
+							</h3>	
+						</div>
+		  			</div>
+		  		</div>
+		  	</div>	
+		  	</div>
+	  	</div>
+	</div>  	
+
+<script type="text/javascript" src="resources/js/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="resources/js/moments.js"></script>
+<script type="text/javascript" src="resources/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="resources/js/angular.js"></script>
+<script type="text/javascript" src="resources/js/angular-route.js"></script>
+<script type="text/javascript" src="resources/js/ng-grid.js"></script>
+<script type="text/javascript" src="resources/js/ng-quick-date.js"></script>
+<script type="text/javascript" src="resources/js/underscore-min.js"></script>
+<script type="text/javascript" src="resources/js/custom.js"></script>
+
+
+</body>
+</html>

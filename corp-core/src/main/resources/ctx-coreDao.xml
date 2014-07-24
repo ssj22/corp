@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<bean id="userDao" class="net.corp.core.dao.impl.UserDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="addressDao" class="net.corp.core.dao.impl.AddressDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="roleDao" class="net.corp.core.dao.impl.RoleDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="privilegeDao" class="net.corp.core.dao.impl.PrivilegeDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="userAuthorizationDao" class="net.corp.core.dao.impl.UserAuthorizationDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="rolePrivilegeDao" class="net.corp.core.dao.impl.RolePrivilegeDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="materialDao" class="net.corp.core.dao.impl.MaterialDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="vehicleDao" class="net.corp.core.dao.impl.VehicleDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="vibhagDao" class="net.corp.core.dao.impl.VibhagDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="primaryGroupDao" class="net.corp.core.dao.impl.PrimaryGroupDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="stockItemDao" class="net.corp.core.dao.impl.StockItemDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+</beans>

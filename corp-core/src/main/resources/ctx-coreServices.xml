@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<aop:config>
+		<aop:pointcut
+			expression="execution(public * net.corp.core.service.impl.UserServiceImpl.*(..)) || 
+					execution(public * net.corp.core.service.impl.MaterialServiceImpl.*(..))"
+				id="defaultTransactionServicePointCut" />
+		
+		<aop:advisor advice-ref="defaultTxAdvice" order="999"
+			pointcut-ref="defaultTransactionServicePointCut" />
+	</aop:config>
+
+	<bean id="coreServiceHelper" class="net.corp.core.service.helper.CoreServiceHelper">
+		<property name="userDao" ref="userDao" />
+		<property name="addressDao" ref="addressDao" />
+		<property name="roleDao" ref="roleDao" />
+		<property name="privilegeDao" ref="privilegeDao" />
+		<property name="materialDao" ref="materialDao" />
+		<property name="vehicleDao" ref="vehicleDao" />
+		<property name="userAuthorizationDao" ref="userAuthorizationDao" />
+		<property name="rolePrivilegeDao" ref="rolePrivilegeDao" />
+		<property name="stockItemDao" ref="stockItemDao" />
+		<property name="primaryGroupDao" ref="primaryGroupDao" />
+		<property name="vibhagDao" ref="vibhagDao" />
+	</bean>
+	
+	<bean id="userService" class="net.corp.core.service.impl.UserServiceImpl">
+		<property name="coreServiceHelper" ref="coreServiceHelper" />
+	</bean>
+	
+	<bean id="materialService" class="net.corp.core.service.impl.MaterialServiceImpl">
+		<property name="coreServiceHelper" ref="coreServiceHelper" />
+	</bean>
+	
+</beans>
