@@ -16,7 +16,10 @@
 		<aop:advisor advice-ref="defaultTxAdvice" order="999"
 			pointcut-ref="defaultTransactionServicePointCut" />
 	</aop:config>
-
+	<bean id="messageService" class="net.corp.core.service.impl.MessageServiceImpl">
+		<property name="coreServiceHelper" ref="coreServiceHelper" />
+	</bean>
+		
 	<bean id="coreServiceHelper" class="net.corp.core.service.helper.CoreServiceHelper">
 		<property name="userDao" ref="userDao" />
 		<property name="addressDao" ref="addressDao" />

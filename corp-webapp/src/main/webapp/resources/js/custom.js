@@ -1,6 +1,8 @@
+var tim='" + DateTime.Now.TimeOfDay.ToString() + "';
 var myApp = angular.module('myApp', [ "ngRoute", "ngGrid", "ngQuickDate" ]), permissionList = null;
 
-myApp.factory('counts', function($rootScope, $http) {
+myApp.factory('counts', function($rootScope, $http, $filter) {
+	$rootScope.currtime = $filter('date')(new Date(), 'dd-MMM-yyyy HH:mm:ss');
 	return {
 		getCount: function() {
 			$http.get('rest/counts').then(function(response) {
@@ -113,6 +115,51 @@ myApp.controller(
 					
 					counts.getCount();
 
+					var grossWtListener;
+					var tareWtListener;
+					
+					$scope.watchGrossWt = function() {
+						grossWtListener = $scope.$watch('selection.grossWt',
+							function(newVal, oldVal) {
+								if ($scope.selection == null) return;
+								//console.log($scope.selection);
+								if (angular.isDefined($scope.selection.tareWt)) {
+									//console.log("inside");
+									$scope.selection.netWt = newVal - $scope.selection.tareWt;
+								}
+								else {
+									//console.log("inside2");
+									$scope.selection.netWt = newVal;
+								}
+							}
+						);
+					};
+					
+					$scope.unwatchGrossWt = function() {
+						grossWtListener();
+					}; 
+					
+					$scope.watchTareWt = function() {
+						tareWtListener = $scope.$watch('selection.tareWt',
+							function(newVal, oldVal) {
+								if ($scope.selection == null) return;
+								//console.log($scope.selection);
+								if (angular.isDefined($scope.selection.grossWt)) {
+									//console.log("inside3");
+									$scope.selection.netWt = $scope.selection.grossWt - newVal;
+								}
+								else {
+									//console.log("inside4");
+									$scope.selection.netWt = -1 * newVal;
+								}
+							}
+						);
+					};
+					
+					$scope.unwatchTareWt = function() {
+						tareWtListener();
+					};
+					
 					$scope.printEntry = function() {
 						$scope.selection = $scope.selectedRow[0];
 					};
@@ -123,6 +170,22 @@ myApp.controller(
 						$scope.readOnly = false;
 						$scope.editMode = true;
 						$scope.weight();
+						$scope.watchGrossWt();
+						$scope.watchTareWt();
+						
+						$scope.grossBtnDisabled = true;
+						$scope.tareBtnDisabled = true;
+						
+						if ($scope.selection.entryType == 1) {
+							if ($scope.selection.status == "INITIATED") {
+								$scope.tareBtnDisabled = false;
+							}
+						}
+						else {
+							if ($scope.selection.status == "INITIATED") {
+								$scope.grossBtnDisabled = false;
+							}
+						}
 					};
 
 					$scope.createEntry = function() {
@@ -130,11 +193,15 @@ myApp.controller(
 						$scope.selection = null;
 						$scope.readOnly = false;
 						$scope.editMode = false;
+						$scope.watchGrossWt();
+						$scope.watchTareWt();
 					};
 
 					$scope.cancelEntry = function() {
 						$scope.readOnly = true;
 						$scope.stopWeight();
+						$scope.unwatchGrossWt();
+						$scope.unwatchTareWt();
 					};
 
 					$scope.saveEntry = function() {
@@ -155,6 +222,17 @@ myApp.controller(
 									$scope.getPagedDataAsync(
 											$scope.pagingOptions.pageSize,
 											$scope.pagingOptions.currentPage);
+									$http({
+										method : 'POST',
+										url : 'rest/sendSms',
+										data : $scope.selection,
+										headers : {
+											'Content-Type' : 'application/json'
+										}
+									}).then(
+											function(response) {
+												console.log(response.data);
+											});
 								});
 					};
 
@@ -178,6 +256,13 @@ myApp.controller(
 					}).then(function(response) {
 						$scope.stocks = response.data;
 					});
+					
+					$http({
+						method : 'GET',
+						url : 'rest/sites'
+					}).then(function(response) {
+						$scope.sites = response.data;
+					});
 
 					$http({
 						method : 'GET',
@@ -195,15 +280,15 @@ myApp.controller(
 							function(response) {
 								if ($scope.selection.entryType == 1) {
 									if ($scope.selection.status == null) {
-										$scope.selection.grossWt = response;
+										$scope.selection.grossWt = response.data;
 									} else if ($scope.selection.status == "INITIATED") {
-										$scope.selection.tareWt = response;
+										$scope.selection.tareWt = response.data;
 									}
 								} else {
 									if ($scope.selection.status == null) {
-										$scope.selection.tareWt = response;
+										$scope.selection.tareWt = response.data;
 									} else if ($scope.selection.status == "INITIATED") {
-										$scope.selection.grossWt = response;
+										$scope.selection.grossWt = response.data;
 									}
 								}
 							});
@@ -228,6 +313,8 @@ myApp.controller(
 				    $scope.$on('$destroy', function() {
 				        // Make sure that the interval nis destroyed too
 				        $scope.stopWeight();
+				        $scope.unwatchGrossWt();
+						$scope.unwatchTareWt();
 				      });    
 					    
 					$scope.weightBtns = function() {
@@ -480,12 +567,12 @@ myApp.controller(
 						}, {
 							field : 'vehicleInTime',
 							displayName : 'Vehicle In Time',
-							cellFilter : 'date:\"MM/dd/yyyy @ h:mma\"',
+							cellFilter : 'date:\"dd-MMM-yyyy @ h:mma\"',
 							width : '220px'
 						}, {
 							field : 'vehicleOutTime',
 							displayName : 'Vehicle Out Time',
-							cellFilter : 'date:\"MM/dd/yyyy @ h:mma\"',
+							cellFilter : 'date:\"dd-MMM-yyyy @ h:mma\"',
 							width : '220px',
 							visible : false
 						}, {

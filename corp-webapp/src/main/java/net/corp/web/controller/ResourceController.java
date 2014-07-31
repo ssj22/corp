@@ -9,6 +9,7 @@ import net.corp.core.model.StockItems;
 import net.corp.core.model.Vehicles;
 import net.corp.core.model.Vibhag;
 import net.corp.core.service.MaterialService;
+import net.corp.core.service.MessageService;
 import net.corp.core.service.UserService;
 import net.corp.core.vo.CountVO;
 import net.corp.core.vo.MaterialsVO;
@@ -40,6 +41,9 @@ public class ResourceController {
 	@Autowired
 	MaterialService materialService;
 	
+	@Autowired
+	MessageService messageService;
+	
 	@RequestMapping(value="/login", method=RequestMethod.GET)
 	public @ResponseBody AuthUser getLoggedInUser() {
 		SecurityContext context = SecurityContextHolder.getContext();
@@ -58,6 +62,17 @@ public class ResourceController {
 			logger.error("Exception while retrieving tabs " + e.getExceptionMessage(), e);
 		}
 		return null;
+	}
+	
+	@RequestMapping(value="sendSms", method=RequestMethod.POST)
+	public @ResponseBody String sendSms(@RequestBody MaterialsVO material) {
+		try {
+			messageService.sendMessage(material);
+			return "OK";
+		} catch (Exception e) {
+			logger.error("Exception while sending message for material id " + material.getMaterialId() + " : " + e.getMessage(), e);
+			return "ERROR";
+		}
 	}
 	
 	@RequestMapping(value="/counts", method=RequestMethod.GET)
