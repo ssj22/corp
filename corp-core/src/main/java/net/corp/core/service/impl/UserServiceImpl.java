@@ -12,11 +12,13 @@ import net.corp.core.exception.CorpException;
 import net.corp.core.model.Address;
 import net.corp.core.model.MapRolePrivileges;
 import net.corp.core.model.MapUserAuthorization;
+import net.corp.core.model.UserPreference;
 import net.corp.core.model.Users;
 import net.corp.core.service.UserService;
 import net.corp.core.service.helper.CoreServiceHelper;
 import net.corp.core.vo.AddressVO;
 import net.corp.core.vo.TabsVO;
+import net.corp.core.vo.UserPreferenceVO;
 import net.corp.core.vo.UserVO;
 
 import org.apache.log4j.Logger;
@@ -26,6 +28,36 @@ public class UserServiceImpl implements UserService {
 	
 	private CoreServiceHelper coreServiceHelper;
 	
+	@Override
+	public boolean saveUserPreference(UserPreferenceVO prefVo) {
+		try {
+			UserPreference pref = getCoreServiceHelper().convertVOToModel(prefVo);
+			if (pref == null) {
+				return false;
+			}
+			else {
+				getCoreServiceHelper().getUserPreferenceDao().saveOrUpdate(pref);
+			}
+		}
+		catch(Exception e) {
+			LOGGER.error("Exception while saving user preference for user " + prefVo.getUserId() + " : " + e.getMessage(), e);
+		}
+		return false;
+	}
+
+	@Override
+	public UserPreferenceVO fetchUserPreference(Integer userId) {
+		List<UserPreference> preferences = getCoreServiceHelper().getUserPreferenceDao().findPreferencesByUser(userId);
+		if (preferences != null && !preferences.isEmpty()) {
+			UserPreference pref = preferences.get(0);
+			UserPreferenceVO prefVo = new UserPreferenceVO();
+			prefVo.setUserId(pref.getUserId());
+			prefVo.setMaterialEntryTimeSel(pref.getMaterialViewTimeSel());
+			return prefVo;
+		}
+		return null;
+	}
+
 	@Override
 	public List<TabsVO> fetchAllTabs() throws CorpException {
 		return getCoreServiceHelper().getAllTabs();

@@ -40,14 +40,14 @@ public class PrimaryGroup implements java.io.Serializable {
 	@Column(name = "usrid")
 	private Integer usrid;
 	@Column(name = "persentage")
-	private Double persentage;
+	private Double percentage;
 
 	public PrimaryGroup() {
 	}
 
 	public PrimaryGroup(String vendorName, String address, String phoneNo,
 			Integer yearId, String givenCode, String number, Integer usrid,
-			Double persentage) {
+			Double percentage) {
 		this.vendorName = vendorName;
 		this.address = address;
 		this.phoneNo = phoneNo;
@@ -55,7 +55,7 @@ public class PrimaryGroup implements java.io.Serializable {
 		this.givenCode = givenCode;
 		this.number = number;
 		this.usrid = usrid;
-		this.persentage = persentage;
+		this.percentage = percentage;
 	}
 
 	public Integer getVendorId() {
@@ -122,12 +122,12 @@ public class PrimaryGroup implements java.io.Serializable {
 		this.usrid = usrid;
 	}
 
-	public Double getPersentage() {
-		return this.persentage;
+	public Double getPercentage() {
+		return this.percentage;
 	}
 
-	public void setPersentage(Double persentage) {
-		this.persentage = persentage;
+	public void setPercentage(Double percentage) {
+		this.percentage = percentage;
 	}
 
 }

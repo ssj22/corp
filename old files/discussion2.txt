@@ -1,0 +1,97 @@
+Show live weight constantly changing based on machine fluctuation - remove button. introduce checkbox
+Vendor (inward) or Vibhag (outward) - never both per material
+INVOICE details screen - depending on INVOICE_IND flag in STOCK_ITEMS
+	- for LDO or similar materials, extra KL field is shown (need a flag for this in DB)
+Amount = (Column Amount 2, Truck Status, Used AT to be deleted)
+	For Main Item = 1, 
+		INWARD : Height correction to be entered (default 0)
+			Final Rate used will be from stock items inward rate * vendor percentages applied on top of the base rate (from primary group table)				
+			If net wt > 5 tons, cubic meter = dimensions of the truck (height adjusted if height correction is provided)
+			If net wt < 5 tons, cubic meter = 0
+			Amount = Final Rate * cubic meter
+			Show Cubic Meter in challan slip
+		OUTWARD : No Height Correction (no extra fields)
+			Rest is same as Inward, except Cubic meter is calculated using "factor" column in item_main
+
+	For Main Item = 2 (Mixed Materials),
+		Inward: NOT APPLICABLE (need to put a flag to avoid showing them)
+		Outward: No extra fields, Amount = net wt * Final Rate
+
+	For Main Item = 3, 15, 19, 20
+		INWARD: Section: {yes}, Fields: {invoice, invoicedate, quantity, amount} 
+			If Amount is not entered, enter amount as 0.
+			If Amount is entered, use that for the challan slip. 
+			Show rate in the challan slip as = Entered Amount / Entered Quantity (not applicable if quantity is missing)
+			Show Difference weight = net wt - company weight
+		OUTWARD: Section:{yes}, Fields:{quantity}
+			Amount = Final Rate * quantity (ignore net wt)
+			Show out weight = entered quantity (in Kg)
+
+	For Main Item = 12 (Diesel), 
+		INWORD: Section: {yes}, Fields: {invoice, invoicedate, quantity, amount} 
+			If Amount is not entered, enter amount as 0.
+			If Amount is entered, use that for the challan slip. 
+			Show rate in the challan slip as the actual rate applicable depending on vendor
+		OUTWARD: Section:{yes}, Fields:{quantity}
+			Amount = Final Rate * quantity (in litres)
+			Show out weight = entered quantity (show "in litres" in bracket)
+
+	For Main Item = 16 (LDO), 
+		INWORD: Section: {yes}, Fields: {invoice, invoicedate, quantity, amount, KL} 
+			If Amount is not entered, enter amount as 0.
+			If Amount is entered, use that for the challan slip. 
+			Show rate in the challan slip as = Entered Amount / Entered KL (not applicable if KL is missing)
+			Show Difference weight = net wt - company weight
+		OUTWARD: Section:{yes}, Fields:{quantity}
+			Amount = Final Rate * quantity (in litres)
+			Show out weight = entered quantity (show "in litres" in bracket)	
+		
+	For Main Item = 14 (Plant Spare Part), 
+		INWORD: Section: {yes}, Fields: {invoice, invoicedate, quantity, amount} 
+			If Amount is not entered, enter amount as 0.
+			If Amount is entered, use that for the challan slip. 
+			Show rate as 0
+			Show a different screen for Plant spare parts to be added/edited
+			Invoice number should show up where order number does
+		OUTWARD: NOT APPLICABLE
+
+Rate Update Screen - which applies changes to in/out rate to data within a selected date range for given vendor (ADMIN only)
+
+SMS
+	OUTGOING 
+	- For Inward entry, Send a set format SMS to everyone listed in d_notifications for whom the inward flag is true (Whenever there is printing)
+		Time should be the In time for INITIATED and out time for COMPLETED
+	- For Outward entry, Send a set format SMS to concerned vibhag person's PHONE, PHONE1, PHONE2, PHONE3, PHONE4 (Whenever there is printing)
+		Time should be the Vehicle out time
+		(ONLY one SMS per person per entry)
+	- Send daily report SMS to everyone listed in d_notifications in a set format SMS (could be cumulative depending on outward materials in a day)
+		Only applicable to Mixed Materials. This will be sent at a specific time in a day and on-demand,.
+
+	INCOMING
+	- For Inward, there is no incoming SMS** (might change in future)
+	- For Outward, SMS is accepted only in the following format:
+		 SHIFT	VEHICLE		TRANSPORTER	MATERIAL		QUANTITY (in Metric Tonnes, Litres)		SITE
+		"D"$"State Code" "Area Code" "Number"$" "$"19@3000 ","DBM@2000"$" "
+		
+		Show SMS received in a different pop-up window
+
+		validation
+		- If vehicle number and transporter don't match	, don't allow vehicle to enter
+		- If shift doesn't match, don't allow vehicle to enter until shift changes
+		- If there is missing data, allow vehicle to enter but don't allow weight entry and display message to contact Admin
+
+	For Material Entries against SMS received, upon selection of "To" field, populate Vehicle, Material and Site.
+	Show Serial Number against SMS and a status that shows READ, UNREAD, COMPLETED
+
+---------------------
+Show Date range for data selection in material screen
+
+
+-----------
+
+Multiple Entry
+- ALL entries are single and have an option to combine/link. 
+- Any print taken changes the status to LOCKED after which only Admin can revert back the status to COMPLETED.
+- Printing option after combining shows only on the parent/oldest entry. 
+- Challan Slip for multiple entry is different than the regular since it shows a static section at top and then recurring data for all entries. 
+	Only the effective weight/quantity needs to be shown

@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -20,9 +21,12 @@ import org.hibernate.annotations.DynamicUpdate;
 public class Materials implements Serializable {
 	@Id
 	@Column(name = "MATERIAL_ID")
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer materialId;
 	
+	@Column(name = "PARENT_MATERIAL_ID")
+	private Integer parentMaterialId;
+		
 	@Column(name = "CHALLAN_NO")
 	private String challanNo;
 	
@@ -77,26 +81,14 @@ public class Materials implements Serializable {
 	@Column(name = "IN_CREATED_BY")
 	private Integer inCreatedBy; 
 	
-	@Column(name = "IN_UPDATED_BY")
-	private Integer inUpdatedBy;
-	
 	@Column(name = "OUT_CREATED_BY")
 	private Integer outCreatedBy;
 	
-	@Column(name = "OUT_UPDATED_BY")
-	private Integer outUpdatedBy;
-	
-	@Column(name = "IN_CREATED_DATE", nullable=true)
+	@Column(name = "IN_CREATED_DATE")
 	private Timestamp inCreatedDate; 
 	
-	@Column(name = "IN_UPDATED_DATE", nullable=true)
-	private Timestamp inUpdatedDate;
-	
-	@Column(name = "OUT_CREATED_DATE", nullable=true)
+	@Column(name = "OUT_CREATED_DATE")
 	private Timestamp outCreatedDate;
-	
-	@Column(name = "OUT_UPDATED_DATE", nullable=true)
-	private Timestamp outUpdatedDate;
 	
 	@Column(name = "INVOICE_DATE")
 	private Timestamp invoiceDate;
@@ -109,6 +101,20 @@ public class Materials implements Serializable {
 	
 	@Column(name = "status")
 	private String status;
+	
+	@Column(name = "LOG_MATERIAL_ID")
+	private Integer logMaterialId;
+	
+	@Column(name = "QTY")
+	private Integer quantity;
+	
+	public Integer getLogMaterialId() {
+		return logMaterialId;
+	}
+
+	public void setLogMaterialId(Integer logMaterialId) {
+		this.logMaterialId = logMaterialId;
+	}
 
 	public String getOrderId() {
 		return orderId;
@@ -278,28 +284,12 @@ public class Materials implements Serializable {
 		this.inCreatedBy = inCreatedBy;
 	}
 
-	public Integer getInUpdatedBy() {
-		return inUpdatedBy;
-	}
-
-	public void setInUpdatedBy(Integer inUpdatedBy) {
-		this.inUpdatedBy = inUpdatedBy;
-	}
-
-	public Integer getOutCreatedBy() {
+		public Integer getOutCreatedBy() {
 		return outCreatedBy;
 	}
 
 	public void setOutCreatedBy(Integer outCreatedBy) {
 		this.outCreatedBy = outCreatedBy;
-	}
-
-	public Integer getOutUpdatedBy() {
-		return outUpdatedBy;
-	}
-
-	public void setOutUpdatedBy(Integer outUpdatedBy) {
-		this.outUpdatedBy = outUpdatedBy;
 	}
 
 	public Timestamp getInCreatedDate() {
@@ -310,28 +300,12 @@ public class Materials implements Serializable {
 		this.inCreatedDate = inCreatedDate;
 	}
 
-	public Timestamp getInUpdatedDate() {
-		return inUpdatedDate;
-	}
-
-	public void setInUpdatedDate(Timestamp inUpdatedDate) {
-		this.inUpdatedDate = inUpdatedDate;
-	}
-
 	public Timestamp getOutCreatedDate() {
 		return outCreatedDate;
 	}
 
 	public void setOutCreatedDate(Timestamp outCreatedDate) {
 		this.outCreatedDate = outCreatedDate;
-	}
-
-	public Timestamp getOutUpdatedDate() {
-		return outUpdatedDate;
-	}
-
-	public void setOutUpdatedDate(Timestamp outUpdatedDate) {
-		this.outUpdatedDate = outUpdatedDate;
 	}
 
 	public Timestamp getInvoiceDate() {
@@ -349,6 +323,21 @@ public class Materials implements Serializable {
 	public void setInvoiceNo(String invoiceNo) {
 		this.invoiceNo = invoiceNo;
 	}
-	
+
+	public Integer getParentMaterialId() {
+		return parentMaterialId;
+	}
+
+	public void setParentMaterialId(Integer parentMaterialId) {
+		this.parentMaterialId = parentMaterialId;
+	}
+
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
 	
 }

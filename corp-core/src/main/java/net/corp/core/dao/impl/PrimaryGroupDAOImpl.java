@@ -33,4 +33,10 @@ public class PrimaryGroupDAOImpl extends GenericDAOImpl<PrimaryGroup, Integer> i
 		
 		return crit.list(); 
 	}
+
+	@Override
+	public List<PrimaryGroup> findEligibleVendors() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

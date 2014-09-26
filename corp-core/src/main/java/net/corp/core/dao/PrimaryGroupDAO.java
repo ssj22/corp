@@ -8,4 +8,5 @@ public interface PrimaryGroupDAO extends GenericDAO<PrimaryGroup, Integer> {
 
 	PrimaryGroup findPrimaryGroupByName(String transporterName);
 	List<PrimaryGroup> searchPrimaryGroupsByName(String pgName);
+	List<PrimaryGroup> findEligibleVendors();
 }	

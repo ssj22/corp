@@ -34,4 +34,19 @@ public class VibhagDAOImpl extends GenericDAOImpl<Vibhag, Integer> implements Vi
 		return crit.list(); 
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public Vibhag findVibhagByPhone(String phone) {
+		Criteria crit = getSession().createCriteria(Vibhag.class);
+		crit.add(Restrictions.eq("phone", phone));
+		
+		List<Vibhag> list = crit.list(); 
+		
+		if (list != null && !list.isEmpty()) {
+			return list.get(0);
+		}
+		
+		return null; 
+	}
+
 }

@@ -6,9 +6,9 @@
 }
 
 .autocomplete input{
-  font-size: 1.2em;
-  width: 100%;
-  padding:0.4em;
+  /* font-size: 1.2em; */
+  width: 340px;
+  /* padding:0.4em; */
 }
 
 .autocomplete ul{
@@ -18,15 +18,17 @@
   border-left: 1px solid #888;
   border-right: 1px solid #888;
   border-bottom: 1px solid #888;
+  -webkit-padding-start: 0px;
   z-index: 1;
+  cursor: pointer;
 }
 
 .autocomplete li{
   text-align: left;
   list-style:none;
   width: 100%;
-  padding:0.4em;
-  background-color: #fff;
+  /* padding:0.4em; */
+  background-color: #ddd;
 }
 
 .autocomplete li.active{
@@ -40,5 +42,5 @@
 
 .autocomplete li.active .highlight {
   background: #666;
-  color: #fff;
+  color: #ddd;
 }

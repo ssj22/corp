@@ -1,9 +1,11 @@
 package net.corp.biz.test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import net.corp.core.dao.MaterialDAO;
 import net.corp.core.exception.CorpException;
 import net.corp.core.service.MaterialService;
 import net.corp.core.vo.MaterialsVO;
@@ -24,6 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class MaterialServiceTest {
 	
 	@Resource
+	private MaterialDAO materialDAO;
+	
+	@Resource
 	private MaterialService materialService;
 	
 	@Before
@@ -37,7 +42,7 @@ public class MaterialServiceTest {
 	@Test
 	public void testFetchAllMaterialEntries() {
 		try {
-			List<MaterialsVO> list = materialService.fetchAllMaterialEntries(100, 1, null, false);
+			List<MaterialsVO> list = materialService.fetchAllMaterialEntries(100, 1, null, false, null, null, null);
 			if (list != null && !list.isEmpty()) {
 				System.out.println(list.get(0).getChallanNo());
 			}
@@ -48,11 +53,25 @@ public class MaterialServiceTest {
 	}
 
 	@Test
+	public void testLinkMaterial() {
+		List<Integer> list = new ArrayList<Integer>();
+		list.add(142885);
+		list.add(142870);
+		list.add(142881);
+		System.out.println(materialDAO.linkMaterial(142887, list));
+	}
+	
+	@Test
 	public void testSaveMaterial() {
 		List<MaterialsVO> list = null;
 		try {
-			list = materialService.fetchAllMaterialEntries(1, 1, null, false);
-		} catch (CorpException e) {
+			list = materialService.fetchAllMaterialEntries(1, 1, null, false, null, null, null);
+//			Materials entity = new Materials(); 
+//			entity.setStatus("INITIATED");
+//			entity.setMaterialId(23);
+//			materialDAO.saveOrUpdate(entity);
+//			System.out.println(entity.getMaterialId());
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -61,6 +80,7 @@ public class MaterialServiceTest {
 			System.out.println(materialsVO.getTareWt());
 			materialsVO.setTareWt(31.0);
 			materialService.saveMaterial(materialsVO);
+			System.out.println(materialsVO.getMaterialId());
 		}
 		
 		

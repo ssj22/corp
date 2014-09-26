@@ -34,4 +34,13 @@ public class VehicleDAOImpl extends GenericDAOImpl<Vehicles, Integer> implements
 		return crit.list(); 
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Vehicles> searchVehicleByTransport(Integer transportId) {
+		Criteria crit = getSession().createCriteria(Vehicles.class);
+		crit.add(Restrictions.eq("vendorId", transportId));
+		
+		return crit.list();
+	}
+
 }

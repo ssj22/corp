@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -29,8 +31,9 @@ public class StockItems implements java.io.Serializable {
 	private String stockItemname;
 	@Column(name = "company_id")
 	private Integer companyId;
-	@Column(name = "main_itemid")
-	private Integer mainItemid;
+	@JoinColumn(name = "main_itemid")
+	@ManyToOne
+	private Items item;
 	@Column(name = "stock_wt")
 	private Double stockWt;
 	@Column(name = "stock_rate")
@@ -50,12 +53,12 @@ public class StockItems implements java.io.Serializable {
 	}
 
 	public StockItems(String stockItemname, Integer companyId,
-			Integer mainItemid, Double stockWt, Double stockRate,
+			Items item, Double stockWt, Double stockRate,
 			Double stockRateInword, Integer unit, Double convFact,
 			Integer usrid, Integer invoiceInd) {
 		this.stockItemname = stockItemname;
 		this.companyId = companyId;
-		this.mainItemid = mainItemid;
+		this.item = item;
 		this.stockWt = stockWt;
 		this.stockRate = stockRate;
 		this.stockRateInword = stockRateInword;
@@ -89,12 +92,12 @@ public class StockItems implements java.io.Serializable {
 		this.companyId = companyId;
 	}
 
-	public Integer getMainItemid() {
-		return this.mainItemid;
+	public Items getItem() {
+		return item;
 	}
 
-	public void setMainItemid(Integer mainItemid) {
-		this.mainItemid = mainItemid;
+	public void setItem(Items item) {
+		this.item = item;
 	}
 
 	public Double getStockWt() {

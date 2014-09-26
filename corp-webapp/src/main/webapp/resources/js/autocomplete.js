@@ -98,11 +98,12 @@ app.directive('autocomplete', function() {
 
       // Default atts
       scope.attrs = {
-        "placeholder": "start typing...",
+        "placeholder": "",
         "class": "",
         "id": "",
         "inputclass": "",
-        "inputid": ""
+        "inputid": "",
+        "autocomplete":"off"
       };
 
       for (var a in attrs) {
@@ -219,7 +220,17 @@ app.directive('autocomplete', function() {
           e.preventDefault();
       });
     },
-    templateUrl: 'script/ac_template.html'
+   /* template: '<div class="autocomplete">'+
+    '<input type="text" ng-model="searchParam" placeholder="{{placeholder}}" />' +
+    '<ul ng-show="completing">' +
+      '<li suggestion ng-repeat="suggestion in suggestions | filter:searchFilter | orderBy:\'toString()\'" '+
+      'index="{{$index}}" val="{{suggestion}}" ng-class="{active: '+
+      '($index == selectedIndex)}" ng-click="select(suggestion)">'+
+        '{{suggestion}}'+
+      '</li>'+
+    '</ul>'+
+    '</div>'*/
+    templateUrl: 'resources/ac_template.html'
   };
 });
 

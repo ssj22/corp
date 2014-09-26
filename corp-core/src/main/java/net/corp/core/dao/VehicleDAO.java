@@ -8,5 +8,6 @@ public interface VehicleDAO extends GenericDAO<Vehicles, Integer> {
 
 	Vehicles findVehicleByNumber(String vehicleNumber);
 	List<Vehicles> searchVehicleByName(String vehicleName);
+	List<Vehicles> searchVehicleByTransport(Integer transportId);
 	
 }

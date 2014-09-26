@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <title>HotMix Plant</title>
     <link rel="stylesheet" href="resources/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="resources/css/jquery-ui.css" />
     <link rel="stylesheet" href="resources/css/ng-grid.css" />
     <link rel="stylesheet" href="resources/css/jquery.ui.theme.css" />
     <link rel="stylesheet" href="resources/css/ng-quick-date.css" />
+    <link rel="stylesheet" href="resources/css/autocomplete.css" />
 	<link rel="stylesheet" href="resources/css/style.css" />
     <style type="text/css">
         .ngRow.selected {
@@ -39,6 +41,7 @@
 
 </head>
 <body ng-cloak="">
+
 	<div class="navbar navbar-inverse navbar-fixed-top">
 	    <div class="container">
 	        <div class="navbar-header">
@@ -50,7 +53,7 @@
 	            <ul id="myTab" ng-controller="ViewCtrl" ng-class="tabClass">
 	                <li ng-repeat="tab in tabs" ng-class="{active:isTabActive('/' + tab.tabName)}" has-permission="{{tab.tabPermission}}" ng-click="loadTab(tab.tabOrder)"><a href="#{{tab.tabName}}" data-toggle="tab">{{tab.tabName}}</a></li>
 	            </ul>
-	            <form class="navbar-form navbar-right">
+	            <div class="navbar-form navbar-right">
 	                <span class="label label-default">Welcome {{loginuser.fullName}} !</span>
 	                <!-- <div class="form-group">
 	                    <input type="text" placeholder="Enter Text" class="form-control">
@@ -61,8 +64,8 @@
 	                <a href="j_spring_security_logout" class="btn btn-primary btn-md">
 					  <span class="glyphicon glyphicon-log-out"></span> Logout
 					</a>
-				</form>
-	        </div><!--/.navbar-collapse -->
+				</div>	
+			</div><!--/.navbar-collapse -->
 	    </div>
 	</div>
 	<div class="jumbotron">
@@ -70,7 +73,6 @@
 	        <div class="tab-pane fade active in">
 	            <ng-view>
 	                </ng-view>
-	            
 	        </div>
 	    </div>
 	</div>
@@ -129,11 +131,12 @@
 		  			</div>
 		  		</div>
 		  	</div>	
-		  	</div>
 	  	</div>
-	</div>  	
+  	</div>
+</div>  	
 
 <script type="text/javascript" src="resources/js/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="resources/js/jquery-ui.js"></script>
 <script type="text/javascript" src="resources/js/moments.js"></script>
 <script type="text/javascript" src="resources/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="resources/js/angular.js"></script>
@@ -141,7 +144,11 @@
 <script type="text/javascript" src="resources/js/ng-grid.js"></script>
 <script type="text/javascript" src="resources/js/ng-quick-date.js"></script>
 <script type="text/javascript" src="resources/js/underscore-min.js"></script>
+<script type="text/javascript" src="resources/js/autocomplete.js"></script>
 <script type="text/javascript" src="resources/js/custom.js"></script>
+<script type="text/javascript" src="resources/js/services.js"></script>
+<script type="text/javascript" src="resources/js/util.js"></script>
+<script type="text/javascript" src="resources/js/material.js"></script>
 
 
 </body>

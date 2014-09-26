@@ -5,6 +5,7 @@ import java.util.List;
 import net.corp.core.exception.CorpException;
 import net.corp.core.vo.AddressVO;
 import net.corp.core.vo.TabsVO;
+import net.corp.core.vo.UserPreferenceVO;
 import net.corp.core.vo.UserVO;
 
 public interface UserService {
@@ -37,4 +38,7 @@ public interface UserService {
 	 */
 	List<TabsVO> fetchAllTabs() throws CorpException;
 	
+	UserPreferenceVO fetchUserPreference(Integer userId);
+	
+	boolean saveUserPreference(UserPreferenceVO prefVo);
 }

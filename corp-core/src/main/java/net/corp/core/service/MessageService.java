@@ -1,9 +1,12 @@
 package net.corp.core.service;
 
-import net.corp.core.vo.MaterialsVO;
+import java.util.List;
+
 
 public interface MessageService {
-	public void sendMessage(MaterialsVO materialVo) throws Exception;
-	
-	public void readMessage() throws Exception;
+	public void syncUp();
+
+	void sendMessage(String phone, String text) throws Exception;
+
+	void sendMessages(List<String> phones, String text) throws Exception;
 }

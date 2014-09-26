@@ -6,6 +6,11 @@
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="src" path="/corp-core"/>
+  <classpathentry kind="var" path="M2_REPO/org/quartz-scheduler/quartz/1.8.6/quartz-1.8.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/slf4j/slf4j-api/1.6.0/slf4j-api-1.6.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/xerial/sqlite-jdbc/3.7.2/sqlite-jdbc-3.7.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/RXTXcomm/RXTXcomm/2.2/RXTXcomm-2.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/smslib/smslib/3.5.5/smslib-3.5.5.jar"/>
   <classpathentry kind="var" path="M2_REPO/junit/junit/4.11/junit-4.11.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"/>
   <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.15/log4j-1.2.15.jar" sourcepath="M2_REPO/log4j/log4j/1.2.15/log4j-1.2.15-sources.jar"/>
@@ -24,7 +29,6 @@
   <classpathentry kind="var" path="M2_REPO/mysql/mysql-connector-java/5.1.10/mysql-connector-java-5.1.10.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/google/guava/guava/r08/guava-r08.jar" sourcepath="M2_REPO/com/google/guava/guava/r08/guava-r08-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/jolbox/bonecp/0.7.1.RELEASE/bonecp-0.7.1.RELEASE.jar" sourcepath="M2_REPO/com/jolbox/bonecp/0.7.1.RELEASE/bonecp-0.7.1.RELEASE-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/slf4j/slf4j-api/1.5.10/slf4j-api-1.5.10.jar" sourcepath="M2_REPO/org/slf4j/slf4j-api/1.5.10/slf4j-api-1.5.10-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/jolbox/bonecp-provider/0.7.1.RELEASE/bonecp-provider-0.7.1.RELEASE.jar" sourcepath="M2_REPO/com/jolbox/bonecp-provider/0.7.1.RELEASE/bonecp-provider-0.7.1.RELEASE-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/hibernate/hibernate-core/4.1.7.Final/hibernate-core-4.1.7.Final.jar" sourcepath="M2_REPO/org/hibernate/hibernate-core/4.1.7.Final/hibernate-core-4.1.7.Final-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/antlr/antlr/2.7.7/antlr-2.7.7.jar"/>

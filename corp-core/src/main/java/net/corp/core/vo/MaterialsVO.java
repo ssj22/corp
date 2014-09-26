@@ -57,19 +57,11 @@ public class MaterialsVO implements Serializable {
 	
 	private Integer inCreatedBy; 
 	
-	private Integer inUpdatedBy;
-	
 	private Integer outCreatedBy;
-	
-	private Integer outUpdatedBy;
 	
 	private Timestamp inCreatedDate; 
 	
-	private Timestamp inUpdatedDate;
-	
 	private Timestamp outCreatedDate;
-	
-	private Timestamp outUpdatedDate;
 	
 	private Timestamp invoiceDate;
 	
@@ -79,6 +71,60 @@ public class MaterialsVO implements Serializable {
 	
 	private String status;
 	
+	private Integer userId;
+	
+	private Boolean inAddlInd;
+	
+	private Boolean outAddlInd;
+	
+	private Boolean htCorrectionInd;
+	
+	private Boolean qtyInd;
+	
+	private Boolean klInd;
+	
+	private Boolean invoiceInd;
+	
+	private Integer category;
+	
+	private Integer parentMaterialId;
+	
+	private Integer logMaterialId;
+	
+	private Integer quantity;
+	
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
+
+	public Integer getLogMaterialId() {
+		return logMaterialId;
+	}
+
+	public void setLogMaterialId(Integer logMaterialId) {
+		this.logMaterialId = logMaterialId;
+	}
+
+	public Integer getParentMaterialId() {
+		return parentMaterialId;
+	}
+
+	public void setParentMaterialId(Integer parentMaterialId) {
+		this.parentMaterialId = parentMaterialId;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
 	public String getVendorName() {
 		return vendorName;
 	}
@@ -293,28 +339,12 @@ public class MaterialsVO implements Serializable {
 		this.inCreatedBy = inCreatedBy;
 	}
 
-	public Integer getInUpdatedBy() {
-		return inUpdatedBy;
-	}
-
-	public void setInUpdatedBy(Integer inUpdatedBy) {
-		this.inUpdatedBy = inUpdatedBy;
-	}
-
 	public Integer getOutCreatedBy() {
 		return outCreatedBy;
 	}
 
 	public void setOutCreatedBy(Integer outCreatedBy) {
 		this.outCreatedBy = outCreatedBy;
-	}
-
-	public Integer getOutUpdatedBy() {
-		return outUpdatedBy;
-	}
-
-	public void setOutUpdatedBy(Integer outUpdatedBy) {
-		this.outUpdatedBy = outUpdatedBy;
 	}
 
 	public Timestamp getInCreatedDate() {
@@ -325,28 +355,12 @@ public class MaterialsVO implements Serializable {
 		this.inCreatedDate = inCreatedDate;
 	}
 
-	public Timestamp getInUpdatedDate() {
-		return inUpdatedDate;
-	}
-
-	public void setInUpdatedDate(Timestamp inUpdatedDate) {
-		this.inUpdatedDate = inUpdatedDate;
-	}
-
 	public Timestamp getOutCreatedDate() {
 		return outCreatedDate;
 	}
 
 	public void setOutCreatedDate(Timestamp outCreatedDate) {
 		this.outCreatedDate = outCreatedDate;
-	}
-
-	public Timestamp getOutUpdatedDate() {
-		return outUpdatedDate;
-	}
-
-	public void setOutUpdatedDate(Timestamp outUpdatedDate) {
-		this.outUpdatedDate = outUpdatedDate;
 	}
 
 	public Timestamp getInvoiceDate() {
@@ -379,6 +393,110 @@ public class MaterialsVO implements Serializable {
 
 	public void setEntryTypeText(String entryTypeText) {
 		this.entryTypeText = entryTypeText;
+	}
+
+	public boolean isInAddlInd() {
+		return inAddlInd;
+	}
+
+	public void setInAddlInd(boolean inAddlInd) {
+		this.inAddlInd = inAddlInd;
+	}
+
+	public boolean isOutAddlInd() {
+		return outAddlInd;
+	}
+
+	public void setOutAddlInd(boolean outAddlInd) {
+		this.outAddlInd = outAddlInd;
+	}
+
+	public boolean isHtCorrectionInd() {
+		return htCorrectionInd;
+	}
+
+	public void setHtCorrectionInd(boolean htCorrectionInd) {
+		this.htCorrectionInd = htCorrectionInd;
+	}
+
+	public boolean isQtyInd() {
+		return qtyInd;
+	}
+
+	public void setQtyInd(boolean qtyInd) {
+		this.qtyInd = qtyInd;
+	}
+
+	public boolean isKlInd() {
+		return klInd;
+	}
+
+	public void setKlInd(boolean klInd) {
+		this.klInd = klInd;
+	}
+
+	public boolean isInvoiceInd() {
+		return invoiceInd;
+	}
+
+	public void setInvoiceInd(boolean invoiceInd) {
+		this.invoiceInd = invoiceInd;
+	}
+
+	public Integer getCategory() {
+		return category;
+	}
+
+	public void setCategory(Integer category) {
+		this.category = category;
+	}
+
+	public Boolean getInAddlInd() {
+		return inAddlInd;
+	}
+
+	public void setInAddlInd(Boolean inAddlInd) {
+		this.inAddlInd = inAddlInd;
+	}
+
+	public Boolean getOutAddlInd() {
+		return outAddlInd;
+	}
+
+	public void setOutAddlInd(Boolean outAddlInd) {
+		this.outAddlInd = outAddlInd;
+	}
+
+	public Boolean getHtCorrectionInd() {
+		return htCorrectionInd;
+	}
+
+	public void setHtCorrectionInd(Boolean htCorrectionInd) {
+		this.htCorrectionInd = htCorrectionInd;
+	}
+
+	public Boolean getQtyInd() {
+		return qtyInd;
+	}
+
+	public void setQtyInd(Boolean qtyInd) {
+		this.qtyInd = qtyInd;
+	}
+
+	public Boolean getKlInd() {
+		return klInd;
+	}
+
+	public void setKlInd(Boolean klInd) {
+		this.klInd = klInd;
+	}
+
+	public Boolean getInvoiceInd() {
+		return invoiceInd;
+	}
+
+	public void setInvoiceInd(Boolean invoiceInd) {
+		this.invoiceInd = invoiceInd;
 	}
 	
 }

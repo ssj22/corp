@@ -1,0 +1,43 @@
+Tables to be removed
+- attendance
+- butumin in and out
+- ch_numbers
+- company_add
+- department
+- do_numbers
+- emplyee_table
+- invoice and invoicedetails
+- legers
+- material_inin1 (remove after vehicle in/out time is copied for old records)
+- refactor material_in table since it contains out data also. In and out data is a update to single record. Need to maintain material history.
+- material_out
+- refactor plantspare for a meaningful name (spare is parts available for utilitizing within plant)
+- process table
+- refactor report_sms to a notification table that sends summary over sms whenever a material entry is printed and daily summary at 8 pm / on-demand based on incoming request
+- refactor save_sms to a notification table that sends sms to engineers (contact person of the vibhag concerned) whenever out material entry is complete.
+- smssend
+- refactor stock_items with item_main (child-parent relation)
+- Table1
+- tadminexpenditure
+- temp
+- tmaterial_in
+- tmp
+- tmprpt
+- tplantspare
+- ttmaterial_in
+- tttmaterial_in
+- refactor unit to conversion
+- refactor user_table
+- refactor vehicle_table
+
+Actual Reports
+Report 1 - Monthly (All material in categories are divided by the type of material)
+	- Material in Summary (type of material, quantity, unit, rate, cost, total cost) 
+	- Material in (by vendors - plant sr. no, material type, vehicle no, rate, quantity, amount)** rate is calculated, amount is given
+	- Material in (by transport - same as above) ** rate is based on what is calculated already  ** only for some items
+	- Metal in summary
+	- Metal in vendor
+	- Plant spare
+	- Material out Summary (type of material, quantity, unit, rate, cost, total cost) 
+	- Material out (by vibhag - plant sr. no, material type, vehicle no, rate, quantity, amount)** rate is calculated, amount is given
+	- Overall summary

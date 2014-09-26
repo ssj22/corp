@@ -14,8 +14,8 @@ public class RestHelper {
 	private static final Logger log = Logger.getLogger(RestHelper.class);
 	
 	public static String liveWeight() {
-		String url = "http://192.168.3.67:8732/Weight";
-		
+		String url = "http://192.168.0.23:8732/weight";
+		//url = "http://localhost/weight";
 		// Create an instance of HttpClient.
 	    HttpClient client = new HttpClient();
 
@@ -50,11 +50,12 @@ public class RestHelper {
 
 	    } catch (HttpException e) {
 	    	log.error("Fatal protocol violation: " + e.getMessage());
-	      e.printStackTrace();
 	    } catch (IOException e) {
 	    	log.error("Fatal transport error: " + e.getMessage());
-	      e.printStackTrace();
-	    } finally {
+	    } catch (Exception e) {
+	    	log.error("Execption: " + e.getMessage());
+	    }
+	    finally {
 	      // Release the connection.
 	      method.releaseConnection();
 	    }

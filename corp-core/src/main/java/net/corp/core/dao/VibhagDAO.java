@@ -8,6 +8,8 @@ public interface VibhagDAO extends GenericDAO<Vibhag, Integer> {
 
 	Vibhag findVibhagByName(String vibhagName);
 	
+	Vibhag findVibhagByPhone(String phone);
+	
 	List<Vibhag> searchVibhagsByName(String vibhagName);
 	 
 }

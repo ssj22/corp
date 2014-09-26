@@ -74,6 +74,12 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+	    <servlet-name>SMSServlet</servlet-name>
+	    <servlet-class>net.corp.web.servlet.SMSServlet</servlet-class>
+	    <load-on-startup>1</load-on-startup>
+	</servlet>
+
 	<!-- Spring listener -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

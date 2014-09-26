@@ -1,294 +1,323 @@
-<div>
+<div id="mydiv" ng-show="loading !== 0">
+    <img src="resources/img/loading_icon.gif" class="ajax-loader"/>
+</div>
+<div style="margin-top: 0px;">
 	<div>
 	    <div ng-show="readOnly">
-	        <div class="btn-group" has-permission="VIEW_REPORTS">
-	
-	            <button type="submit" class="btn btn-info" ng-click="createEntry()">Create Entry</button>
-	            <button type="submit" class="btn btn-warning" ng-click="editEntry()" ng-disabled="disabled">Edit Entry</button>
-				<button type="submit" class="btn btn-success" ng-click="printEntry()" ng-show="printready"  data-toggle="modal" data-target="#myModal">Print</button>
-			</div>
-	
-	        <div class="gridFilterOptions">
-	            <span class="label label-default">Show Entries for</span> :
-	            <select ng-model="sel" ng-options="time.name for time in times" ng-change="timeSelected()">
-	
-	            </select>
-	
-	            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	            
-	            <!-- <span class="label label-success" style="cursor: pointer;" ng-click="loadMore()">Load More</span> -->
-	        </div>
+	        <div>
+		        <div class="btn-group" has-permission="VIEW_REPORTS">
+					<button type="submit" class="btn btn-info" ng-click="createEntry()">Create Entry</button>
+		            <button type="submit" class="btn btn-warning" ng-click="editEntry(1)" ng-show="printready" >Edit Entry</button>
+					<button type="submit" class="btn btn-success" ng-click="printEntry()" ng-show="printready"  data-toggle="modal" data-target="#myModal">Print Entry</button>
+					<button type="submit" class="btn btn-warning" ng-click="linkEntry(1)" ng-show="linkready" >Link</button>
+					<button type="submit" class="btn btn-primary" ng-click="linkEntry(2)" ng-show="unlinkready" >De-Link</button>
+					<button type="submit" class="btn btn-info" ng-click="editEntry(2)" ng-show="attachready" >Attach</button>
+				</div>
+		
+		        <div class="gridFilterOptions">
+		        	<span class="label label-default " style="cursor: pointer;" ng-click="timeSelected(1)">Today</span>
+		        	<span class="label label-default " style="cursor: pointer;" ng-click="timeSelected(7)">Last 7 days</span>
+		        	<span class="label label-default " style="cursor: pointer;" ng-click="timeSelected(180)">Last 30 days</span>
+		        	&nbsp;&nbsp;&nbsp;&nbsp;
+		            <!-- <input type="radio" name="dataFilter" value="Range" ng-click="rangeDateFilter()"/> Range --> 
+		            <input id="dateFrom" type="text" ng-model="dateFrom" datepicker style="width: 160px;"/> <span class="glyphicon glyphicon-transfer"></span> 
+		            <input id="dateTo" type="text" ng-model="dateTo" datepicker/> 
+		            &nbsp;&nbsp;&nbsp;&nbsp;
+		            <span class="glyphicon glyphicon-refresh" style="cursor: pointer;" ng-click="rangeSelected()" ng-disabled="datafilter == 1"></span>
+				</div>
+		    </div> 
 	        <div class="gridStyle" ng-grid="gridOptions">
 	
 	        </div>
 	    </div>
 	    <div ng-show="!readOnly">
 	        <form name="form">
-	            <div style="border-bottom: 1px solid #000; padding-bottom: 10px;">
-	            	<h3>Serial No: {{selection.materialId}}
-	            	<b>{{selection.status == null && "INITIATED" || selection.status}}</b>
+	            <div style="margin-bottom: 5px; padding-bottom: 5px;">
+	            	<div>
+	            	<h3>
+	            		<div style="float:left;">
+	            			<span class="label label-default">Serial No:</span> {{selection.materialId}}
+	            		</div>
+	            		<div align="right">
+	            			<span class="label label-default">Status:</span>
+	            			{{selection.status == null && "INITIATED" || selection.status}}
+	            		</div>
 	            	</h3> 
+	            	</div>
+	            	<div>
+	            		<div style="float:left;" >
+	            			<span class="label label-warning">Entry Type</span>
+			            	<select ng-model="selection.entryType" ng-change="weightBtns()" ng-disabled="selection.status != null || attachedEntry">
+			                	<option label="Inward" value="1"></option>
+			                    <option label="Outward" value="2"></option>
+			                </select>
+	            		</div>
+	            		<div align="center">
+	            			<span class="label label-warning">Attached To:</span>
+			            	{{attachedDisplay}}
+			            </div>
+	            		
+	            	</div>
 	            	
-	            	Entry Type *
-	            	<select ng-model="selection.entryType" ng-change="weightBtns()" ng-disabled="selection.status != null">
-	                	<option label="Inward" value="1"></option>
-	                    <option label="Outward" value="2"></option>
-	                </select>
 	            </div>
-	            <div style="float:left; width: 50%">
-	            <table>
-	                <tr>
-	                    <td align="right">Challan Number</td>
-	                    <td align="center"> : </td>
-	                    <td align="left">
-	                    	<input type="text" ng-model="selection.challanNo" name="challanNo"/>
-	            		</td>
-	                    <td align="center">&nbsp;</td>
-	                </tr>
-	                <tr>
-	                    <td align="right">Gross Weight *</td>
-	                    <td align="center"> : </td>
-	                    <td align="left"><input type="text" ng-model="selection.grossWt" name="grossWt" disabled="grossBtnDisabled"/></td>
-	                    <td align="left">&nbsp;</td>
-	                </tr>
-	                <tr>
-	                    <td align="right">Tare Weight *</td>
-	                    <td align="center"> : </td>
-	                    <td align="left"><input type="text" ng-model="selection.tareWt" name="tareWt" disabled="tareBtnDisabled"/></td>
-	                    <td align="left">&nbsp;</td>
-	                </tr>
-	                <tr>
-	                    <td align="right">Net Weight</td>
-	                    <td align="center"> : </td>
-	                    <td align="left"><input type="text" ng-model="selection.netWt" name="netWt" disabled/></td>
-	                    <td align="center">&nbsp;</td>
-	                </tr>
-	                <tr>
-	                    <td align="right">Vehicle In Time </td>
-	                    <td align="center"> : </td>
-	                    <th align="left">{{selection.vehicleInTime | date:"dd-MMM-yyyy @ h:mma"}}
-	                    </th>
-	                    <td align="center">&nbsp;</td>
-	                </tr>
-	                <tr>
-	                    <td align="right">Vehicle Out Time </td>
-	                    <td align="center"> : </td>
-	                    <th align="left">{{selection.vehicleOutTime | date:"dd-MMM-yyyy @ h:mma"}}
-	                    </th>
-	                    <td align="center">&nbsp;</td>
-	                </tr>
-	            </table>
-	            </div>
-	
-	            <div>
-	                <table>
-	                    <tr>
-	                        <td align="right">{{(selection.entryType == 1) && "From" || 'To'}} *</td>
-	                        <td align="center"> : </td>
-	                        <td align="left">
-	                            <div ng-show="selection.entryType == 1">
-	                            	<input ng-model="selection.vendorName" list="vendorList" required style="width: 250px;"/>
-	                            	<datalist id="vendorList">
-	                                    <option ng-repeat="pg in pgs" value="{{pg.vendorName}}"></option>
-	                                </datalist>
-	                            </div>
-	                            <div ng-show="selection.entryType != 1">
-	                            	<input ng-model="selection.vibhagName" list="vibhagList" required style="width: 250px;"/>
-	                             	<datalist id="vibhagList">
-	                                    <option ng-repeat="vibhag in vibhags" value="{{vibhag.vibhagName}}"></option>
-	                                </datalist>    
-	                            </div>
-	                        </td>
-	                        <td align="center">&nbsp;                        	
-							</td>
-	                    </tr>
-	                    <tr>
-	                        <td align="right">Site Name</td>
-	                        <td align="center"> : </td>
-	                        <td align="left">
-	                        	<input type="text" ng-model="selection.siteName" name="siteName" list="siteList" required style="width: 340px;"/>
-	                        	<datalist id="siteList">
-                                    <option ng-repeat="site in sites" value="{{site.siteName}}"></option>
-                                </datalist>    
-	                        </td>
-	                        <td align="center">&nbsp;</td>
-	                    </tr>
-	                    <tr>
-	                        <td align="right">Material Type *</td>
-	                        <td align="center"> : </td>
-	                        <td align="left">
-	                            <div>
-	                                <input ng-model="selection.stockName" list="stockList" required style="width: 250px;"/>
-	                                <datalist id="stockList">
-	                                    <option ng-repeat="stock in stocks" value="{{stock.stockItemname}}"></option>
-	                                </datalist>
-	                            </div>
-	                        </td>
-	                        <td align="center">&nbsp;</td>
-	                    </tr>
-	                    <tr>
-	                        <td align="right">Transporter *</td>
-	                        <td align="center"> : </td>
-	                        <td align="left">
-	                            <div>
-	                                <input ng-model="selection.transporterName" list="transportList" required style="width: 250px;"/>
-	                                <datalist id="transportList">
-	                                    <option ng-repeat="pg in pgs" value="{{pg.vendorName}}"></option>
-	                                </datalist>
-	                            </div>
-	                        </td>
-	                        <td align="center">&nbsp;</td>
-	                    </tr>
-	                    <tr>
-	                        <td align="right">Vehicle Details *</td>
-	                        <td align="center"> : </td>
-	                        <td align="left">
-	                            <div>
-	                                <input ng-model="selection.vehicleNumber" list="vehicleList" required />
-	                                <datalist id="vehicleList">
-	                                    <option ng-repeat="vehicle in vehicles" value="{{vehicle.vehicleNumber}}"></option>
-	                                </datalist>
-	                            </div>
-	                        </td>
-	                        <td align="center">&nbsp;</td>
-	                    </tr>
-	                    <tr>
-	                        <td align="right">Notes</td>
-	                        <td align="center"> : </td>
-	                        <td align="left"><input type="textarea" ng-class="textarea" name="notes" /></td>
-	                        <td align="center">&nbsp;</td>
-	                    </tr>
-	                </table>
-	
-	            </div>
-	            <div>
-	                <div class="btn-group">
-	
+	            <div class="panel panel-warning">
+				  <div class="panel-heading">
+				    <h3 class="panel-title">Basic Information</h3>
+				  </div>
+				  <div class="panel-body">
+				    <div style="float:left; width: 50%">
+			            <table>
+			            	<tr>
+		                        <td align="right"><span class="label label-warning">{{(selection.entryType == 1) && "From" || ((selection.entryType == 2) && "To" || "From / To") }}</span></td>
+		                        <td align="center"> : </td>
+		                        <td align="left">
+		                            <div ng-show="selection.entryType == 1">
+		                            	<autocomplete ng-model="selection.vendorName" data="pglist" click-activation="true" on-select="loadStaticData"></autocomplete>
+		                            </div>
+		                            <div ng-show="selection.entryType == 2">
+		                            	<autocomplete ng-model="selection.vibhagName" data="vibhaglist" click-activation="true" on-select="loadSelectiveStaticData"></autocomplete>
+		                            </div>
+		                        </td>
+		                        <td align="center">&nbsp;                        	
+								</td>
+		                    </tr>
+			                <tr>
+			                    <td align="right"><span class="label label-warning">Gross Weight</span></td>
+			                    <td align="center"> : </td>
+			                    <td align="left"><input type="text" ng-model="selection.grossWt" name="grossWt" disabled="grossDisabled"/></td>
+			                    <td align="left">&nbsp;</td>
+			                </tr>
+			                <tr>
+			                    <td align="right"><span class="label label-warning">Tare Weight</span></td>
+			                    <td align="center"> : </td>
+			                    <td align="left"><input type="text" ng-model="selection.tareWt" name="tareWt" disabled="tareDisabled"/></td>
+			                    <td align="left">&nbsp;</td>
+			                </tr>
+			                <tr>
+			                    <td align="right"><span class="label label-default">Net Weight</span></td>
+			                    <td align="center"> : </td>
+			                    <td align="left"><input type="text" ng-model="selection.netWt" name="netWt" disabled/></td>
+			                    <td align="center">&nbsp;</td>
+			                </tr>
+			                <tr>
+			                    <td align="right"><span class="label label-default">Vehicle In Time</span></td>
+			                    <td align="center"> : </td>
+			                    <th align="left">&nbsp;{{selection.vehicleInTime | date:"dd-MMM-yyyy @ h:mma"}}
+			                    </th>
+			                    <td align="center">&nbsp;</td>
+			                </tr>
+			                <tr ng-show="selection.entryType == 1">
+			                    <td align="right"><span class="label label-default">Challan Number</span></td>
+			                    <td align="center"> : </td>
+			                    <td align="left">
+			                    	<input type="text" ng-model="selection.challanNo" name="challanNo"/>
+			            		</td>
+			                    <td align="center">&nbsp;</td>
+			                </tr>
+			            </table>
+			            </div>
+			
+			            <div>
+			                <table>
+			                    <tr>
+			                        <td align="right"><span class="label label-warning">Transporter</span></td>
+			                        <td align="center"> : </td>
+			                        <td align="left">
+			                            <autocomplete ng-model="selection.transporterName" data="pglist" on-select="transporterSelect" click-activation="true" ng-show="!attachedEntry"/>
+			                            <label ng-show="attachedEntry">{{selection.transporterName}}</label>
+			                        </td>
+			                        <td align="center">&nbsp;</td>
+			                    </tr>
+			                    <tr>
+			                        <td align="right"><span class="label label-warning">Vehicle Details</span></td>
+			                        <td align="center"> : </td>
+			                        <td align="left">
+			                            <autocomplete ng-model="selection.vehicleNumber" data="vehiclelist" ng-show="!transporterEmpty && !attachedEntry" click-activation="true"></autocomplete>
+			                            <label ng-show="attachedEntry">{{selection.vehicleNumber}} &nbsp;</label>
+			                        </td>
+			                        <td align="center">&nbsp;</td>
+			                    </tr>
+			                    <tr>
+			                        <td align="right"><span class="label label-warning">Site Name</span></td>
+			                        <td align="center"> : </td>
+			                        <td align="left">
+			                        	<autocomplete ng-model="selection.siteName" data="sitelist" click-activation="true" ng-show="!attachedEntry"/>
+			                        	<label ng-show="attachedEntry">{{selection.siteName}}</label>
+			                        </td>
+			                        
+			                        <td align="center">&nbsp;</td>
+			                    </tr>
+			                    <tr>
+			                        <td align="right"><span class="label label-warning">Material Type</span></td>
+			                        <td align="center"> : </td>
+			                        <td align="left">
+			                            <autocomplete ng-model="selection.stockName" data="stocklist" click-activation="true" on-select="checkAddl()" ng-show="selection.entryType != null"/>
+			                        </td>
+			                        <td align="center">&nbsp;</td>
+			                    </tr>
+			                    <tr>
+				                    <td align="right"><span class="label label-default">Vehicle Out Time</span></td>
+				                    <td align="center"> : </td>
+				                    <th align="left">&nbsp;{{selection.vehicleOutTime | date:"dd-MMM-yyyy @ h:mma"}}
+				                    </th>
+				                    <td align="center">&nbsp;</td>
+				                </tr>
+			                    <tr>
+			                        <td align="right"><span class="label label-default">Notes</span></td>
+			                        <td align="center"> : </td>
+			                        <td align="left"><input type="text" ng-class="textarea" name="notes" /></td>
+			                        <td align="center">&nbsp;</td>
+			                    </tr>
+	                		</table>
+	            		</div>
+					</div>
+				</div>
+				
+	            <div class="panel panel-default" id="addlInfo" ng-show="addl">
+				  <div class="panel-heading">
+				    <h3 class="panel-title">Additional Information</h3>
+				  </div>
+				  <div class="panel-body">
+				  	<div style="float:left; width: 50%">
+			            <table>
+			                <tr ng-show="invoiceInd">
+			                    <td align="right"><span class="label label-default">Invoice Number</span></td>
+			                    <td align="center"> : </td>
+			                    <td align="left">
+			                    	<input type="text" ng-model="selection.invoiceNo" name="invoiceno"/>
+			            		</td>
+			                    <td align="center">&nbsp;</td>
+			                </tr>
+			                <tr ng-show="qtyInd">
+			                    <td align="right"><span class="label label-default">Quantity (in Metric tonnes)</span></td>
+			                    <td align="center"> : </td>
+			                    <td align="left"><input type="text" ng-model="selection.quantity" name="quantityTN"/></td>
+			                    <td align="left">&nbsp;</td>
+			                </tr>
+			                <tr ng-show="klInd">
+			                    <td align="right"><span class="label label-default">Quantity (in Kilo Litres)</span></td>
+			                    <td align="center"> : </td>
+			                    <td align="left"><input type="text" ng-model="selection.quantity" name="quantityKL"/></td>
+			                    <td align="left">&nbsp;</td>
+			                </tr>
+			                <tr ng-show="heightCorr">
+			                    <td align="right"><span class="label label-default">Height Correction</span></td>
+			                    <td align="center"> : </td>
+			                    <td align="left"><input type="text" ng-model="selection.heightCorrection" name="quantityKL"/></td>
+			                    <td align="left">&nbsp;</td>
+			                </tr>
+			             </table>
+			         </div>
+			         <div>
+		                <table>
+		                    <tr ng-show="invoiceInd">
+		                        <td align="right"><span class="label label-default">Invoice Date</span></td>
+		                        <td align="center"> : </td>
+		                        <td align="left"> {{selection.invoicedate}}<quick-datepicker ng-model='selection.invoicedate'></quick-datepicker>
+		                        </td>
+		                        <td align="center">&nbsp;                        	
+								</td>
+		                    </tr>
+		                    <tr ng-show="amountInd">
+		                        <td align="right"><span class="label label-default">Amount</span></td>
+		                        <td align="center"> : </td>
+		                        <td align="left">
+		                        	<input type="text" ng-model="selection.amount" name="siteName"/>
+		                        </td>
+		                        <td align="center">&nbsp;</td>
+		                    </tr>
+		                </table>
+			          </div>              
+				  </div>
+				</div>  
+	            <div class="panel panel-default">
+				  <div class="panel-body">
+				    <div class="btn-group" align="center">
 	                    <button type="submit" class="btn btn-info" ng-click="cancelEntry()">Cancel</button>
-	                    <button type="submit" class="btn btn-warning" ng-click="saveEntry()">Save</button>
+	                    <button type="submit" class="btn btn-info" ng-click="saveEntry()">Save</button>
 	
 	                </div>
-	            </div>
+				  </div>
+				</div>
 	        </form>
 	    </div>
 	</div>
 </div>	
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" ng-controller="MaterialsCtrl">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         <div>
-	        <div class="modal-title" id="myModalLabel" style="float: left;">PMC Hotmix plant - Receipt</div>
-	        <div class="modal-title" id="myModalLabel" style="float: right;">Dated: {{currtime}} &nbsp;&nbsp;</div>
+	        <div class="modal-title" id="myModalLabel1" style="float: left;">PMC Hotmix plant - Receipt <b>{{selection.materialId}}</b></div>
+	        <div class="modal-title" id="myModalLabel2" style="float: right;">Print Date: {{currtime}} &nbsp;&nbsp;</div>
         </div>
         <br/>
       </div>
       <div class="modal-body">
-      	<div align="center" style="margin-top: 0">
+      	<div style="margin-top: 0">
            	<div  style="margin-top: 0">
-      			<div style="float: left;">
-      				<img alt="logo" src="resources/img/logo2.png" width="130px" height="130px"/>
+      			<div style="float: left; margin-left: 20px;">
+      				<img alt="logo" src="resources/img/logo2.png" width="90px" height="90px"/>
       			</div>	
       			<div style="margin-left: 130px;" align="center">
-      				<h2>DEPUTY CITY ENGINEER, HOT MIX PLANT (ROADS)</h2>
+      				<h3>DEPUTY CITY ENGINEER, HOT MIX PLANT (ROADS)</h3>
       				<h4>PUNE MUNICIPAL CORPORATION</h4>
       				<h4>Jai Jawan Nagar , Yerawada Pune - 411006</h4>
-      				<h4>CHALLAN SLIP</h4>
-      				
       			</div>
-     			</div>
-      		<table>	
-      			<tr valign="top"><td>	
-      			<div style="margin-top: 20px; width: 100%">
-      				<table border="1" style="width: 100%">
-      					<tr><td>
-      						<table style="width: 100%">
-      							<tr>
-      								<th style="text-align:right; width:220px">SERIAL NO : </th>
-      								<td style="text-align:left; width:220px">{{selection.materialId}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">PRINT DATE : </th>
-      								<td style="text-align:left; width:220px"></td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right; width:220px">TRANSPORTER : </th>
-      								<td style="text-align:left; width:220px">{{selection.transporter}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">MATERIAL : </th>
-      								<td style="text-align:left; width:220px">{{selection.itemName}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right; width:220px">VEHICLE NO : </th>
-      								<td style="text-align:left; width:220px">{{selection.vehicleNumber}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">RATE : </th>
-      								<td style="text-align:left; width:220px">{{selection.itemName}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right; width:220px">JE/WARD OFFICE : </th>
-      								<td style="text-align:left; width:220px">{{selection.vibhagName}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">AMOUNT : </th>
-      								<td style="text-align:left; width:220px">{{selection.itemName}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right; width:220px">NAME OF SITE : </th>
-      								<td style="text-align:left; width:220px">{{selection.siteName}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">SECTION : </th>
-      								<td style="text-align:left; width:220px">{{selection.vibhagName}}</td>
-      							</tr>
-      						</table>
-      					</td></tr>
-      					<tr><td>
-      						<table style="width: 100%">
-      							<tr>
-      								<th style="text-align:right; width:220px">GROSS WEIGHT : </th>
-      								<td style="text-align:left; width:220px">{{selection.grossWt}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">IN TIME : </th>
-      								<td style="text-align:left; width:220px">{{selection.vehicleInTime | date:"dd-MMM-yyyy @ h:mma"}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right; width:220px">TARE WEIGHT : </th>
-      								<td style="text-align:left; width:220px">{{selection.tareWt}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">OUT TIME : </th>
-      								<td style="text-align:left; width:220px">{{selection.vehicleOutTime | date:"dd-MMM-yyyy @ h:mma"}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right; width:220px">NET WEIGHT : </th>
-      								<td style="text-align:left; width:220px">{{selection.netWt}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">OUT WEIGHT : </th>
-      								<td style="text-align:left; width:220px">{{selection.netWt}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right;" colspan="5"><br/><br/>PLANT SUPERVISOR SIGN</th>
-      							</tr>
-      						</table>
-      					</td></tr>
-      				</table>
-      				<table style="width: 100%">
-	      				<tr>
-	      					<td style="text-align:center; width: 50%">NOTE: {{selection.notes}}<br/></td>
-	      					<td style="text-align:center; width: 50%">RECEIVED TIME:<p style="width: 200px;">&nbsp;</p></td>
-      					</tr>
-      					<tr>
-	      					<td style="text-align:center; width: 50%">TRANSPORTER SIGN</td>
-	      					<td style="text-align:center; width: 50%">SITE INCHARGE SIGN</td>
-      					</tr>
-      				</table>
+     		</div>
+     		<div class="panel panel-info">
+			  <div class="panel-heading">
+			    
+			    <div style="float: left; margin-left: 20px;">
+      				<h3 class="panel-title">{{selection.transporterName}}</h3>
       			</div>	
-      			</td></tr>		
-      		</table>
+      			<div style="margin-right: 20px;" align="right">
+      				<h3 class="panel-title">{{selection.vehicleNumber}}</h3>
+      			</div>
+			  </div>
+			  <div class="panel-body">
+			  	<table border="1" style="width: 100%;">
+		    		<thead>
+		    			<tr style="margin-left: 5px;">
+		    				<th width="130px"> &nbsp; {{(selection.entryType == 1) && "From" || 'To'}}</th>
+		    				<th width="70px"> S. No.</th>
+		    				<th width="160px"> Material</th>
+		    				<th width="160px"> Net Wt (in Kg)</th>
+		    				<th width="90px"> Effective<br/> Qty</th>
+		    				<th width="90px"> Effective<br/> Rate</th>
+		    				<th width="90px"> Amount</th>
+		    			</tr>
+		    		</thead>
+   		   			<tbody data-ng-repeat="(fromTo, entries) in materialMap">
+   		   				<tr ng-repeat="item in entries">
+	                		<td rowspan="{{entries.length}}" width="130px" style="padding-left: 5px;" ng-if="$index==0">{{fromTo}}</td>
+	                		<!-- <td colspan="6" style="padding: 0px">
+	                			<table  style="width: 100%; padding-left: 5px;">
+	                				<tbody>
+	                				<tr ng-repeat="item in entries"> -->
+	                					<td width="70px">{{item.materialId}}</td>
+					    				<td width="160px">{{item.stockName}}</td>
+					    				<td width="160px">{{item.grossWt}} - {{item.tareWt}} = {{item.netWt}}</td>
+					    				<td width="90px">{{item.qty}}</td>
+					    				<td width="90px">{{item.rate}}</td>
+					    				<td width="90px">{{item.amount}}</th>
+					    			<!-- </tr>	
+	                				</tbody>
+	                			</table>
+	                		</td> -->
+	                	</tr>
+		            </tbody>
+		    	</table>
+			  </div>
+			</div>	
       	</div>	
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer" id="modalfooter">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="javascript:window.print(); return;">Print</button>
+        <button type="button" class="btn btn-primary" onclick="javascript:document.getElementById('modalfooter').style.display='none';window.print(); return;">Print</button>
       </div>
     </div>
   </div>
 </div>
+

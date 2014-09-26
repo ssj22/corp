@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.corp.core.dao.AddressDAO;
+import net.corp.core.dao.LogDAO;
+import net.corp.core.dao.LogMaterialDAO;
 import net.corp.core.dao.MaterialDAO;
 import net.corp.core.dao.PrimaryGroupDAO;
 import net.corp.core.dao.PrivilegeDAO;
@@ -13,23 +15,30 @@ import net.corp.core.dao.RolePrivilegeDAO;
 import net.corp.core.dao.StockItemDAO;
 import net.corp.core.dao.UserAuthorizationDAO;
 import net.corp.core.dao.UserDAO;
+import net.corp.core.dao.UserPreferenceDAO;
 import net.corp.core.dao.VehicleDAO;
 import net.corp.core.dao.VibhagDAO;
 import net.corp.core.model.Address;
+import net.corp.core.model.LogBook;
+import net.corp.core.model.LogMaterial;
 import net.corp.core.model.Materials;
 import net.corp.core.model.PrimaryGroup;
 import net.corp.core.model.Privileges;
 import net.corp.core.model.Roles;
 import net.corp.core.model.StockItems;
 import net.corp.core.model.UserLogin;
+import net.corp.core.model.UserPreference;
 import net.corp.core.model.Users;
 import net.corp.core.model.Vehicles;
 import net.corp.core.model.Vibhag;
 import net.corp.core.vo.AddressVO;
+import net.corp.core.vo.LogMaterialVO;
+import net.corp.core.vo.LogVO;
 import net.corp.core.vo.MaterialsVO;
 import net.corp.core.vo.PrivilegeVO;
 import net.corp.core.vo.RoleVO;
 import net.corp.core.vo.TabsVO;
+import net.corp.core.vo.UserPreferenceVO;
 import net.corp.core.vo.UserVO;
 
 import org.springframework.beans.BeanUtils;
@@ -46,7 +55,28 @@ public class CoreServiceHelper {
 	private StockItemDAO stockItemDao;
 	private VibhagDAO vibhagDao;
 	private PrimaryGroupDAO primaryGroupDao;
+	private UserPreferenceDAO userPreferenceDao;
+	private LogDAO logDao;
+	private LogMaterialDAO logMaterialDao;
 	
+	public LogDAO getLogDao() {
+		return logDao;
+	}
+	public void setLogDao(LogDAO logDao) {
+		this.logDao = logDao;
+	}
+	public LogMaterialDAO getLogMaterialDao() {
+		return logMaterialDao;
+	}
+	public void setLogMaterialDao(LogMaterialDAO logMaterialDao) {
+		this.logMaterialDao = logMaterialDao;
+	}
+	public UserPreferenceDAO getUserPreferenceDao() {
+		return userPreferenceDao;
+	}
+	public void setUserPreferenceDao(UserPreferenceDAO userPreferenceDao) {
+		this.userPreferenceDao = userPreferenceDao;
+	}
 	public StockItemDAO getStockItemDao() {
 		return stockItemDao;
 	}
@@ -114,6 +144,30 @@ public class CoreServiceHelper {
 		this.addressDao = addressDao;
 	}
 	
+	public LogVO convertModelToVO(List<LogMaterial> logMaterials) {
+		LogVO logVo = new LogVO();
+		List<LogMaterialVO> logMaterialVos = new ArrayList<LogMaterialVO>();
+		logVo.setLogMaterials(logMaterialVos);
+		LogBook logbook = logMaterials.get(0).getLog(); 
+		BeanUtils.copyProperties(logbook, logVo);
+		
+		logVo.setTransportName(logbook.getTransport().getVendorName());
+		logVo.setVehicleNumber(logbook.getVehicle().getVehicleNumber());
+		logVo.setVibhagName(logbook.getVibhag().getVibhagName());
+		logVo.setVibhagPhone(logbook.getVibhag().getVibhagName());
+		
+		for (LogMaterial logMaterial: logMaterials) {
+			LogMaterialVO logMaterialVo = new LogMaterialVO();
+			BeanUtils.copyProperties(logMaterial, logMaterialVo);
+			logMaterialVo.setLogId(logMaterial.getLog().getLogId());
+			logMaterialVo.setMaterialId(logMaterial.getMaterial().getMaterialId());
+			logMaterialVo.setStockItemName(logMaterial.getItem().getStockItemname());
+		}
+		
+		return logVo;
+	}
+	
+	
 	/*--------------------Utility Methods-----------------------*/
 	
 	public MaterialsVO convertModelToVO(Materials materials) {
@@ -123,7 +177,7 @@ public class CoreServiceHelper {
 		if (materials.getVehicleId() != null) {
 			Vehicles vehicle = getVehicleDao().getById(materials.getVehicleId());
 			if (vehicle != null) {
-				materialsVo.setVehicleNumber(vehicle.getVehicleNumber());
+				materialsVo.setVehicleNumber(vehicle.getVehicleNumber().replace(" ", "-"));
 			}
 		}
 		
@@ -152,6 +206,12 @@ public class CoreServiceHelper {
 			StockItems stockItems = getStockItemDao().getById(materials.getStockId());
 			if (stockItems != null) {
 				materialsVo.setStockName(stockItems.getStockItemname());
+				materialsVo.setInAddlInd(stockItems.getItem().isInAddlInd());
+				materialsVo.setOutAddlInd(stockItems.getItem().isOutAddlInd());
+				materialsVo.setInvoiceInd(stockItems.getItem().isInvoiceInd());
+				materialsVo.setHtCorrectionInd(stockItems.getItem().isHtCorrectionInd());
+				materialsVo.setKlInd(stockItems.getItem().isKlInd());
+				materialsVo.setQtyInd(stockItems.getItem().isQtyInd());
 			}
 		}
 		
@@ -200,6 +260,83 @@ public class CoreServiceHelper {
 		return addressVo;
 	}
 	
+	public List<LogMaterial> convertVOToModel(LogVO logVo) {
+		List<LogMaterial> logMaterials = new ArrayList<LogMaterial>();
+		LogBook logbook = null;
+		Integer id = logVo.getLogId();
+		if (id != null) {
+			logbook = getLogDao().getById(id);
+		}
+		else {
+			logbook = new LogBook();
+		}
+		
+		BeanUtils.copyProperties(logVo, logbook);
+		logbook.setLogId(id);
+		logbook.setValid(true);
+		
+		if (logVo.getTransportName() == null) {
+			logbook.setValid(false);	
+		}
+		else {
+			PrimaryGroup pg = getPrimaryGroupDao().findPrimaryGroupByName(logVo.getTransportName());
+			logbook.setTransport(pg);
+		}
+		
+		if (logVo.getVehicleNumber() == null) {
+			logbook.setValid(false);
+		}	
+		else {	
+			Vehicles vehicle = getVehicleDao().findVehicleByNumber(logVo.getVehicleNumber());
+			logbook.setVehicle(vehicle);
+		}
+		
+		if (logVo.getPhone() == null) {
+			logbook.setValid(false);
+		}
+		else {
+			Vibhag vibhag = getVibhagDao().findVibhagByPhone(logVo.getPhone());
+			logbook.setVibhag(vibhag);
+			logbook.setPhone(logVo.getPhone());
+		}
+		
+		logbook.setUpdateDate(new Timestamp(System.currentTimeMillis()));
+		
+		for (LogMaterialVO logMaterialVo: logVo.getLogMaterials()) {
+			logMaterials.add(convertVOToModel(logMaterialVo, logbook));
+		}
+		
+		return logMaterials;
+	}
+	
+	public LogMaterial convertVOToModel(LogMaterialVO logMaterialVo, LogBook logBook) {
+		LogMaterial logMaterial = null;
+		
+		Integer mid = logMaterialVo.getLogMaterialId();
+		if (mid != null) {
+			logMaterial = getLogMaterialDao().getById(mid);
+		}
+		else {
+			logMaterial = new LogMaterial();
+		}
+		
+		BeanUtils.copyProperties(logMaterialVo, logMaterial);
+		logMaterial.setLogMaterialId(mid);
+		
+		if (logMaterialVo.getStockItemName() != null) {
+			StockItems stockItem = getStockItemDao().findStockByName(logMaterialVo.getStockItemName());
+			logMaterial.setItem(stockItem);
+		}
+		
+		if (logBook != null) {
+			logMaterial.setLog(logBook);
+		}
+				
+		logMaterial.setUpdateDate(new Timestamp(System.currentTimeMillis()));
+		
+		return logMaterial;
+	}
+	
 	public Address convertVOToModel(AddressVO addressVo) {
 		Address address = null;
 		
@@ -228,6 +365,27 @@ public class CoreServiceHelper {
 		return address;
 	}
 	
+	public UserPreference convertVOToModel(UserPreferenceVO userPrefVo) {
+		UserPreference userPref = null;
+		
+		if (userPrefVo.getUserId() == null) {
+			return null;
+		}
+		
+		List<UserPreference> prefs = getUserPreferenceDao().findPreferencesByUser(userPrefVo.getUserId());
+		if (prefs != null && !prefs.isEmpty()) {
+			userPref = prefs.get(0);
+		}
+		else {
+			userPref = new UserPreference();
+			userPref.setUserId(userPrefVo.getUserId());
+		}
+		
+		userPref.setMaterialViewTimeSel(userPrefVo.getMaterialEntryTimeSel());
+		
+		return userPref;
+	}
+	
 	public Materials convertVOToModel(MaterialsVO materialVo) {
 		Materials materials = null;
 		
@@ -240,7 +398,7 @@ public class CoreServiceHelper {
 		BeanUtils.copyProperties(materialVo, materials);
 		
 		if (materialVo.getVehicleNumber() != null) {
-			Vehicles vehicle = getVehicleDao().findVehicleByNumber(materialVo.getVehicleNumber());
+			Vehicles vehicle = getVehicleDao().findVehicleByNumber(materialVo.getVehicleNumber().replace("-", " "));
 			if (vehicle != null && ((materialVo.getVehicleId() == null) || (vehicle.getVehicleId() != materialVo.getVehicleId()))) {
 				materials.setVehicleId(vehicle.getVehicleId());
 			}
@@ -364,23 +522,27 @@ public class CoreServiceHelper {
 	public List<TabsVO> getAllTabs() {
 		List<TabsVO> tabs = new ArrayList<TabsVO>();
 		TabsVO tab1 = new TabsVO();
+		
 		tab1.setTabName("Home");
 		tab1.setTabDesc("Home");
 		tab1.setTabOrder(1);
 		tab1.setTabPermission("HOME");
 		tabs.add(tab1);
+		
 		TabsVO tab2 = new TabsVO();
 		tab2.setTabName("Materials");
 		tab2.setTabDesc("Materials");
 		tab2.setTabOrder(2);
 		tab2.setTabPermission("VIEW_MATERIAL_ENTRY");
 		tabs.add(tab2);
+		
 		TabsVO tab3 = new TabsVO();
 		tab3.setTabName("Reports");
 		tab3.setTabDesc("Reports");
 		tab3.setTabOrder(3);
 		tab3.setTabPermission("VIEW_REPORTS");
 		tabs.add(tab3);
+		
 		TabsVO tab4 = new TabsVO();
 		tab4.setTabName("Setup");
 		tab4.setTabDesc("Setup");
@@ -388,7 +550,93 @@ public class CoreServiceHelper {
 		tab4.setTabOrder(4);
 		tabs.add(tab4);
 		
+		TabsVO tab5 = new TabsVO();
+		tab5.setTabName("Gate-Log");
+		tab5.setTabDesc("Gate-Log");
+		tab5.setTabPermission("HOME");
+		tab5.setTabOrder(5);
+		tabs.add(tab5);
+		
 		return tabs;
+	}
+	
+	public LogVO getLogFromSms(String phone, String sms) {
+		LogVO logVo = new LogVO();
+		logVo.setMsg(sms);
+		logVo.setPhone(phone);
+		
+		String[] arr = sms.split("\\$");
+		boolean valid = true;
+		
+		if (arr == null || arr.length < 5 ||
+				arr[0] == null || arr[0].trim().isEmpty() ||
+				arr[1] == null || arr[1].trim().isEmpty() ||
+				arr[2] == null || arr[2].trim().isEmpty() ||
+				arr[3] == null || arr[3].trim().isEmpty() ||
+				arr[4] == null || arr[4].trim().isEmpty()) {
+			valid = false;
+		}
+		else {
+			if (arr[0].equalsIgnoreCase("N")) {
+				logVo.setNightShift(true);
+			}
+			else {
+				logVo.setNightShift(false);
+			}
+			logVo.setVehicleNumber(arr[1]);
+			logVo.setTransportName(arr[2]);
+			
+			List<LogMaterialVO> logMaterialVOs = new ArrayList<LogMaterialVO>();
+			String[] stocks = arr[3].split(",");
+			
+			if (stocks.length == 0) {
+				valid = false;
+			}
+			else {
+				for (int i = 0; i < stocks.length; i++) {
+					LogMaterialVO logMaterialVo = new LogMaterialVO();
+					logMaterialVo.setValid(true);
+					String[] split = stocks[i].split("@");
+					if (split == null || split.length < 3) {
+						valid = false;
+						logMaterialVo.setValid(false);
+					}
+					
+					if (split[0] == null || split[0].trim().isEmpty()) {
+						valid = false;
+						logMaterialVo.setValid(false);
+					}
+					else {
+						logMaterialVo.setStockItemName(split[0]);
+					}
+					
+					if (split[1] == null || split[1].trim().isEmpty()) {
+						valid = false;
+						logMaterialVo.setValid(false);
+					}
+					else {
+						logMaterialVo.setQuantity(split[1]);
+					}
+					
+					if (split[2] == null || split[2].trim().isEmpty()) {
+						valid = false;
+						logMaterialVo.setValid(false);
+					}
+					else {
+						logMaterialVo.setUnit(split[2]);
+					}
+					
+					logMaterialVo.setComplete(false);
+					logMaterialVOs.add(logMaterialVo);
+				}
+			}
+			
+			logVo.setSiteName(arr[4]);
+			logVo.setLogMaterials(logMaterialVOs);
+		}
+		
+		logVo.setValid(valid);
+		return logVo;
 	}
 	
 }
