@@ -20,7 +20,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:applicationContext.xml")
+@ContextConfiguration("classpath:applicationContext-test.xml")
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = false)
 @Transactional
 public class MaterialServiceTest {
@@ -55,10 +55,9 @@ public class MaterialServiceTest {
 	@Test
 	public void testLinkMaterial() {
 		List<Integer> list = new ArrayList<Integer>();
+		list.add(142886);
 		list.add(142885);
-		list.add(142870);
-		list.add(142881);
-		System.out.println(materialDAO.linkMaterial(142887, list));
+		System.out.println(materialDAO.linkMaterial(list));
 	}
 	
 	@Test

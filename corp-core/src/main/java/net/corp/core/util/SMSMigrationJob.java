@@ -13,7 +13,7 @@ public class SMSMigrationJob extends QuartzJobBean {
 	@Override
     public void executeInternal(final JobExecutionContext ctx)
             throws JobExecutionException {
-		getMessageService().syncUp();
+		//getMessageService().syncUp();
     }
 
 	public MessageService getMessageService() {

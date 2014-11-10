@@ -5272,7 +5272,7 @@ a.list-group-item-danger.active,a.list-group-item-danger.active:hover,a.list-gro
 }
 
 .panel-group .panel+.panel {
-	margin-top: 5px
+	/*margin-top: 5px*/
 }
 
 .panel-group .panel-heading {

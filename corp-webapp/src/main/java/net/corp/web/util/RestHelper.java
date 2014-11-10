@@ -2,6 +2,8 @@ package net.corp.web.util;
 
 import java.io.IOException;
 
+import net.corp.core.util.PropertyUtil;
+
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -14,13 +16,18 @@ public class RestHelper {
 	private static final Logger log = Logger.getLogger(RestHelper.class);
 	
 	public static String liveWeight() {
-		String url = "http://192.168.0.23:8732/weight";
+		StringBuffer url = new StringBuffer("http://");
+		url.append(PropertyUtil.getInstance().getProperty("weightUrlHost"));
+		url.append(":");
+		url.append(PropertyUtil.getInstance().getProperty("weightUrlPort"));
+		url.append("/");
+		url.append(PropertyUtil.getInstance().getProperty("weightUrlApi"));
 		//url = "http://localhost/weight";
 		// Create an instance of HttpClient.
 	    HttpClient client = new HttpClient();
 
 	    // Create a method instance.
-	    GetMethod method = new GetMethod(url);
+	    GetMethod method = new GetMethod(url.toString());
 	    
 	    // Provide custom retry handler is necessary
 	    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
@@ -57,6 +64,7 @@ public class RestHelper {
 	    }
 	    finally {
 	      // Release the connection.
+	      client = null;
 	      method.releaseConnection();
 	    }
 	    return null;

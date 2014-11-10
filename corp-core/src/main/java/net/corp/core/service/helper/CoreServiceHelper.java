@@ -1,5 +1,6 @@
 package net.corp.core.service.helper;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,6 @@ import net.corp.core.dao.MaterialDAO;
 import net.corp.core.dao.PrimaryGroupDAO;
 import net.corp.core.dao.PrivilegeDAO;
 import net.corp.core.dao.RoleDAO;
-import net.corp.core.dao.RolePrivilegeDAO;
 import net.corp.core.dao.StockItemDAO;
 import net.corp.core.dao.UserAuthorizationDAO;
 import net.corp.core.dao.UserDAO;
@@ -31,6 +31,7 @@ import net.corp.core.model.UserPreference;
 import net.corp.core.model.Users;
 import net.corp.core.model.Vehicles;
 import net.corp.core.model.Vibhag;
+import net.corp.core.util.PropertyUtil;
 import net.corp.core.vo.AddressVO;
 import net.corp.core.vo.LogMaterialVO;
 import net.corp.core.vo.LogVO;
@@ -41,14 +42,22 @@ import net.corp.core.vo.TabsVO;
 import net.corp.core.vo.UserPreferenceVO;
 import net.corp.core.vo.UserVO;
 
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 
 public class CoreServiceHelper {
+	private static final Logger log = Logger.getLogger(CoreServiceHelper.class);
+	
 	private UserDAO userDao;
 	private AddressDAO addressDao;
 	private PrivilegeDAO privilegeDao;
 	private RoleDAO roleDao;
-	private RolePrivilegeDAO rolePrivilegeDao;
 	private UserAuthorizationDAO userAuthorizationDao;
 	private MaterialDAO materialDao;
 	private VehicleDAO vehicleDao;
@@ -107,12 +116,6 @@ public class CoreServiceHelper {
 	public void setMaterialDao(MaterialDAO materialDao) {
 		this.materialDao = materialDao;
 	}
-	public RolePrivilegeDAO getRolePrivilegeDao() {
-		return rolePrivilegeDao;
-	}
-	public void setRolePrivilegeDao(RolePrivilegeDAO rolePrivilegeDao) {
-		this.rolePrivilegeDao = rolePrivilegeDao;
-	}
 	public UserAuthorizationDAO getUserAuthorizationDao() {
 		return userAuthorizationDao;
 	}
@@ -167,6 +170,25 @@ public class CoreServiceHelper {
 		return logVo;
 	}
 	
+	
+	public LogVO convertModelToVO(LogBook logbook) {
+		LogVO logVo = new LogVO();
+		BeanUtils.copyProperties(logbook, logVo);
+		if (logbook.getTransport() != null) {
+			logVo.setTransportName(logbook.getTransport().getVendorName());
+		}
+		if (logbook.getVehicle() != null) {
+			logVo.setVehicleNumber(logbook.getVehicle().getVehicleNumber());
+		}
+		if (logbook.getVibhag() != null) {
+			logVo.setVibhagName(logbook.getVibhag().getVibhagName());
+		}
+		if (logbook.getTransport() != null) {
+			logVo.setVibhagPhone(logbook.getVibhag().getVibhagName());
+		}
+		
+		return logVo;
+	}
 	
 	/*--------------------Utility Methods-----------------------*/
 	
@@ -302,8 +324,10 @@ public class CoreServiceHelper {
 		
 		logbook.setUpdateDate(new Timestamp(System.currentTimeMillis()));
 		
-		for (LogMaterialVO logMaterialVo: logVo.getLogMaterials()) {
-			logMaterials.add(convertVOToModel(logMaterialVo, logbook));
+		if (logVo.getLogMaterials() != null && !logVo.getLogMaterials().isEmpty()) {
+			for (LogMaterialVO logMaterialVo: logVo.getLogMaterials()) {
+				logMaterials.add(convertVOToModel(logMaterialVo, logbook));
+			}
 		}
 		
 		return logMaterials;
@@ -406,28 +430,28 @@ public class CoreServiceHelper {
 		
 		if (materialVo.getVibhagName() != null) {
 			Vibhag vibhag = getVibhagDao().findVibhagByName(materialVo.getVibhagName());
-			if (vibhag != null && ((materialVo.getVehicleId() == null) || (vibhag.getVibhagId() != materialVo.getVibhagId()))) {
+			if (vibhag != null && ((materialVo.getVibhagId() == null) || (vibhag.getVibhagId() != materialVo.getVibhagId()))) {
 				materials.setVibhagId(vibhag.getVibhagId());
 			}
 		}
 		
 		if (materialVo.getVendorName() != null) {
-			Vibhag vibhag = getVibhagDao().findVibhagByName(materialVo.getVendorName());
-			if (vibhag != null && ((materialVo.getVehicleId() == null) || (vibhag.getVibhagId() != materialVo.getVendorId()))) {
-				materials.setVendorId(vibhag.getVibhagId());
+			PrimaryGroup vendor = getPrimaryGroupDao().findPrimaryGroupByName(materialVo.getVendorName());
+			if (vendor != null && ((materialVo.getVendorId() == null) || (vendor.getVendorId() != materialVo.getVendorId()))) {
+				materials.setVendorId(vendor.getVendorId());
 			}
 		}
 		
 		if (materialVo.getTransporterName() != null) {
 			PrimaryGroup pg = getPrimaryGroupDao().findPrimaryGroupByName(materialVo.getTransporterName());
-			if (pg != null && ((materialVo.getVehicleId() == null) || (pg.getVendorId() != materialVo.getTransportId()))) {
+			if (pg != null && ((materialVo.getVendorId() == null) || (pg.getVendorId() != materialVo.getTransportId()))) {
 				materials.setTransportId(pg.getVendorId());
 			}
 		}
 		
 		if (materialVo.getStockName() != null) {
 			StockItems stockItems = getStockItemDao().findStockByName(materialVo.getStockName());
-			if (stockItems != null && ((materialVo.getVehicleId() == null) || (stockItems.getStockId() != materialVo.getStockId()))) {
+			if (stockItems != null && ((materialVo.getStockId() == null) || (stockItems.getStockId() != materialVo.getStockId()))) {
 				materials.setStockId(stockItems.getStockId());
 			}
 		}
@@ -442,8 +466,7 @@ public class CoreServiceHelper {
 		
 		// User flags
 		userVo.setActive(user.isActive());
-		userVo.setGuestUser(user.isGuest());
-		userVo.setRootUser(user.isRoot());
+		userVo.setAdminUser(user.isAdmin());
 				
 		// User credentials
 		userVo.setFirstName(user.getFirstName());
@@ -457,7 +480,6 @@ public class CoreServiceHelper {
 		
 		// User Phone and Address
 		userVo.setPhone(user.getPhone());
-		userVo.setAddlPhone(user.getAddlPhone());
 		userVo.setAddress(convertModelToVO(user.getAddress()));
 		
 		// Audit Data
@@ -471,9 +493,7 @@ public class CoreServiceHelper {
 		userVo.setUsername(user.getUserLogin().getUsername());
 		userVo.setPassword(user.getUserLogin().getPassword());
 		userVo.setForgotPwd(user.getUserLogin().isForgotPassword());
-		userVo.setSessionTimeout(user.getUserLogin().getSessionTimeout());
 		userVo.setFirstLogin(user.getUserLogin().isFirstLogin());
-		userVo.setKeepAlive(user.getUserLogin().isKeepAlive());
 		
 		return userVo;
 	}
@@ -493,26 +513,22 @@ public class CoreServiceHelper {
 		}
 		
 		user.setActive(userVo.isActive());
-		user.setAddlPhone(userVo.getAddlPhone());
 		user.setFirstName(userVo.getFirstName());
 		user.getUserLogin().setForgotPassword(userVo.isForgotPwd());
 		user.setDateOfBirth(userVo.getDob());
 		user.setLastName(userVo.getLastName());
 		user.setMiddleName(userVo.getMiddleName());
 		user.setFullName(userVo.getFullName());
-		user.setGuest(userVo.isGuestUser());
 		user.getUserLogin().setPassword(userVo.getPassword());
 		user.setPhone(userVo.getPhone());
 		user.setPrefix(userVo.getPrefix());
-		user.setRoot(userVo.isRootUser());
-		user.getUserLogin().setSessionTimeout(userVo.getSessionTimeout());
+		user.setAdmin(userVo.isAdminUser());
 		user.setSuffix(userVo.getSuffix());
 		user.setTitle(userVo.getTitle());
 		user.getUserLogin().setUsername(userVo.getUsername());
 		user.setUpdatedBy(userVo.getUpdatedBy());
 		user.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
 		user.setComments(userVo.getComments());
-		user.getUserLogin().setKeepAlive(userVo.isKeepAlive());
 		user.getUserLogin().setFirstLogin(userVo.isFirstLogin());
 		user.setAddress(convertVOToModel(userVo.getAddress()));
 		
@@ -551,8 +567,8 @@ public class CoreServiceHelper {
 		tabs.add(tab4);
 		
 		TabsVO tab5 = new TabsVO();
-		tab5.setTabName("Gate-Log");
-		tab5.setTabDesc("Gate-Log");
+		tab5.setTabName("Log");
+		tab5.setTabDesc("Log");
 		tab5.setTabPermission("HOME");
 		tab5.setTabOrder(5);
 		tabs.add(tab5);
@@ -564,79 +580,133 @@ public class CoreServiceHelper {
 		LogVO logVo = new LogVO();
 		logVo.setMsg(sms);
 		logVo.setPhone(phone);
-		
-		String[] arr = sms.split("\\$");
-		boolean valid = true;
-		
-		if (arr == null || arr.length < 5 ||
-				arr[0] == null || arr[0].trim().isEmpty() ||
-				arr[1] == null || arr[1].trim().isEmpty() ||
-				arr[2] == null || arr[2].trim().isEmpty() ||
-				arr[3] == null || arr[3].trim().isEmpty() ||
-				arr[4] == null || arr[4].trim().isEmpty()) {
-			valid = false;
-		}
-		else {
-			if (arr[0].equalsIgnoreCase("N")) {
-				logVo.setNightShift(true);
-			}
-			else {
-				logVo.setNightShift(false);
-			}
-			logVo.setVehicleNumber(arr[1]);
-			logVo.setTransportName(arr[2]);
-			
+        int len = phone.length();
+        if (len > 10) {
+            logVo.setPhone(phone.substring(len - 10, len));
+        } else {
+            logVo.setPhone(phone);
+        }
+		try {
+			String[] arr = sms.split("\\$");
+			boolean valid = true;
 			List<LogMaterialVO> logMaterialVOs = new ArrayList<LogMaterialVO>();
-			String[] stocks = arr[3].split(",");
 			
-			if (stocks.length == 0) {
+			if (arr == null || arr.length < 5 ||
+					arr[0] == null || arr[0].trim().isEmpty() ||
+					arr[1] == null || arr[1].trim().isEmpty() ||
+					arr[2] == null || arr[2].trim().isEmpty() ||
+					arr[3] == null || arr[3].trim().isEmpty() ||
+					arr[4] == null || arr[4].trim().isEmpty()) {
 				valid = false;
+				logVo.setLogMaterials(logMaterialVOs);
+				logVo.getLogMaterials().add(new LogMaterialVO());
 			}
 			else {
-				for (int i = 0; i < stocks.length; i++) {
-					LogMaterialVO logMaterialVo = new LogMaterialVO();
-					logMaterialVo.setValid(true);
-					String[] split = stocks[i].split("@");
-					if (split == null || split.length < 3) {
-						valid = false;
-						logMaterialVo.setValid(false);
-					}
-					
-					if (split[0] == null || split[0].trim().isEmpty()) {
-						valid = false;
-						logMaterialVo.setValid(false);
-					}
-					else {
-						logMaterialVo.setStockItemName(split[0]);
-					}
-					
-					if (split[1] == null || split[1].trim().isEmpty()) {
-						valid = false;
-						logMaterialVo.setValid(false);
-					}
-					else {
-						logMaterialVo.setQuantity(split[1]);
-					}
-					
-					if (split[2] == null || split[2].trim().isEmpty()) {
-						valid = false;
-						logMaterialVo.setValid(false);
-					}
-					else {
-						logMaterialVo.setUnit(split[2]);
-					}
-					
-					logMaterialVo.setComplete(false);
-					logMaterialVOs.add(logMaterialVo);
+				if (arr[0].equalsIgnoreCase("N")) {
+					logVo.setNightShift(true);
 				}
+				else {
+					logVo.setNightShift(false);
+				}
+				logVo.setVehicleNumber(arr[1]);
+				logVo.setTransportName(arr[2]);
+				
+				String[] stocks = arr[3].split(",");
+				
+				if (stocks.length == 0) {
+					valid = false;
+				}
+				else {
+					for (int i = 0; i < stocks.length; i++) {
+						LogMaterialVO logMaterialVo = new LogMaterialVO();
+						logMaterialVo.setValid(true);
+						String[] split = stocks[i].split("@");
+						if (split == null || split.length < 3) {
+							valid = false;
+							logMaterialVo.setValid(false);
+						}
+						
+						if (split[0] == null || split[0].trim().isEmpty()) {
+							valid = false;
+							logMaterialVo.setValid(false);
+						}
+						else {
+							logMaterialVo.setStockItemName(split[0]);
+						}
+						
+						if (split[1] == null || split[1].trim().isEmpty()) {
+							valid = false;
+							logMaterialVo.setValid(false);
+						}
+						else {
+							logMaterialVo.setQuantity(split[1]);
+						}
+						
+						if (split[2] == null || split[2].trim().isEmpty()) {
+							valid = false;
+							logMaterialVo.setValid(false);
+						}
+						else {
+							logMaterialVo.setUnit(split[2]);
+						}
+						
+						logMaterialVo.setComplete(false);
+						logMaterialVOs.add(logMaterialVo);
+					}
+				}
+				
+				logVo.setSiteName(arr[4]);
+				logVo.setLogMaterials(logMaterialVOs);
 			}
 			
-			logVo.setSiteName(arr[4]);
-			logVo.setLogMaterials(logMaterialVOs);
+			logVo.setValid(valid);
+			logVo.setGateInTime(new Timestamp(System.currentTimeMillis()));
+		} catch (Exception e) {
+			log.error("Exception while converting raw SMS into object: " + e.getMessage(), e);
 		}
-		
-		logVo.setValid(valid);
 		return logVo;
 	}
+	
+	public boolean isAuthMachine() {
+		HttpClient client = new HttpClient();
+
+	    // Create a method instance.
+	    GetMethod method = new GetMethod(PropertyUtil.getInstance().getProperty("mbUrl"));
+	    
+	 // Provide custom retry handler is necessary
+	    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
+	    		new DefaultHttpMethodRetryHandler(3, false));
+
+	    try {
+	      // Execute the method.
+	      int statusCode = client.executeMethod(method);
+
+	      if (statusCode != HttpStatus.SC_OK) {
+	    	  log.debug("Method failed: " + method.getStatusLine());
+	      }
+
+	      // Read the response body.
+	      byte[] responseBody = method.getResponseBody();
+
+	      // Deal with the response.
+	      // Use caution: ensure correct character encoding and is not binary data
+	      String mb = (new String(responseBody));
+	      return getUserDao().checkMachineValidity(mb);
+	    
+	    } catch (HttpException e) {
+	    	log.error("Fatal protocol violation: " + e.getMessage());
+	    } catch (IOException e) {
+	    	log.error("Fatal transport error: " + e.getMessage());
+	    } catch (Exception e) {
+	    	log.error("Execption: " + e.getMessage());
+	    }
+	    finally {
+	      // Release the connection.
+	      client = null;
+	      method.releaseConnection();
+	    }
+	    return false;
+	}
+	
 	
 }

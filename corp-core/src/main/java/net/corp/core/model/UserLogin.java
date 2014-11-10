@@ -24,7 +24,6 @@ import org.hibernate.annotations.Parameter;
 @Table (name = "md_user_login")
 public class UserLogin implements Serializable {
 	
-	
 	@Id
 	@GeneratedValue(generator = "generator")
 	@GenericGenerator(name = "generator", strategy = "foreign", parameters = @Parameter(name = "property", value = "user"))
@@ -41,15 +40,9 @@ public class UserLogin implements Serializable {
 	@Column(name = "PASSWORD")
     private String password;
 	
-	@Column(name = "KEEP_ALIVE")
-	private boolean keepAlive;
-	
 	@Column(name = "FIRST_LOGIN")
 	private boolean firstLogin;
     
-	@Column(name = "SESSION_TIMEOUT")
-    private Integer sessionTimeout;
-	
 	@Column(name = "FORGOT_PASSWORD")
     private boolean forgotPassword;
 	
@@ -89,28 +82,12 @@ public class UserLogin implements Serializable {
 		this.password = password;
 	}
 
-	public boolean isKeepAlive() {
-		return keepAlive;
-	}
-
-	public void setKeepAlive(boolean keepAlive) {
-		this.keepAlive = keepAlive;
-	}
-
 	public boolean isFirstLogin() {
 		return firstLogin;
 	}
 
 	public void setFirstLogin(boolean firstLogin) {
 		this.firstLogin = firstLogin;
-	}
-
-	public Integer getSessionTimeout() {
-		return sessionTimeout;
-	}
-
-	public void setSessionTimeout(Integer sessionTimeout) {
-		this.sessionTimeout = sessionTimeout;
 	}
 
 	public boolean isForgotPassword() {

@@ -1,7 +1,7 @@
 angular.module('myApp')
 .factory('Util', function($q, $rootScope, $filter) {
 	return {
-		getColumnDefs: function() {
+		getMaterialColumnDefs: function() {
 			var columnDefs = [
 			{
 				field : 'materialId',
@@ -75,6 +75,30 @@ angular.module('myApp')
 				width : '90px',
 				visible : false
 			} ];
+			
+			return columnDefs;
+		},
+		
+		getLogColumnDefs: function() {
+			var columnDefs = [
+			{
+				field : 'phone',
+				displayName : 'Phone',
+				width : '160px'
+			}, {
+				field : 'vibhagName',
+				displayName : 'Vibhag Name',
+				width : '220px'
+			}, {
+				field : 'msg',
+				displayName : 'SMS',
+				width : '540px'
+			}, {
+				field : 'updateDate',
+				displayName : 'SMS Received Time',
+				cellFilter : 'date:\"dd-MMM-yyyy @ h:mma\"',
+				width : '220px'
+			}];
 			
 			return columnDefs;
 		}

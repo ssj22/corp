@@ -2,7 +2,6 @@ package net.corp.core.service.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -26,8 +25,6 @@ import net.corp.core.vo.MaterialsVO;
 import net.corp.core.vo.SiteVO;
 
 import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	
@@ -37,16 +34,13 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	@Override
 	public Integer linkMaterial(Integer type, List<String> materialIds) {
 		List<Integer> children = new ArrayList<Integer>(materialIds.size());
-		int parent = 0;
 		for (String strId: materialIds) {
 			int id = Integer.parseInt(strId);
 			children.add(id);
-			Collections.sort(children);		
 		}
 		
 		if (type.intValue() == 1) {
-			parent = children.remove(0);
-			return getCoreServiceHelper().getMaterialDao().linkMaterial(parent, children);
+			return getCoreServiceHelper().getMaterialDao().linkMaterial(children);
 		}
 		else {
 			return getCoreServiceHelper().getMaterialDao().unlinkMaterial(children);
@@ -54,7 +48,6 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	}
 
 	@Override
-	@Transactional(propagation= Propagation.REQUIRED, rollbackFor=Exception.class)
 	public MaterialsVO saveMaterial(MaterialsVO material) {
 		try {
 			Materials entity = getCoreServiceHelper().convertVOToModel(material);
@@ -77,7 +70,10 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 			PrimaryGroup vendor = getCoreServiceHelper().getPrimaryGroupDao().getById(entity.getVendorId());
 			Vehicles vehicle = getCoreServiceHelper().getVehicleDao().getById(entity.getVehicleId());
 			Double volume = (vehicle.getVolume() == 0)? (vehicle.getBreadth() * vehicle.getHeight() * vehicle.getLength()) : vehicle.getVolume();
-			Double effInRate = (1 + vendor.getPercentage()/100) * inRate;
+			Double effInRate = inRate;
+			if (vendor.getPercentage() != null) {
+				effInRate = (1 + vendor.getPercentage()/100) * inRate;
+			}
 			Double effOutRate = item.getStockRate();
 			Double effRate = 0.0;
 			Double amount = 0.0;
@@ -97,7 +93,12 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 					}
 					else {
 						// Use factor as per metric ton
-						qty = (qty/1000) * item.getItem().getFactor();
+						double factor = 1.0;
+						if (item.getItem().getFactor() != null) {
+							factor = item.getItem().getFactor();
+						}
+						
+						qty = (qty/1000) * factor;
 						amount = effOutRate * qty;
 						effRate = effOutRate;
 					}
@@ -111,8 +112,8 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 				case 19:
 				case 20:
 					if (entity.getEntryType() == 1) {
-						amount = entity.getAmount();
-						qty = 1.0 * entity.getQuantity();
+						amount = entity.getAmount() != null ? entity.getAmount() : 0;
+						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
 						if (qty != null && qty.intValue() > 0) {
 							effInRate = amount / qty; 
 						}
@@ -123,27 +124,27 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 						effRate = effInRate;
 					}
 					else {
-						qty = 1.0 * entity.getQuantity();
+						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
 						amount = effOutRate * qty;
 						effRate = effOutRate;
 					}
 					break;
 				case 12:
 					if (entity.getEntryType() == 1) {
-						amount = entity.getAmount();
-						qty = 1.0 * entity.getQuantity();
+						amount = entity.getAmount() != null ? entity.getAmount() : 0;
+						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
 						effRate = inRate; 
 					}
 					else {
-						qty = 1.0 * entity.getQuantity();
+						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
 						amount = effOutRate * qty;
 						effRate = effOutRate;
 					}
 					break;
 				case 16:
 					if (entity.getEntryType() == 1) {
-						amount = entity.getAmount();
-						qty = 1.0 * entity.getQuantity();
+						amount = entity.getAmount() != null ? entity.getAmount() : 0;
+						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
 						if (qty != null && qty.intValue() > 0) {
 							effInRate = amount / qty; 
 						}
@@ -153,14 +154,14 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 						effRate = effInRate;
 					}
 					else {
-						qty = 1.0 * entity.getQuantity();
+						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
 						amount = effOutRate * qty;
 						effRate = effOutRate;
 					}
 					break;
 				case 14:
-					amount = entity.getAmount();
-					qty = 1.0 * entity.getQuantity();
+					amount = entity.getAmount() != null ? entity.getAmount() : 0;
+					qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
 					effRate = 0.0;
 					break;
 			}
@@ -174,7 +175,8 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 			if (material.getParentMaterialId() != null) {
 				List<Integer> list = new ArrayList<Integer>();
 				list.add(material.getMaterialId());
-				getCoreServiceHelper().getMaterialDao().linkMaterial(material.getParentMaterialId(), list);
+				list.add(material.getParentMaterialId());
+				getCoreServiceHelper().getMaterialDao().linkMaterial(list);
 			}
 			
 			material.setMaterialId(entity.getMaterialId());
@@ -352,7 +354,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 				if (!sList.contains(sName)) {
 					sList.add(sName);
 				}
-				if (!iList.contains(iName)) {
+				if (!iList.contains(iName) && (lm.getMaterial() == null || lm.getMaterial().getMaterialId() == null)) {
 					iList.add(iName);
 				}
 			}
@@ -423,9 +425,10 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	public boolean saveLog(LogVO logVo) {
 		try {
 			List<LogMaterial> logMaterials = getCoreServiceHelper().convertVOToModel(logVo);
-			if (logMaterials != null) {
+			if (logMaterials != null && !logMaterials.isEmpty()) {
 				LogBook logbook = logMaterials.get(0).getLog();
-				if (logbook.getVehicle().getVendorId().intValue() != logbook.getTransport().getVendorId().intValue()) {
+				if (logbook.getVehicle() != null && logbook.getTransport() != null && 
+						logbook.getVehicle().getVendorId().intValue() != logbook.getTransport().getVendorId().intValue()) {
 					logbook.setValid(false);
 				}
 				
@@ -489,6 +492,19 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 		else {
 			return fetchLogByVehicleNumber(vehicleNo);
 		}
+	}
+	
+	@Override
+	public List<LogVO> fetchLogsByCriteria(Integer time, Date from, Date to) {
+		List<LogVO> logVos = new ArrayList<LogVO>();
+		List<LogBook> list = getCoreServiceHelper().getLogDao().findLogsByCriteria(time, from, to);
+		if (list != null && !list.isEmpty()) {
+			for (LogBook log: list) {
+				logVos.add(getCoreServiceHelper().convertModelToVO(log));
+			}
+		}
+		
+		return logVos;
 	}
 
 	@Override

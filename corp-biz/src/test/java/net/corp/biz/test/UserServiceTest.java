@@ -4,6 +4,7 @@ import java.util.Calendar;
 
 import javax.annotation.Resource;
 
+import net.corp.core.dao.UserDAO;
 import net.corp.core.exception.CorpException;
 import net.corp.core.service.UserService;
 import net.corp.core.vo.AddressVO;
@@ -19,13 +20,17 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:applicationContext.xml")
+@ContextConfiguration("classpath:applicationContext-test.xml")
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = false)
 @Transactional
 public class UserServiceTest {
 	
 	@Resource
 	private UserService userService;
+	
+	@Resource
+	private UserDAO userDao;
+
 	
 	@Before
 	public void setUp() throws Exception {
@@ -36,13 +41,18 @@ public class UserServiceTest {
 	}
 	
 	@Test
+	public void testCheckMachineValidity() {
+		System.out.println(userDao.checkMachineValidity("/DZRLVS1/CN7590025M000R/"));
+	}
+	
+	@Test
 	public void testFetchActiveUserByUsername() {
 		String username = "Shyam22";
 		try {
 			UserVO userVo = userService.fetchActiveUserByUsername(username);
 			System.out.println("Full Name = " + userVo.getFullName() + " followed by Privileges: ");
 			if (userVo.getPrivileges() != null) {
-				for (String priv: userVo.getPrivileges()) {
+				for (String priv: userVo.getPrivileges().keySet()) {
 					System.out.println(priv);
 				}
 			}

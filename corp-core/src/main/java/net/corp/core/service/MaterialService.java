@@ -41,6 +41,7 @@ public interface MaterialService {
 	boolean updateLogEntry(String vehicleNumber, Timestamp gateInTime, Timestamp gateOutTime);
 	LogVO fetchLogByVehicleNumber(String vehicleNumber);
 	LogVO fetchLogByCriteria(String vehicleNo, Integer time, Date from, Date to, Integer shift);
+	List<LogVO> fetchLogsByCriteria(Integer time, Date from, Date to);
 	Map<String, Map<String, List<String>>> fetchStaticDataForVibhag(String vibhagName);
 	List<String> fetchEligVibhags();
 }

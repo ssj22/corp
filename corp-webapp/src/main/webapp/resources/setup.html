@@ -1,121 +1,62 @@
-  	<div align="center" style="margin-top: 0" ng-controller="MaterialsCtrl">
-           	<div  style="margin-top: 0">
-      			<div style="float: left;">
-      				<img alt="logo" src="resources/img/logo2.png" width="90px" height="90px"/>
-      			</div>	
-      			<div style="margin-left: 130px;" align="center">
-      				<h3>DEPUTY CITY ENGINEER, HOT MIX PLANT (ROADS)</h3>
-      				<h4>PUNE MUNICIPAL CORPORATION</h4>
-      				<h4>Jai Jawan Nagar , Yerawada Pune - 411006</h4>
-      			</div>
-     		</div>
-     		<div class="panel panel-warning">
-				  <div class="panel-heading">
-				    <h3 class="panel-title">{{selection.vibhagName}}</h3>
-				  </div>
-				  <div class="panel-body">
-				    <table border="1" style="width: 100%; padding-left: 5px;">
-				    		<thead >
-				    			<tr>
-				    				<th> &nbsp; S. No.</th>
-				    				<th> &nbsp; Material</th>
-				    				<th> &nbsp; Net Wt</th>
-				    				<th> &nbsp; Effective Qty</th>
-				    				<th> &nbsp; Effective Rate</th>
-				    				<th> &nbsp; Amount</th>
-				    			</tr>
-				    		</thead>
-				    		<tbody>
-				                <tr ng-repeat="item in printMaterials">
-				                    <td>{{item.materialId}}</td>
-				                    <td>{{item.stockName}}</td>
-				                    <td>{{item.grossWt}} - {{item.tareWt}} = {{item.netWt}}</td>
-				                    <td>{{item.rate}}</td>
-				                    <td>{{item.amount}}</td>
-				                    <td>{{item.qty}}</td>
-				                </tr>
-				            </tbody>
-				    	</table>
-				  </div>
-			</div>	    
-      		<table>	
-      			<tr valign="top"><td>	
-      			<div style="margin-top: 10px; width: 100%">
-      				<table border="1" style="width: 100%">
-      					<tr><td>
-      						<table style="width: 100%">
-      							<tr>
-      								<th style="text-align:right; width:220px">TRANSPORTER : </th>
-      								<td style="text-align:left; width:220px">{{selection.transporter}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">MATERIAL : </th>
-      								<td style="text-align:left; width:220px">{{selection.itemName}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right; width:220px">VEHICLE NO : </th>
-      								<td style="text-align:left; width:220px">{{selection.vehicleNumber}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">RATE : </th>
-      								<td style="text-align:left; width:220px">&nbsp; {{selection.itemName}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right; width:220px">JE/WARD OFFICE : </th>
-      								<td style="text-align:left; width:220px">&nbsp; {{selection.vibhagName}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">AMOUNT : </th>
-      								<td style="text-align:left; width:220px">&nbsp; {{selection.itemName}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right; width:220px">NAME OF SITE : </th>
-      								<td style="text-align:left; width:220px">&nbsp; {{selection.siteName}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">SECTION : </th>
-      								<td style="text-align:left; width:220px">&nbsp; {{selection.vibhagName}}</td>
-      							</tr>
-      						</table>
-      					</td></tr>
-      					<tr><td>
-      						<table style="width: 100%">
-      							<tr>
-      								<th style="text-align:right; width:220px">GROSS WEIGHT : </th>
-      								<td style="text-align:left; width:220px">&nbsp; {{selection.grossWt}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">IN TIME : </th>
-      								<td style="text-align:left; width:220px">&nbsp; {{selection.vehicleInTime | date:"dd-MMM-yyyy @ h:mma"}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right; width:220px">TARE WEIGHT : </th>
-      								<td style="text-align:left; width:220px">&nbsp; {{selection.tareWt}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">OUT TIME : </th>
-      								<td style="text-align:left; width:220px">&nbsp; {{selection.vehicleOutTime | date:"dd-MMM-yyyy @ h:mma"}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right; width:220px">NET WEIGHT : </th>
-      								<td style="text-align:left; width:220px">&nbsp; {{selection.netWt}}</td>
-      								<td width="70px">&nbsp;</td>
-      								<th style="text-align:right; width:220px">OUT WEIGHT : </th>
-      								<td style="text-align:left; width:220px">&nbsp; {{selection.netWt}}</td>
-      							</tr>
-      							<tr>
-      								<th style="text-align:right;" colspan="4">PLANT SUPERVISOR SIGN</th>
-      								<td style="text-align:left; width:220px">&nbsp;</td>
-      							</tr>
-      						</table>
-      					</td></tr>
-      				</table>
-      				<table style="width: 100%">
-	      				<tr>
-	      					<td style="text-align:center; width: 50%">NOTE: {{selection.notes}}<br/></td>
-	      					<td style="text-align:center; width: 50%">RECEIVED TIME:<p style="width: 200px;">&nbsp;</p></td>
-      					</tr>
-      					<tr>
-	      					<td style="text-align:center; width: 50%">TRANSPORTER SIGN</td>
-	      					<td style="text-align:center; width: 50%">SITE INCHARGE SIGN</td>
-      					</tr>
-      				</table>
-      			</div>	
-      			</td></tr>		
-      		</table>
-      	</div>	
-      
+<accordion close-others="true">
+   <accordion-group heading="User Setup" is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
+   	 <div>
+	   	 <div style="width: 48%; float: left; padding-bottom: 5px;">
+	   	 	<button type="button" class="btn btn-info btn-sm" ng-click="createUser()" >Create User</button>
+	   	 	<button type="button" class="btn btn-warning btn-sm" ng-click="editUser()" >Search User</button>
+	   	 </div>
+	   	 <div style="float:right; width: 48%; padding-bottom: 10px;" >
+	   	 	<autocomplete ng-model="typed" data="users" on-select="loadPermissions" ng-show="searchUserFlag" attr-placeholder="Search User by Name"></autocomplete>
+	   	 </div>
+	   	 
+   	 </div>
+   	 <br/>
+   	 <div ng-show="userActionFlag">
+	   	 <div class="panel panel-primary" style="width: 100%">
+	   	 	<div class="panel-body">
+	   	 	<input type="text" placeholder="Enter First Name" ng-model="selectedUser.firstName" style="width: 30%"/> &nbsp; 
+	   	 	<input type="text" placeholder="Enter Last Name" ng-model="selectedUser.lastName" style="width: 30%"/>
+	   	 	&nbsp;&nbsp;
+	   	 	<input type="tel" placeholder="Enter Phone Number here" ng-model="selectedUser.phone" style="width: 30%"/>&nbsp;&nbsp;
+	   	 	<input type="checkbox" value="" ng-model="selectedUser.admin"/> Admin
+	   	 	</div> 	
+	   	 </div>
+	   	 	
+	     <div class ="panel panel-default" style="float: left; width: 48%" align="center">
+	     	<div class="panel-heading">
+	     		<div class="panel-title"> Available Permissions <button type="button" class="btn btn-success btn-sm" ng-click="selectAllPriv()"><span class="glyphicon glyphicon-fast-forward"></span></button>
+	     		</div>
+	     	</div>
+	     	<div class="panel-body" style="height: 200px; overflow: auto;">
+	     		<div class="btn-group-vertical" style="width: 100%">
+				  <div class="btn btn-default" ng-repeat="item in items track by $index" ng-click="selItem(item)">
+				  {{item}}</div>
+				</div>
+	     	</div>
+	     </div>
+	     <div class ="panel panel-default" style="width: 48%; float: right" align="center">
+	     	<div class="panel-heading">
+	     		<div class="panel-title">  <button type="button" class="btn btn-danger btn-sm" ng-click="deselectAllPriv()"><span class="glyphicon glyphicon-fast-backward"></span></button>
+	     		Selected Permissions
+	     		</div>
+	     	</div>
+	     	<div class="panel-body" style="height: 200px; overflow: auto;">
+	     		<div class="btn-group-vertical" style="width: 100%">
+				  <div class="btn btn-default" ng-repeat="item in selItems track by $index" ng-click="unSelItem(item)">
+				  {{item}}</div>
+				</div>
+	     	</div>
+	     </div>
+	     <div class="btn-group" style="margin-top: 10px; ">
+			<button type="submit" class="btn btn-primary" ng-click="savePermissions()">Save Permissions</button>
+		</div>
+     </div>
+   </accordion-group>
+   
+   <accordion-group heading="Material Rate Screen">
+   	<div align="center">
+	    <img alt="Under Construction" src="resources/img/underconstruction.gif" align="middle">
+	</div>	  
+   </accordion-group>
+   
+ </accordion>

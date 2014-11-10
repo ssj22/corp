@@ -1,6 +1,7 @@
 package net.corp.core.service;
 
 import java.util.List;
+import java.util.Map;
 
 import net.corp.core.exception.CorpException;
 import net.corp.core.vo.AddressVO;
@@ -41,4 +42,14 @@ public interface UserService {
 	UserPreferenceVO fetchUserPreference(Integer userId);
 	
 	boolean saveUserPreference(UserPreferenceVO prefVo);
+
+	List<UserVO> fetchActiveUsers();
+	
+	Map<String, UserVO> fetchActiveUserNames();
+
+	Integer saveUser(List<UserVO> users);
+
+	Map<String, String> fetchAllPrivileges(Integer userId);
+
+	Integer saveUserPermission(UserVO user, Integer userId);
 }

@@ -40,12 +40,12 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 			crit.add(Restrictions.eq("vib.phone", vibhagPhone));
 		}
 		if (vibhagName != null) {
-			crit.add(Restrictions.eq("vib.vendorName", vibhagName));
+			crit.add(Restrictions.eq("vib.vibhagName", vibhagName));
 		}
 		if (today) {
-			addTodayCriteria(crit, "log.gateInTime");
+			addTodayCriteria(crit, "logbook.gateInTime");
 		}
-		return crit.list();
+        return crit.list();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -56,7 +56,7 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 		crit.createAlias("log", "logbook");
 		crit.add(Restrictions.eq("stock.stockItemname", stockItemName));
 		if (today) {
-			addTodayCriteria(crit, "log.gateInTime");
+			addTodayCriteria(crit, "logbook.gateInTime");
 		}
 		return crit.list();
 	}
@@ -69,7 +69,7 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 		crit.createAlias("logbook.transport", "trans");
 		crit.add(Restrictions.eq("trans.vendorName", transporterName));
 		if (today) {
-			addTodayCriteria(crit, "log.gateInTime");
+			addTodayCriteria(crit, "logbook.gateInTime");
 		}
 		crit.addOrder(Order.asc("logMaterialId"));
 		return crit.list();
@@ -83,7 +83,7 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 		crit.createAlias("logbook.vehicle", "veh");
 		crit.add(Restrictions.eq("veh.vehicleNumber", vehicleNumber));
 		if (today) {
-			addTodayCriteria(crit, "log.gateInTime");
+			addTodayCriteria(crit, "logbook.gateInTime");
 		}
 		return crit.list();
 	}
@@ -126,16 +126,21 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 	}
 	
 	private void addTodayCriteria(Criteria crit, String fieldName) {
-		Timestamp endDate = new Timestamp(System.currentTimeMillis());
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(endDate);
-		cal.set(Calendar.HOUR, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-		Timestamp startDate = new Timestamp(cal.getTimeInMillis());
-		crit.add(Restrictions.gt(fieldName, startDate));
-		crit.add(Restrictions.le(fieldName, endDate));
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Timestamp startDate = new Timestamp(cal.getTime().getTime());
+        cal.setTimeInMillis(System.currentTimeMillis());
+        cal.add(Calendar.DAY_OF_YEAR, 1);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Timestamp endDate = new Timestamp(cal.getTime().getTime());
+        crit.add(Restrictions.ge(fieldName, startDate));
+        crit.add(Restrictions.le(fieldName, endDate));
 	}
 	
 	@SuppressWarnings("unchecked")

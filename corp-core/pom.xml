@@ -26,9 +26,9 @@
 			<version>3.7.2</version>
 		</dependency>
 		<dependency>
-			<groupId>RXTXcomm</groupId>
-			<artifactId>RXTXcomm</artifactId>
-			<version>2.2</version>
+			<groupId>org.rxtx</groupId>
+			<artifactId>rxtxcomm</artifactId>
+			<version>2.2pre2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.smslib</groupId>
@@ -147,6 +147,21 @@
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
 			<version>1.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
 		</dependency>
 	</dependencies>
 </project>

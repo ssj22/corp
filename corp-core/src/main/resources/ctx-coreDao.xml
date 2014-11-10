@@ -27,10 +27,6 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
     </bean>
     
-    <bean id="rolePrivilegeDao" class="net.corp.core.dao.impl.RolePrivilegeDAOImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-    
     <bean id="materialDao" class="net.corp.core.dao.impl.MaterialDAOImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
     </bean>

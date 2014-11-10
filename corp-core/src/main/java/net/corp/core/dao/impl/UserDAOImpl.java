@@ -6,6 +6,7 @@ import net.corp.core.dao.UserDAO;
 import net.corp.core.model.Users;
 
 import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Restrictions;
 
 public class UserDAOImpl extends GenericDAOImpl<Users, Integer> implements UserDAO {
@@ -48,6 +49,15 @@ public class UserDAOImpl extends GenericDAOImpl<Users, Integer> implements UserD
 		crit.add(Restrictions.eq("root", true));
 		crit.add(Restrictions.eq("active", active));
 		return crit.list();
+	}
+
+	@Override
+	public boolean checkMachineValidity(String mb) {
+		SQLQuery query = getSession().createSQLQuery("select count(*) from auth_machine where mb_serial_no = '" + mb + "'");
+		if (((Number)query.uniqueResult()).longValue() > 0) {
+			return true;
+		};
+		return false;
 	}
 
 }

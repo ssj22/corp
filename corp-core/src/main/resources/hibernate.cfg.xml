@@ -10,7 +10,6 @@
         <mapping class="net.corp.core.model.Users"/>
         <mapping class="net.corp.core.model.UserLogin"/>
         <mapping class="net.corp.core.model.Address"/>
-        <mapping class="net.corp.core.model.MapRolePrivileges"/>
         <mapping class="net.corp.core.model.UserPreference"/>
         <mapping class="net.corp.core.model.MapUserAuthorization"/>
         <mapping class="net.corp.core.model.Privileges"/>

@@ -3,7 +3,7 @@ package net.corp.core.vo;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class UserVO implements Serializable {
@@ -26,17 +26,22 @@ public class UserVO implements Serializable {
 	private String username;
 	private String password;
 	private boolean forgotPwd;
-	private List<String> privileges; 
-	private List<RoleVO> roles;
+	private Map<String, String> privileges; 
 	private boolean guestUser;
-	private boolean rootUser;
+	private boolean adminUser;
 	private int createdBy;
 	private Timestamp createdDate;
     private int updatedBy;
     private Timestamp updatedDate;
 	private String comments;
-	private List<TabsVO> tabs;
-		
+	private boolean authMachine;
+	
+	public boolean isAuthMachine() {
+		return authMachine;
+	}
+	public void setAuthMachine(boolean authMachine) {
+		this.authMachine = authMachine;
+	}
 	public Integer getUserId() {
 		return userId;
 	}
@@ -133,17 +138,11 @@ public class UserVO implements Serializable {
 	public void setForgotPwd(boolean forgotPwd) {
 		this.forgotPwd = forgotPwd;
 	}
-	public List<String> getPrivileges() {
+	public Map<String, String> getPrivileges() {
 		return privileges;
 	}
-	public void setPrivileges(List<String> privileges) {
+	public void setPrivileges(Map<String, String> privileges) {
 		this.privileges = privileges;
-	}
-	public List<RoleVO> getRoles() {
-		return roles;
-	}
-	public void setRoles(List<RoleVO> roles) {
-		this.roles = roles;
 	}
 	public boolean isGuestUser() {
 		return guestUser;
@@ -151,11 +150,11 @@ public class UserVO implements Serializable {
 	public void setGuestUser(boolean guestUser) {
 		this.guestUser = guestUser;
 	}
-	public boolean isRootUser() {
-		return rootUser;
+	public boolean isAdminUser() {
+		return adminUser;
 	}
-	public void setRootUser(boolean rootUser) {
-		this.rootUser = rootUser;
+	public void setAdminUser(boolean adminUser) {
+		this.adminUser = adminUser;
 	}
 	public int getCreatedBy() {
 		return createdBy;
@@ -205,11 +204,5 @@ public class UserVO implements Serializable {
 	public void setFirstLogin(boolean firstLogin) {
 		this.firstLogin = firstLogin;
 	}
-	public List<TabsVO> getTabs() {
-		return tabs;
-	}
-	public void setTabs(List<TabsVO> tabs) {
-		this.tabs = tabs;
-	}
-		
+			
 }

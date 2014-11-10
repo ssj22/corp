@@ -48,6 +48,11 @@
             <name>JBoss Repository</name>
             <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
         </repository>
+		<repository>
+			<id>MavenAlt</id>
+			<name>AlternateMaven</name>
+			<url>http://maven.geotoolkit.org/</url>
+		</repository>
 	</repositories>
 
 
@@ -56,8 +61,8 @@
         <hibernate-envers.version>4.1.7.Final</hibernate-envers.version>
         
         <javax.servlet.version>2.5</javax.servlet.version>
-        <java.compiler.target>1.6</java.compiler.target>
-        <java.compiler.source>1.6</java.compiler.source>
+        <java.compiler.target>1.7</java.compiler.target>
+        <java.compiler.source>1.7</java.compiler.source>
         <javassist.version>3.4.GA</javassist.version>
         <junit.verson>4.11</junit.verson>
 		<jackson.version>1.9.10</jackson.version>

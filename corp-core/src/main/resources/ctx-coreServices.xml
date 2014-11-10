@@ -10,7 +10,8 @@
 	<aop:config>
 		<aop:pointcut
 			expression="execution(public * net.corp.core.service.impl.UserServiceImpl.*(..)) || 
-					execution(public * net.corp.core.service.impl.MaterialServiceImpl.*(..))"
+					execution(public * net.corp.core.service.impl.MaterialServiceImpl.*(..)) ||
+					execution(public * net.corp.core.service.impl.MessageServiceImpl.*(..))"
 				id="defaultTransactionServicePointCut" />
 		
 		<aop:advisor advice-ref="defaultTxAdvice" order="999"
@@ -29,7 +30,6 @@
 		<property name="materialDao" ref="materialDao" />
 		<property name="vehicleDao" ref="vehicleDao" />
 		<property name="userAuthorizationDao" ref="userAuthorizationDao" />
-		<property name="rolePrivilegeDao" ref="rolePrivilegeDao" />
 		<property name="stockItemDao" ref="stockItemDao" />
 		<property name="primaryGroupDao" ref="primaryGroupDao" />
 		<property name="vibhagDao" ref="vibhagDao" />
@@ -40,6 +40,7 @@
 	
 	<bean id="userService" class="net.corp.core.service.impl.UserServiceImpl">
 		<property name="coreServiceHelper" ref="coreServiceHelper" />
+		<property name="messageService" ref="messageService" />		
 	</bean>
 	
 	<bean id="materialService" class="net.corp.core.service.impl.MaterialServiceImpl">

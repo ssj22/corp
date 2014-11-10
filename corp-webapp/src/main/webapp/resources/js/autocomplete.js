@@ -236,6 +236,7 @@ app.directive('autocomplete', function() {
 
 app.filter('highlight', ['$sce', function ($sce) {
   return function (input, searchParam) {
+	//console.log(searchParam);  
     if (typeof input === 'function') return '';
     if (searchParam) {
       var words = '(' +

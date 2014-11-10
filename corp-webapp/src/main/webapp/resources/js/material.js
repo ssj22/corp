@@ -14,156 +14,199 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		$scope.stocklist; // List of names of Stock Items
 		$scope.stockMap; // List of Stock Item Objects
 		$scope.sitelist; // List of names of Sites
-		
+		$scope.staticMap;
 		var clearStaticData = function() {
-			$scope.pglist = null;
-			$scope.vibhaglist = null;
-			$scope.vehiclelist = null;
-			$scope.stocklist = null;
-			//$scope.stocks = null;
-			$scope.stockMap = null;
-			$scope.sitelist = null;
+			$scope.pglist = null;$scope.vibhaglist = null;$scope.vehiclelist = null;$scope.stocklist = null;$scope.stockMap = null;$scope.sitelist = null;
 		}
 		
-		$scope.transporterSelect = function(typed) {
-			$scope.transporterEmpty = false;
-			$rootScope.loading++;
-			RestService.getVehicleNames(typed, 2).success(function(data) {
-				var vehicleList = [];
-				for (var i = 0, l = data.length; i < l; i++) {
-					vehicleList[i] = data[i].vehicleNumber;
-				}
-				$scope.vehiclelist = vehicleList;
-				$rootScope.loading--;
-			}).error(function(error) {
-				console.log("Error while getting Vehicle Names: " + error);
-			});	
-		}
+		$scope.showTransporters = false;
+		$scope.showVehicles = false;
+		$scope.showSite = false;
+		$scope.showMaterials = false;
+		$scope.showSaveMaterials = false;
 		
-		var loadStaticData = function() {
-//			$rootScope.loading++;
-//			RestService.getVibhagNames().success(function(data) {
-//				var vibhagList = [];
-//				for (var i = 0, l = data.length; i < l; i++) {
-//				    vibhagList[i] = data[i].vibhagName;
-//				}
-//				$scope.vibhaglist = vibhagList;
-//				$rootScope.loading--;
-//				//console.log("Inside " + $scope.pglist);
-//			}).error(function(error) {
-//				console.log("Error while getting Vibhag Names: " + error);
-//			});
-				
-			
-			$rootScope.loading++;
-			RestService.getStockItemNames().success(function(data) {
-//						console.log("data = " + data);
-				//$scope.stocks = data;
-				var stockList = [];
-				var stockMap = {};
-				for (var i = 0, l = data.length; i < l; i++) {
-					stockList[i] = data[i].stockItemname;
-					stockMap[data[i].stockItemname] = data[i];
-				}
-				$scope.stocklist = stockList;
-				$scope.stockMap = stockMap;
-				$rootScope.loading--;
-//						console.log(stockList);
-			}).error(function(error) {
-				console.log("Error while getting Stock Item Names: " + error);
-			});
-			
-			$rootScope.loading++;
-			RestService.getSiteNames().success(function(data) {
-				var siteList = [];
-				for (var i = 0, l = data.length; i < l; i++) {
-					siteList[i] = data[i].siteName;
-				}
-				$scope.sitelist = siteList;
-				$rootScope.loading--;
-			}).error(function(error) {
-				console.log("Error while getting Site Names: " + error);
-			});
-			
-			$rootScope.loading++;
-			RestService.getPGNames().success(function(data) {
-				var pgList = [];
-				for (var i = 0, l = data.length; i < l; i++) {
-					pgList[i] = data[i].vendorName;
-				}
-				$scope.pglist = pgList;
-				$rootScope.loading--;
-			}).error(function(error) {
-				console.log("Error while getting Primary Group Names: " + error);
-			});
-			console.log($rootScope.loading);
-		}
+		$scope.fromToError = false;
+		$scope.transporterError = false;
+		$scope.vehicleError = false;
+		$scope.stockError = false;
 		
-		$scope.loadSelectiveStaticData = function() {
-			$rootScope.loading++;
-			RestService.getStaticData($selection.vibhagName).success(function(data) {
-				$scope.pglist = Object.keys(data);
-				
-				$rootScope.loading--;
-//						console.log(stockList);
-			}).error(function(error) {
-				console.log("Error while getting Static Data: " + error);
-			});
-		}
 		
-		$scope.weightBtns = function() {
-			// console.log($scope.selection.status);
+		// STEP 1
+		$scope.selectEntryType = function() {
+			//console.log($scope.selection.entryType);
 			$scope.weight();
-			RestService.getEligVibhags().then(function(response) {
-				console.log(response.data);
-				$scope.vibhaglist = response.data;
-			});
+			if ($scope.selection.entryType == 2) { 
+				RestService.getEligVibhags().then(function(response) {
+					//console.log(response.data);
+					$scope.vibhaglist = response.data;
+				});
+			}
+			else {
+				$rootScope.loading++;
+				RestService.getPGNames().success(function(data) {
+					var pgList = [];
+					for (var i = 0, l = data.length; i < l; i++) {
+						pgList[i] = data[i].vendorName;
+					}
+					$scope.pglist = pgList;
+					$rootScope.loading--;
+				});
+			}
 		};
 		
-		var grossWtListener;
-		var tareWtListener;
-
-		$scope.watchGrossWt = function() {
-			grossWtListener = $scope
-				.$watch(
-					'selection.grossWt',
-					function(newVal, oldVal) {
-						if ($scope.selection == null)
-							return;
-						// console.log($scope.selection);
-						if (angular
-								.isDefined($scope.selection.tareWt)) {
-							// console.log("inside");
-							$scope.selection.netWt = newVal
-									- $scope.selection.tareWt;
-						} else {
-							// console.log("inside2");
-							$scope.selection.netWt = newVal;
+		$scope.selectVendor = function(value) {
+			if ($scope.pglist == null) {
+				return;
+			}
+			
+			if ($scope.pglist.indexOf(value) > -1) {
+				$scope.showTransporters = true;
+			}
+			else {
+				$scope.showTransporters = false;
+				$scope.showVehicles = false;
+				$scope.showSite = false;
+				$scope.showMaterials = false;
+				$scope.showSaveMaterials = false;
+			}
+		}
+		
+		$scope.selectVibhag = function(value) {
+			//console.log($scope.vibhaglist.indexOf(value));
+			if ($scope.vibhaglist == null) {
+				return;
+			}
+			
+			if ($scope.vibhaglist.indexOf(value) > -1) {
+				$rootScope.loading++;
+				RestService.getStaticData(value).success(function(data) {
+					if (data == null || data == {}) {
+						$scope.showTransporters = false;
+					}
+					else {
+						$scope.showTransporters = true;
+						$scope.staticMap = data;
+						$scope.pglist = Object.keys(data);
+					}
+					$rootScope.loading--;
+				});
+			}
+			else {
+				$scope.showTransporters = false;
+				$scope.showVehicles = false;
+				$scope.showSite = false;
+				$scope.showMaterials = false;
+				$scope.showSaveMaterials = false;
+			}
+		}
+		
+		$scope.transporterSelect = function(value) {
+			if ($scope.pglist == null) {
+				return;
+			}
+			
+			if ($scope.pglist.indexOf(value) > -1) {
+				$scope.showVehicles = true;
+				if ($scope.selection.entryType == 2) {
+					$scope.vehiclelist = ($scope.staticMap[value])["v"];
+					$scope.sitelist = ($scope.staticMap[value])["s"];
+					$scope.stocklist = ($scope.staticMap[value])["i"];
+					console.log($scope.staticMap);
+				}
+				else {
+					$rootScope.loading++;
+					RestService.getVehicleNames(value, 2).success(function(data) {
+						var vehicleList = [];
+						for (var i = 0, l = data.length; i < l; i++) {
+							vehicleList[i] = data[i].vehicleNumber;
 						}
-					});
-		};
-
-		$scope.watchTareWt = function() {
-			tareWtListener = $scope
-				.$watch(
-					'selection.tareWt',
-					function(newVal, oldVal) {
-						if ($scope.selection == null)
-							return;
-						// console.log($scope.selection);
-						if (angular
-								.isDefined($scope.selection.grossWt)) {
-							// console.log("inside3");
-							$scope.selection.netWt = $scope.selection.grossWt
-									- newVal;
-						} else {
-							// console.log("inside4");
-							$scope.selection.netWt = -1
-									* newVal;
+						$scope.vehiclelist = vehicleList;
+						$rootScope.loading--;
+					});	
+				}
+			}
+			else {
+				$scope.showVehicles = false;
+				$scope.showSite = false;
+				$scope.showMaterials = false;
+				$scope.showSaveMaterials = false;
+			}
+		}
+		
+		$scope.vehicleSelect = function(value) {
+			if ($scope.vehiclelist == null) {
+				return;
+			}
+			
+			if ($scope.vehiclelist.indexOf(value) > -1) {
+				$scope.showSite = true;
+				if ($scope.selection.entryType == 1) {
+					$rootScope.loading++;
+					RestService.getSiteNames().success(function(data) {
+						var siteList = [];
+						for (var i = 0, l = data.length; i < l; i++) {
+							siteList[i] = data[i].siteName;
 						}
-					});
-		};
-
+						$scope.sitelist = siteList;
+						$rootScope.loading--;
+					})
+				}
+			}
+			else {
+				$scope.showSite = false;
+				$scope.showMaterials = false;
+				$scope.showSaveMaterials = false;
+			}
+		}
+		
+		$scope.siteSelect = function(value) {
+			if ($scope.sitelist == null) {
+				return;
+			}
+			
+			if (value == null || 
+					value.trim() == "") {
+				$scope.showMaterials = false;
+				$scope.showSaveMaterials = false;
+			}
+			else {
+				$scope.showMaterials = true;
+				$rootScope.loading++;
+					
+				RestService.getStockItemNames().success(function(data) {
+					var stockList = [];
+					var stockMap = {};
+					for (var i = 0, l = data.length; i < l; i++) {
+						stockList[i] = data[i].stockItemname;
+						stockMap[data[i].stockItemname] = data[i];
+					}
+					if ($scope.selection.entryType == 1) {
+						$scope.stocklist = stockList;
+					}
+					
+					$scope.stockMap = stockMap;
+					//console.log($scope.stockMap);
+					$rootScope.loading--;
+				});
+				
+			}
+		}
+		
+		$scope.stockSelect = function(value) {
+			if ($scope.stocklist == null) {
+				return;
+			}
+			
+			if ($scope.stocklist.indexOf(value) > -1) {
+				$scope.showSaveMaterials = true;
+				$scope.checkAddl();
+			}
+			else {
+				$scope.showSaveMaterials = false;
+				$scope.addl = false;
+			}
+		}
+		
 		$scope.resetAddl = function() {
 			$scope.addl = false;
 			$scope.invoiceInd = false;
@@ -271,21 +314,31 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 			$scope.attachedEntry = false;
 			$scope.weight();
 			if (rel == 2) {
-				$scope.selection.vehicleInTime = null;
-				$scope.selection.vehicleOutTime = null;
-				$scope.selection.stockName = null;
-				$scope.selection.vendorName = null;
-				$scope.selection.vibhagName = null;
-				$scope.selection.grossWt = null;
-				$scope.selection.tareWt = null;
-				$scope.selection.netWt = null;
-				$scope.selection.status = null;
+                var selection = {};
+                for(var k in $scope.selection) {
+                    selection[k]=$scope.selection[k];
+                }
+
+                selection.vehicleInTime = null;
+				selection.vehicleOutTime = null;
+				selection.stockName = null;
+				selection.vendorName = null;
+				selection.vibhagName = null;
+				selection.grossWt = null;
+				selection.tareWt = null;
+				selection.netWt = null;
+				selection.status = null;
 				$scope.attachedEntry = true;
-				$scope.attachedDisplay = $scope.selection.parentMaterialId + " [ Vehicle: " + $scope.selection.vehicleNumber + " ]"; 
-				$scope.selection.materialId = null;
+                var attachedParent = $scope.selection.materialId;
+                if ($scope.selection.parentMaterialId != null) {
+                    attachedParent = $scope.selection.parentMaterialId;
+                }
+				$scope.attachedDisplay = attachedParent + " [ Vehicle: " + $scope.selection.vehicleNumber + " ]";
+				selection.materialId = null;
+                $scope.selection = selection;
 			}
 			//console.log($scope.selectedRow[0]);
-			console.log($scope.selection);
+			//console.log($scope.selection);
 			//loadStaticData();
 		};
 
@@ -340,51 +393,6 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 			});
 		};
 			
-		$scope.getWeight = function() {
-			RestService.getWeight().then(
-				function(response) {
-					if ($scope.selection == undefined) {
-						return;
-					}
-					
-					if ($scope.selection.entryType == 1) {
-						if ($scope.selection.status == null) {
-							$scope.selection.grossWt = response.data;
-						} else if ($scope.selection.status == "INITIATED") {
-							$scope.selection.tareWt = response.data;
-						}
-					} else {
-						if ($scope.selection.status == null) {
-							$scope.selection.tareWt = response.data;
-						} else if ($scope.selection.status == "INITIATED") {
-							$scope.selection.grossWt = response.data;
-						}
-					}
-				});
-		};
-
-		var stop;
-		$scope.weight = function() {
-			if (angular.isDefined(stop))
-				return;
-
-			stop = $interval(function() {
-				$scope.getWeight();
-			}, 1000);
-		};
-
-		$scope.stopWeight = function() {
-			if (angular.isDefined(stop)) {
-				$interval.cancel(stop);
-				stop = undefined;
-			}
-		};
-
-		$scope.$on('$destroy', function() {
-			// Make sure that the interval nis destroyed too
-			$scope.stopWeight();
-		});
-
 		$scope.timeSelected = function(time) {
 			// console.log("Inside timeselected" + $scope.timeSel);
 			$scope.pagingOptions.currentPage = 1;
@@ -436,6 +444,98 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 			currentPage : 1
 		};
 
+		$scope.getWeight = function() {
+            console.log("Get Weight Called");
+			/*RestService.getWeight().then(
+				function(response) {
+					if ($scope.selection == undefined) {
+						return;
+					}
+					
+					if ($scope.selection.entryType == 1) {
+						if ($scope.selection.status == null) {
+							$scope.selection.grossWt = response.data;
+							$scope.selection.tareWt = null;
+						} else if ($scope.selection.status == "INITIATED") {
+							$scope.selection.tareWt = response.data;
+						}
+					} else {
+						if ($scope.selection.status == null) {
+							$scope.selection.tareWt = response.data;
+							$scope.selection.grossWt = null;
+						} else if ($scope.selection.status == "INITIATED") {
+							$scope.selection.grossWt = response.data;
+						}
+					}
+				});*/
+		};
+
+		var stop;
+		$scope.weight = function() {
+			if (angular.isDefined(stop))
+				return;
+
+			/*stop = $interval(function() {
+				$scope.getWeight();
+			}, 1000);*/
+		};
+
+		$scope.stopWeight = function() {
+			if (angular.isDefined(stop)) {
+				$interval.cancel(stop);
+				stop = undefined;
+			}
+		};
+
+		$scope.$on('$destroy', function() {
+			// Make sure that the interval nis destroyed too
+			$scope.stopWeight();
+		});
+
+		var grossWtListener;
+		var tareWtListener;
+
+		$scope.watchGrossWt = function() {
+			grossWtListener = $scope
+				.$watch(
+					'selection.grossWt',
+					function(newVal, oldVal) {
+						if ($scope.selection == null)
+							return;
+						// console.log($scope.selection);
+						if (angular
+								.isDefined($scope.selection.tareWt)) {
+							// console.log("inside");
+							$scope.selection.netWt = newVal
+									- $scope.selection.tareWt;
+						} else {
+							// console.log("inside2");
+							$scope.selection.netWt = newVal;
+						}
+					});
+		};
+
+		$scope.watchTareWt = function() {
+			tareWtListener = $scope
+				.$watch(
+					'selection.tareWt',
+					function(newVal, oldVal) {
+						if ($scope.selection == null)
+							return;
+						// console.log($scope.selection);
+						if (angular
+								.isDefined($scope.selection.grossWt)) {
+							// console.log("inside3");
+							$scope.selection.netWt = $scope.selection.grossWt
+									- newVal;
+						} else {
+							// console.log("inside4");
+							$scope.selection.netWt = -1
+									* newVal;
+						}
+					});
+		};
+		
 		$scope.setPagingData = function(data, page, pageSize) {
 			// console.log("Entered Paging Data with " + page + ","
 			// + pageSize);
@@ -577,8 +677,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 			showColumnMenu : true,
 			keepLastSelected : false,
 			rowTemplate : '<div ng-style="{\'cursor\': row.cursor, \'z-index\': col.zIndex() }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell {{col.cellClass}}" ng-cell ng-click="selectRow()"></div>',
-			columnDefs : Util.getColumnDefs()
+			columnDefs : Util.getMaterialColumnDefs()
 		};
 
-		//console.log($rootScope.loading);
 	});

@@ -73,17 +73,17 @@ public class MaterialsVO implements Serializable {
 	
 	private Integer userId;
 	
-	private Boolean inAddlInd;
+	private boolean inAddlInd;
 	
-	private Boolean outAddlInd;
+	private boolean outAddlInd;
 	
-	private Boolean htCorrectionInd;
+	private boolean htCorrectionInd;
 	
-	private Boolean qtyInd;
+	private boolean qtyInd;
 	
-	private Boolean klInd;
+	private boolean klInd;
 	
-	private Boolean invoiceInd;
+	private boolean invoiceInd;
 	
 	private Integer category;
 	
@@ -451,52 +451,5 @@ public class MaterialsVO implements Serializable {
 		this.category = category;
 	}
 
-	public Boolean getInAddlInd() {
-		return inAddlInd;
-	}
-
-	public void setInAddlInd(Boolean inAddlInd) {
-		this.inAddlInd = inAddlInd;
-	}
-
-	public Boolean getOutAddlInd() {
-		return outAddlInd;
-	}
-
-	public void setOutAddlInd(Boolean outAddlInd) {
-		this.outAddlInd = outAddlInd;
-	}
-
-	public Boolean getHtCorrectionInd() {
-		return htCorrectionInd;
-	}
-
-	public void setHtCorrectionInd(Boolean htCorrectionInd) {
-		this.htCorrectionInd = htCorrectionInd;
-	}
-
-	public Boolean getQtyInd() {
-		return qtyInd;
-	}
-
-	public void setQtyInd(Boolean qtyInd) {
-		this.qtyInd = qtyInd;
-	}
-
-	public Boolean getKlInd() {
-		return klInd;
-	}
-
-	public void setKlInd(Boolean klInd) {
-		this.klInd = klInd;
-	}
-
-	public Boolean getInvoiceInd() {
-		return invoiceInd;
-	}
-
-	public void setInvoiceInd(Boolean invoiceInd) {
-		this.invoiceInd = invoiceInd;
-	}
-	
+		
 }

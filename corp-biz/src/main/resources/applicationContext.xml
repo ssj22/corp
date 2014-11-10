@@ -17,11 +17,12 @@
 	<bean  class="net.corp.core.util.SpringPropertyLoadConfigurer">
 		<property name="locations">
 			<list>
-				<value>classpath:config.properties</value>
+			<!-- 		<value>file:${catalina.home}/conf/config.properties</value>--> 
+			<value>file:${catalina.home}/conf/config.properties</value>
 			</list>
 		</property>
 		<property name="ignoreResourceNotFound" value="false" />
-		<property name="ignoreUnresolvablePlaceholders" value="false" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
 	</bean>
 	
 	<import resource="classpath:hibernateContext.xml"/>

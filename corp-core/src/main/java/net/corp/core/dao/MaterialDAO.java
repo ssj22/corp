@@ -10,7 +10,7 @@ public interface MaterialDAO extends GenericDAO<Materials, Integer> {
 	 List<Materials> findPaginatedMaterialEntries(Integer pageNumber, Integer pageSize, Integer time, boolean more, Date from, Date to);
 	 List<Long> findAllCounts(Integer time);
 	 List<SiteVO> findAllSites();
-	 Integer linkMaterial(int parent, List<Integer> children);
+	 Integer linkMaterial(List<Integer> children);
 	 Integer unlinkMaterial(List<Integer> children);
 	 List<Materials> findRelatedEntries(Integer materialId);
 }

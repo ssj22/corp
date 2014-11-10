@@ -42,9 +42,6 @@ public class Materials implements Serializable {
 	@Column(name="VEHICLE_ID")
 	private Integer vehicleId;
 	
-	@Column(name = "TRUCK_STATUS")
-	private Integer truckStatus;
-	
 	@Column(name = "VEHICLE_IN_TIME")
 	private Timestamp vehicleInTime;
 	
@@ -178,14 +175,6 @@ public class Materials implements Serializable {
 
 	public void setVehicleId(Integer vehicleId) {
 		this.vehicleId = vehicleId;
-	}
-
-	public Integer getTruckStatus() {
-		return truckStatus;
-	}
-
-	public void setTruckStatus(Integer truckStatus) {
-		this.truckStatus = truckStatus;
 	}
 
 	public Timestamp getVehicleInTime() {

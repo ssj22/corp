@@ -45,12 +45,9 @@ public class Users implements Serializable {
 	@Column(name = "ACTIVE")
     private boolean active;
 	
-	@Column(name = "ROOT")
-	private boolean root;
+	@Column(name = "ADMIN")
+	private boolean admin;
 	
-	@Column(name = "GUEST")
-	private boolean guest;
-    
 	@JoinColumn(name = "ADDRESS_ID")
 	@ManyToOne
 	private Address address;
@@ -70,9 +67,6 @@ public class Users implements Serializable {
 	@Column(name = "PHONE")
     private Long phone;
 	
-	@Column(name = "ADDL_PHONE")
-    private Long addlPhone;
-
 	@Column(name = "EMAIL")
     private String email;
 	
@@ -181,37 +175,14 @@ public class Users implements Serializable {
 		this.active = active;
 	}
 
-	/**
-	 * @return the root
-	 */
-	public boolean isRoot() {
-		return root;
+	public boolean isAdmin() {
+		return admin;
 	}
 
-	/**
-	 * @param root the root to set
-	 */
-	public void setRoot(boolean root) {
-		this.root = root;
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 
-	/**
-	 * @return the guest
-	 */
-	public boolean isGuest() {
-		return guest;
-	}
-
-	/**
-	 * @param guest the guest to set
-	 */
-	public void setGuest(boolean guest) {
-		this.guest = guest;
-	}
-
-	/**
-	 * @return the address
-	 */
 	public Address getAddress() {
 		return address;
 	}
@@ -389,20 +360,6 @@ public class Users implements Serializable {
 	 */
 	public void setComments(String comments) {
 		this.comments = comments;
-	}
-
-	/**
-	 * @return the addlPhone
-	 */
-	public Long getAddlPhone() {
-		return addlPhone;
-	}
-
-	/**
-	 * @param addlPhone the addlPhone to set
-	 */
-	public void setAddlPhone(Long addlPhone) {
-		this.addlPhone = addlPhone;
 	}
 
 	public UserLogin getUserLogin() {

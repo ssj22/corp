@@ -9,7 +9,7 @@
   <classpathentry kind="var" path="M2_REPO/org/quartz-scheduler/quartz/1.8.6/quartz-1.8.6.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/slf4j/slf4j-api/1.6.0/slf4j-api-1.6.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/xerial/sqlite-jdbc/3.7.2/sqlite-jdbc-3.7.2.jar"/>
-  <classpathentry kind="var" path="M2_REPO/RXTXcomm/RXTXcomm/2.2/RXTXcomm-2.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/rxtx/rxtxcomm/2.2pre2/rxtxcomm-2.2pre2.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/smslib/smslib/3.5.5/smslib-3.5.5.jar"/>
   <classpathentry kind="var" path="M2_REPO/junit/junit/4.11/junit-4.11.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"/>
@@ -40,7 +40,10 @@
   <classpathentry kind="var" path="M2_REPO/org/hibernate/common/hibernate-commons-annotations/4.0.1.Final/hibernate-commons-annotations-4.0.1.Final.jar" sourcepath="M2_REPO/org/hibernate/common/hibernate-commons-annotations/4.0.1.Final/hibernate-commons-annotations-4.0.1.Final-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/aspectj/aspectjweaver/1.7.0/aspectjweaver-1.7.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/aspectj/aspectjrt/1.7.0/aspectjrt-1.7.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.2/commons-codec-1.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/springframework/security/spring-security-core/3.2.0.RELEASE/spring-security-core-3.2.0.RELEASE.jar" sourcepath="M2_REPO/org/springframework/security/spring-security-core/3.2.0.RELEASE/spring-security-core-3.2.0.RELEASE-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.6/commons-lang-2.6.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/springframework/security/spring-security-taglibs/3.2.0.RELEASE/spring-security-taglibs-3.2.0.RELEASE.jar" sourcepath="M2_REPO/org/springframework/security/spring-security-taglibs/3.2.0.RELEASE/spring-security-taglibs-3.2.0.RELEASE-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/springframework/security/spring-security-acl/3.2.0.RELEASE/spring-security-acl-3.2.0.RELEASE.jar" sourcepath="M2_REPO/org/springframework/security/spring-security-acl/3.2.0.RELEASE/spring-security-acl-3.2.0.RELEASE-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/springframework/security/spring-security-web/3.2.0.RELEASE/spring-security-web-3.2.0.RELEASE.jar" sourcepath="M2_REPO/org/springframework/security/spring-security-web/3.2.0.RELEASE/spring-security-web-3.2.0.RELEASE-sources.jar"/>

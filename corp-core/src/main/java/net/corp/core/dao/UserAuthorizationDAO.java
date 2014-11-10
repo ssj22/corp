@@ -11,4 +11,6 @@ public interface UserAuthorizationDAO extends GenericDAO<MapUserAuthorization, I
 	 * @return List of User Authorization Mapping
 	 */
 	List<MapUserAuthorization> findAuthorizationByUser(int userId);
+
+	void deleteByUser(Integer userId);
 }

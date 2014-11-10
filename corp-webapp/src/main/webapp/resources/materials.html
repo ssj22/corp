@@ -20,8 +20,8 @@
 		        	<span class="label label-default " style="cursor: pointer;" ng-click="timeSelected(180)">Last 30 days</span>
 		        	&nbsp;&nbsp;&nbsp;&nbsp;
 		            <!-- <input type="radio" name="dataFilter" value="Range" ng-click="rangeDateFilter()"/> Range --> 
-		            <input id="dateFrom" type="text" ng-model="dateFrom" datepicker style="width: 160px;"/> <span class="glyphicon glyphicon-transfer"></span> 
-		            <input id="dateTo" type="text" ng-model="dateTo" datepicker/> 
+		            <input id="dateFrom" type="text" ng-model="dateFrom" datepick style="width: 160px;"/> <span class="glyphicon glyphicon-transfer"></span> 
+		            <input id="dateTo" type="text" ng-model="dateTo" datepick/> 
 		            &nbsp;&nbsp;&nbsp;&nbsp;
 		            <span class="glyphicon glyphicon-refresh" style="cursor: pointer;" ng-click="rangeSelected()" ng-disabled="datafilter == 1"></span>
 				</div>
@@ -46,21 +46,25 @@
 	            	</div>
 	            	<div>
 	            		<div style="float:left;" >
-	            			<span class="label label-warning">Entry Type</span>
-			            	<select ng-model="selection.entryType" ng-change="weightBtns()" ng-disabled="selection.status != null || attachedEntry">
+	            			<span class="label label-primary">Entry Type</span>
+			            	<select ng-model="selection.entryType" ng-change="selectEntryType()" ng-disabled="selection.status != null || attachedEntry">
 			                	<option label="Inward" value="1"></option>
 			                    <option label="Outward" value="2"></option>
 			                </select>
 	            		</div>
 	            		<div align="center">
-	            			<span class="label label-warning">Attached To:</span>
+	            			<span class="label label-primary">Attached To:</span>
 			            	{{attachedDisplay}}
 			            </div>
 	            		
 	            	</div>
 	            	
 	            </div>
-	            <div class="panel panel-warning">
+	            <div style="width: 100%; display: none">
+	            	
+	            </div>
+	            
+	            <div class="panel panel-primary">
 				  <div class="panel-heading">
 				    <h3 class="panel-title">Basic Information</h3>
 				  </div>
@@ -68,29 +72,31 @@
 				    <div style="float:left; width: 50%">
 			            <table>
 			            	<tr>
-		                        <td align="right"><span class="label label-warning">{{(selection.entryType == 1) && "From" || ((selection.entryType == 2) && "To" || "From / To") }}</span></td>
+		                        <td align="right"  ng-class="(selection.entryType != null && !showTransporters) && 'blink_me' || ''"><span class="label label-primary">{{(selection.entryType == 1) && "From" || ((selection.entryType == 2) && "To" || "From / To") }}</span></td>
 		                        <td align="center"> : </td>
 		                        <td align="left">
 		                            <div ng-show="selection.entryType == 1">
-		                            	<autocomplete ng-model="selection.vendorName" data="pglist" click-activation="true" on-select="loadStaticData"></autocomplete>
+		                            	<autocomplete ng-model="selection.vendorName" data="pglist" click-activation="true" on-type="selectVendor"></autocomplete>
 		                            </div>
 		                            <div ng-show="selection.entryType == 2">
-		                            	<autocomplete ng-model="selection.vibhagName" data="vibhaglist" click-activation="true" on-select="loadSelectiveStaticData"></autocomplete>
+		                            	<autocomplete ng-model="selection.vibhagName" data="vibhaglist" click-activation="true" on-type="selectVibhag"></autocomplete>
 		                            </div>
 		                        </td>
 		                        <td align="center">&nbsp;                        	
 								</td>
 		                    </tr>
 			                <tr>
-			                    <td align="right"><span class="label label-warning">Gross Weight</span></td>
+			                    <td align="right"><span class="label label-primary">Gross Weight</span></td>
 			                    <td align="center"> : </td>
-			                    <td align="left"><input type="text" ng-model="selection.grossWt" name="grossWt" disabled="grossDisabled"/></td>
+			                    <td align="left"><input type="text" ng-model="selection.grossWt" name="grossWt" /></td>
+                                <!-- disabled="grossDisabled" -->
 			                    <td align="left">&nbsp;</td>
 			                </tr>
 			                <tr>
-			                    <td align="right"><span class="label label-warning">Tare Weight</span></td>
+			                    <td align="right"><span class="label label-primary">Tare Weight</span></td>
 			                    <td align="center"> : </td>
-			                    <td align="left"><input type="text" ng-model="selection.tareWt" name="tareWt" disabled="tareDisabled"/></td>
+			                    <td align="left"><input type="text" ng-model="selection.tareWt" name="tareWt" /></td>
+                                <!-- disabled="tareDisabled" -->
 			                    <td align="left">&nbsp;</td>
 			                </tr>
 			                <tr>
@@ -119,39 +125,39 @@
 			
 			            <div>
 			                <table>
-			                    <tr>
-			                        <td align="right"><span class="label label-warning">Transporter</span></td>
+			                    <tr >
+			                        <td align="right" ng-class="(showTransporters && !showVehicles) && 'blink_me' || ''"><span class="label label-primary">Transporter</span></td>
 			                        <td align="center"> : </td>
 			                        <td align="left">
-			                            <autocomplete ng-model="selection.transporterName" data="pglist" on-select="transporterSelect" click-activation="true" ng-show="!attachedEntry"/>
+			                            <autocomplete ng-model="selection.transporterName" data="pglist" on-type="transporterSelect" click-activation="true" ng-show="showTransporters && !attachedEntry"/>
 			                            <label ng-show="attachedEntry">{{selection.transporterName}}</label>
 			                        </td>
 			                        <td align="center">&nbsp;</td>
 			                    </tr>
-			                    <tr>
-			                        <td align="right"><span class="label label-warning">Vehicle Details</span></td>
+			                    <tr >
+			                        <td align="right" ng-class="(showVehicles && !showSite) && 'blink_me' || ''"><span class="label label-primary">Vehicle Details</span></td>
 			                        <td align="center"> : </td>
 			                        <td align="left">
-			                            <autocomplete ng-model="selection.vehicleNumber" data="vehiclelist" ng-show="!transporterEmpty && !attachedEntry" click-activation="true"></autocomplete>
+			                            <autocomplete ng-model="selection.vehicleNumber" data="vehiclelist" ng-show="showVehicles && !attachedEntry" click-activation="true" on-type="vehicleSelect"></autocomplete>
 			                            <label ng-show="attachedEntry">{{selection.vehicleNumber}} &nbsp;</label>
 			                        </td>
 			                        <td align="center">&nbsp;</td>
 			                    </tr>
-			                    <tr>
-			                        <td align="right"><span class="label label-warning">Site Name</span></td>
+			                    <tr >
+			                        <td align="right" ng-class="(showSite && !showMaterials) && 'blink_me' || ''"><span class="label label-primary">Site Name</span></td>
 			                        <td align="center"> : </td>
 			                        <td align="left">
-			                        	<autocomplete ng-model="selection.siteName" data="sitelist" click-activation="true" ng-show="!attachedEntry"/>
+			                        	<autocomplete ng-model="selection.siteName" data="sitelist" click-activation="true" ng-show="showSite && !attachedEntry" on-type="siteSelect"/>
 			                        	<label ng-show="attachedEntry">{{selection.siteName}}</label>
 			                        </td>
 			                        
 			                        <td align="center">&nbsp;</td>
 			                    </tr>
-			                    <tr>
-			                        <td align="right"><span class="label label-warning">Material Type</span></td>
+			                    <tr >
+			                        <td align="right" ng-class="(showMaterials && !showSaveMaterials) && 'blink_me' || ''"><span class="label label-primary">Material Type</span></td>
 			                        <td align="center"> : </td>
 			                        <td align="left">
-			                            <autocomplete ng-model="selection.stockName" data="stocklist" click-activation="true" on-select="checkAddl()" ng-show="selection.entryType != null"/>
+			                            <autocomplete ng-model="selection.stockName" data="stocklist" click-activation="true" on-type="stockSelect" ng-show="showMaterials && selection.entryType != null"/>
 			                        </td>
 			                        <td align="center">&nbsp;</td>
 			                    </tr>
@@ -165,7 +171,7 @@
 			                    <tr>
 			                        <td align="right"><span class="label label-default">Notes</span></td>
 			                        <td align="center"> : </td>
-			                        <td align="left"><input type="text" ng-class="textarea" name="notes" /></td>
+			                        <td align="left"><input type="text" ng-class="textarea" name="notes" ng-model="selection.notes"/></td>
 			                        <td align="center">&nbsp;</td>
 			                    </tr>
 	                		</table>
@@ -213,7 +219,7 @@
 		                    <tr ng-show="invoiceInd">
 		                        <td align="right"><span class="label label-default">Invoice Date</span></td>
 		                        <td align="center"> : </td>
-		                        <td align="left"> {{selection.invoicedate}}<quick-datepicker ng-model='selection.invoicedate'></quick-datepicker>
+		                        <td align="left"> <input id="invoicedt" type="text" ng-model='selection.invoicedate' datepick/>
 		                        </td>
 		                        <td align="center">&nbsp;                        	
 								</td>
@@ -234,7 +240,7 @@
 				  <div class="panel-body">
 				    <div class="btn-group" align="center">
 	                    <button type="submit" class="btn btn-info" ng-click="cancelEntry()">Cancel</button>
-	                    <button type="submit" class="btn btn-info" ng-click="saveEntry()">Save</button>
+	                    <button type="submit" class="btn btn-info" ng-click="saveEntry()" ng-show="showSaveMaterials">Save</button>
 	
 	                </div>
 				  </div>
@@ -309,9 +315,27 @@
 	                	</tr>
 		            </tbody>
 		    	</table>
+		    	<div>SMS: </div>
 			  </div>
 			</div>	
-      	</div>	
+			<div class="panel panel-info">
+			  <div class="panel-heading">
+			  	<h3 class="panel-title">Office Use only</h3>
+			  </div>
+			  <div class="panel-body">
+			  	<table style="padding-top: 30px; width: 100%">
+			  		<tr>
+			  			<th>Plant Supervisor Signature</th>
+			  			<th>Transporter Signature	</th>
+			  		</tr>
+			  		<tr>
+			  			<th>Note: {{}}</th>
+			  			<th>Site Incharge Signature	</th>
+			  		</tr>
+			  	</table>
+			  </div>
+			</div>  
+		</div>	
       </div>
       <div class="modal-footer" id="modalfooter">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

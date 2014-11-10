@@ -250,16 +250,16 @@ fieldset
 <body>
 <div align="center">
 <form id="login" action="j_spring_security_check" method="POST">
-    <h1>Log In</h1>
-    <fieldset id="inputs">
+	<h1>Log In</h1>
+	<fieldset id="inputs">
         <input id="username" name="j_username" type="text" placeholder="Username" autofocus required>   
         <input id="password" name="j_password" type="password" placeholder="Password" required>
     </fieldset>
     <fieldset id="actions">
         <input type="submit" id="submit" value="Log in">
-        <a href="index">Forgot your password?</a><a href="main">Register</a>
     </fieldset>
 </form>
 </div>
 </body>
+
 </html>

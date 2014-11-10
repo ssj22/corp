@@ -39,4 +39,6 @@ public interface UserDAO extends GenericDAO<Users, Integer> {
 	 * @return Root User object
 	 */
 	List<Users> findRootUser(boolean active); 
+	
+	boolean checkMachineValidity(String mb);
 }

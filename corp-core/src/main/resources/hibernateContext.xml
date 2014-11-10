@@ -79,6 +79,7 @@
 			<tx:method name="delete*" propagation="REQUIRED" rollback-for="Exception" />
 			<tx:method name="assign*" propagation="REQUIRED" rollback-for="Exception" />
 			<tx:method name="merge*" propagation="REQUIRED" rollback-for="Exception" />
+			<tx:method name="sync*" propagation="REQUIRED" rollback-for="Exception" />
 			<tx:method name="invalidate*" propagation="REQUIRED" rollback-for="Exception" />
 			<tx:method name="calculate*" propagation="REQUIRED" rollback-for="Exception" />
 			<tx:method name="execute*" propagation="REQUIRED" rollback-for="Exception" />

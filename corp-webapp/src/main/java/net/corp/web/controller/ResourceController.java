@@ -20,6 +20,8 @@ import net.corp.core.vo.MaterialsVO;
 import net.corp.core.vo.SiteVO;
 import net.corp.core.vo.TabsVO;
 import net.corp.core.vo.UserPreferenceVO;
+import net.corp.core.vo.UserVO;
+import net.corp.web.util.RestHelper;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,7 @@ public class ResourceController {
 	@Autowired
 	MessageService messageService;
 	
-	@RequestMapping(value="/login", method=RequestMethod.GET)
+	@RequestMapping(value="/logindata", method=RequestMethod.GET)
 	public @ResponseBody AuthUser getLoggedInUser() {
 		SecurityContext context = SecurityContextHolder.getContext();
 		Authentication auth = context.getAuthentication();
@@ -56,6 +58,37 @@ public class ResourceController {
 			return (AuthUser) auth.getPrincipal();
 		}
 		return null;
+	}
+	
+	@RequestMapping(value="/users", method=RequestMethod.GET)
+	public @ResponseBody List<UserVO> getUsers() {
+		return userService.fetchActiveUsers();
+	}
+	
+	@RequestMapping(value="/usernames", method=RequestMethod.GET)
+	public @ResponseBody Map<String, UserVO> getUserNames() {
+		return userService.fetchActiveUserNames();
+	}
+	
+	@RequestMapping(value="/users", method=RequestMethod.POST)
+	public @ResponseBody Integer saveUsers(@RequestBody UserVO user
+			, @RequestParam(value="by") Integer userId) {
+		try {
+			if (user.getUserId() == null) {
+				user.setCreatedBy(userId);
+			}
+			user.setUpdatedBy(userId);
+			userService.saveUser(user);
+		} catch (CorpException e) {
+			logger.error("Exception while saving user: " + user.getFirstName() + " " + user.getLastName());
+		}
+		return userService.saveUserPermission(user, userId);
+	}
+	
+	@RequestMapping(value="/privileges", method=RequestMethod.GET)
+	public @ResponseBody Map<String, String> getPrivileges(
+			@RequestParam(value="userId", required=false) Integer userId) {
+		return userService.fetchAllPrivileges(userId);
 	}
 	
 	@RequestMapping(value="/tabs", method=RequestMethod.GET)
@@ -68,13 +101,21 @@ public class ResourceController {
 		return null;
 	}
 	
-	@RequestMapping(value="sendSms", method=RequestMethod.POST)
-	public @ResponseBody String sendSms(@RequestBody MaterialsVO material) {
+	@RequestMapping(value="sendSms", method=RequestMethod.GET)
+	public @ResponseBody String sendSms(
+			@RequestParam(value="number", required=false) String number,
+			@RequestParam(value="msg", required=false) String msg) {
 		try {
-			messageService.sendMessage(null, null);
+			if (msg == null) {
+				msg = "Test Message at " + new Date();
+			}
+			if (number == null) {
+				number = "9767942400";
+			}
+			messageService.sendMessage(number, msg);
 			return "OK";
 		} catch (Exception e) {
-			logger.error("Exception while sending message for material id " + material.getMaterialId() + " : " + e.getMessage(), e);
+			logger.error("Exception while sending message : " + e.getMessage(), e);
 			return "ERROR";
 		}
 	}
@@ -121,8 +162,8 @@ public class ResourceController {
 	
 	@RequestMapping(value="/weight", method=RequestMethod.GET)
 	public @ResponseBody String getWeight() {
-		//return RestHelper.liveWeight();
-		return null;
+		return RestHelper.liveWeight();
+		//return null;
 	}
 	
 	@RequestMapping(value="/dummyweight", method=RequestMethod.GET)
@@ -245,14 +286,15 @@ public class ResourceController {
 			
 	
 	@RequestMapping(value="/logs", method=RequestMethod.GET)
-	public @ResponseBody LogVO getLogs(
+	public @ResponseBody List<LogVO> getLogs(
 			@RequestParam(value = "vno", required = false) String vehicleNo,
 			@RequestParam(value = "time", required = false) Integer time,
 			@RequestParam(value = "from", required = false) Date from,
 			@RequestParam(value = "to", required = false) Date to,
 			@RequestParam(value = "shift", required = false) Integer shift) {
 		
-		return materialService.fetchLogByCriteria(vehicleNo, time, from, to, shift);
+		//return materialService.fetchLogByCriteria(vehicleNo, time, from, to, shift);
+		return materialService.fetchLogsByCriteria(time, from, to);
 	}
 	
 	@RequestMapping(value="/logs", method=RequestMethod.POST)

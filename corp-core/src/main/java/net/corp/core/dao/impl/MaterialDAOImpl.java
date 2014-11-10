@@ -3,6 +3,7 @@ package net.corp.core.dao.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -148,25 +149,27 @@ public class MaterialDAOImpl extends GenericDAOImpl<Materials, Integer> implemen
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Integer linkMaterial(int parent, List<Integer> children) {
-		children.add(parent);
+	public Integer linkMaterial(List<Integer> children) {
 		String inClause = getIds(children);
-		SQLQuery query = getSession().createSQLQuery("select MATERIAL_ID from d_materials where MATERIAL_ID in " + inClause + " OR PARENT_MATERIAL_ID in " + inClause);
-		List<Integer> ids = query.list();
-		
-		int minId = parent;
-		int index = 0;
-		for (Integer item: ids) {
-			if (item.intValue() < minId) {
-				minId = item;
-				index = ids.indexOf(item);
+		SQLQuery query = getSession().createSQLQuery("select MATERIAL_ID, PARENT_MATERIAL_ID from d_materials where MATERIAL_ID in " + inClause + " OR PARENT_MATERIAL_ID in " + inClause);
+		List<Integer[]> list = query.list();
+		List<Integer> ids = new ArrayList<Integer>();
+		for (Object[] obj: list) {
+			if (obj[0] != null && !ids.contains(obj[0])) {
+				ids.add((Integer)obj[0]);
+			}
+			if (obj[1] != null && !ids.contains(obj[1])) {
+				ids.add((Integer)obj[1]);
 			}
 		}
-		
-		ids.remove(index);
-		query = getSession().createSQLQuery("UPDATE d_materials SET PARENT_MATERIAL_ID = " + minId + " WHERE MATERIAL_ID in " + getIds(ids));
-		query.executeUpdate();
-		return minId;
+		 
+		if (!ids.isEmpty()) {
+			Collections.sort(ids);
+			int minId = ids.remove(0);
+			query = getSession().createSQLQuery("UPDATE d_materials SET PARENT_MATERIAL_ID = " + minId + " WHERE MATERIAL_ID in " + getIds(ids));
+			return query.executeUpdate();
+		}	
+		return 0;
 	}
 	
 	private String getIds(List<Integer> children) {

@@ -1,26 +1,137 @@
-var myApp = angular.module('myApp', [ "ngRoute", "ngGrid", "ngQuickDate", "autocomplete" ]), permissionList = null;
+var myApp = angular.module('myApp', [ "ngRoute", "ngGrid", "autocomplete", "ngIdle", "ui.bootstrap"]), permissionList = null;
+
+myApp.config(function($idleProvider, $keepaliveProvider) {
+    // configure $idle settings
+    $idleProvider.idleDuration(10); // in seconds
+    $idleProvider.warningDuration(10); // in seconds
+    $keepaliveProvider.interval(20*60); // in minutes
+    $keepaliveProvider.http('rest/dummyweight');
+})
+.run(function($keepalive){
+    // start watching when the app runs. also starts the $keepalive service by default.
+    $keepalive.start();
+});
+
+myApp.config(function($httpProvider) {
+  var interceptor = ['$rootScope', '$q', function(scope, $q) {
+ 
+      function success(response) {
+        return response;
+      }
+ 
+      function error(response) {
+        var status = response.status;
+ 
+        if (status === 401) {
+          var deferred = $q.defer();
+          var req = {
+            config: response.config,
+            deferred: deferred
+          };
+          scope.requests401.push(req);
+          scope.$broadcast('event:loginRequired');
+          return deferred.promise;
+        }
+        // otherwise
+        return $q.reject(response);
+ 
+      }
+ 
+      return function(promise) {
+        return promise.then(success, error);
+      }
+ 
+    }];
+  $httpProvider.responseInterceptors.push(interceptor);
+});
+
+myApp.run(['$rootScope', '$http', function(scope, $http) {
+ 
+  /**
+   * Holds all the requests which failed due to 401 response.
+   */
+  scope.requests401 = [];
+ 
+  /**
+   * On 'event:loginConfirmed', resend all the 401 requests.
+   */
+  scope.$on('event:loginConfirmed', function() {
+	 // console.log("loginConfirmed called ");
+    var i, requests = scope.requests401;
+    for (i = 0; i < requests.length; i++) {
+      retry(requests[i]);
+    }
+    scope.requests401 = [];
+ 
+    function retry(req) {
+      $http(req.config).then(function(response) {
+        req.deferred.resolve(response);
+      });
+    }
+  });
+ 
+  /**
+   * On 'event:loginRequest' send credentials to the server.
+   */
+  scope.$on('event:loginRequired', function(event, username, password) {
+	//console.log("loginRequired called with " + event + username + password);  
+	  
+    var payload = $.param({j_username: username, j_password: password});
+    var config = {
+      headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+    };
+    $http.post('j_spring_security_check', payload, config).success(function(data) {
+      if (data === 'AUTHENTICATION_SUCCESS') {
+        scope.$broadcast('event:loginConfirmed');
+      }
+    });
+  });
+ 
+  /**
+   * On 'logoutRequest' invoke logout on the server and broadcast 'event:loginRequired'.
+   */
+  scope.$on('event:logoutRequest', function() {
+    $http.put('j_spring_security_logout', {}).success(function() {
+    	console.log("logoutRequest called after spring logout success"); 	
+    	ping();
+    });
+  });
+ 
+  /**
+   * Ping server to figure out if user is already logged in.
+   */
+  function ping() {
+	  //console.log("ping called");
+    $http.get('rest/dummyweight').success(function() {
+      scope.$broadcast('event:loginConfirmed');
+    });
+  }
+  ping();
+ 
+}]);
 
 myApp.factory('permissions', function($rootScope, $http) {
 	//var permissionList = null;
 	return {
 		setPermissions : function(permissions) {
+			//console.log("set permissions called with permissions = " + permissions);
 			permissionList = permissions;
 			$rootScope.$broadcast('permissionsChanged');
 		},
 		hasPermission : function(permission) {
 			//console.log("Inside HasPermission, before call " + permissionList);
 			if (permissionList == null) {
-				
+				console.log("permissionList is null. Hence calling logindata");
 				$http({
 					method : 'GET',
-					url : 'rest/login'
+					url : 'rest/logindata'
 				}).then(function(response) {
 					//console.log("Rest Call Completed");
 					$rootScope.loginuser = response.data.user;
 					//console.log($rootScope.loginuser.privileges);
 					permissionList = $rootScope.loginuser.privileges;
 					$rootScope.$broadcast('permissionsChanged');
-					// console.log($rootScope.loginuser.firstName);
+					//console.log($rootScope.loginuser.firstName);
 					//angular.bootstrap(document, [ 'myApp' ]);
 				});
 			}
@@ -40,7 +151,7 @@ myApp.run(function(permissions) {
 	permissions.setPermissions(permissionList);
 });
 
-myApp.directive('datepicker', function () {
+myApp.directive('datepick', function () {
     return {
         restrict: 'A',
         require: 'ngModel',
@@ -61,6 +172,8 @@ myApp.directive(
 		function(permissions) {
 			return {
 				link : function(scope, element, attrs) {
+					//console.log(attrs);
+					//console.log(element);
 					if (!_.isString(attrs.hasPermission))
 						throw "hasPermission value must be a string";
 
@@ -100,10 +213,12 @@ myApp.config([ "$routeProvider", function($routeProvider) {
 		controller : "ReportsCtrl"
 	}).when("/Setup", {
 		templateUrl : "resources/setup.html",
-		controller : "MaterialsCtrl"
-	}).when("/Gate-Log", {
+		controller : "SetupCtrl"
+	}).when("/Log", {
 		templateUrl : "resources/gatelog.html",
-		controller : "GateCtrl"
+		controller : "LogCtrl"
+	}).when("/logout", {
+		templateUrl : "login.jsp"
 	})
 	.otherwise({
 		
@@ -120,18 +235,18 @@ myApp.controller("ReportsCtrl", function($scope, $http) {
 	});
 });
 
-myApp.controller("GateCtrl", function($scope, $http, RestService) {
+myApp.controller("ViewCtrl", function($scope, $http, $location, $rootScope, permissions, RestService, $window) {
+	$scope.logout = function() {
+		console.log("logoutRequest called after spring logout success");
+		$http.post('j_spring_security_logout', {}).success(function() {
+	    	 	
+	    	$window.location.reload();
+	    });
+	}
 	
-});
-
-myApp.controller("SetupCtrl", function($scope, RestService) {
-	$scope.selection = RestService.getCurrSelection();
-	console.log($scope.selection.materialId);
-});
-
-myApp.controller("ViewCtrl", function($scope, $http, $location, $rootScope, permissions, RestService) {
 	$rootScope.loading = 0;
 	$scope.$watch(function() {
+		//console.log($location.path());	
 	    return $location.path();
 	 }, function(){
 		if ($location.path() == "/Home") {
@@ -142,10 +257,10 @@ myApp.controller("ViewCtrl", function($scope, $http, $location, $rootScope, perm
 		}
 	});
 	//console.log($rootScope.loading);
-	
+	console.log("before logindata")
 	$http({
 		method : 'GET',
-		url : 'rest/login'
+		url : 'rest/logindata'
 	}).then(function(response) {
 		$rootScope.loginuser = response.data.user;
 		//console.log($rootScope.loginuser.privileges);

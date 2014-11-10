@@ -9,7 +9,7 @@
     <security:global-method-security pre-post-annotations="enabled">
     </security:global-method-security>
     
-	<security:http auto-config="true" access-denied-page="/login.jsp?access_denied=1">
+	<security:http auto-config="true" access-denied-page="/login.jsp?access_denied=1" entry-point-ref="customEntryPoint">
         <security:intercept-url pattern="/login.jsp*" access="IS_AUTHENTICATED_ANONYMOUSLY, ROLE_USER"/>
         <security:intercept-url pattern="/**" access="ROLE_USER"/>
         <security:form-login login-page="/login.jsp" 
@@ -20,7 +20,14 @@
 		<security:session-management invalid-session-url="/login.jsp" session-fixation-protection="none">
 			<security:concurrency-control error-if-maximum-exceeded="true" expired-url="/login.jsp" max-sessions="1"/>
 		</security:session-management>
-    </security:http>
+		<!--<security:custom-filter ref="expiredSessionFilter" after="EXCEPTION_TRANSLATION_FILTER"/>-->
+	</security:http>
+
+    <bean id="customEntryPoint" class="net.corp.auth.CustomEntryPoint">
+        <constructor-arg value="/login.jsp"/>
+    </bean>
+
+	<bean id="expiredSessionFilter" class="net.corp.web.util.ExpiredSessionFilter"/>
 	
     <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
   	
