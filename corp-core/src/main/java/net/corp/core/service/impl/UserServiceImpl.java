@@ -242,9 +242,12 @@ public class UserServiceImpl implements UserService {
 			if (user.getAddress() != null) {
 				getAddressDao().saveOrUpdate(user.getAddress());
 			}
-			
-			String rawPass = RandomStringUtils.randomAlphanumeric(8);
-			
+			String rawPass = userVo.getPassword();
+			if (rawPass == null || rawPass.isEmpty()){
+				rawPass = RandomStringUtils.randomAlphanumeric(8);
+				LOGGER.info("Password for user " + userVo.getFirstName() + " " + userVo.getLastName() + " is set to : " + rawPass);
+			}
+
 			String encPass = EncryptionUtil.encodePassword(rawPass);
 			user.getUserLogin().setPassword(encPass);
 			user.getUserLogin().setFirstLogin(true);

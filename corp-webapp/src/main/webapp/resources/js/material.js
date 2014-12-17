@@ -1,4 +1,4 @@
-angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $interval, RestService, CorpService, Util, $rootScope, $route) {
+angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $interval, RestService, CorpService, Util, $rootScope, $route, permissions, $window) {
 		$scope.userId = $rootScope.loginuser.userId;
 		$scope.printready = false;
 		$scope.linkready = false;
@@ -313,6 +313,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 			$scope.watchTareWt();
 			$scope.attachedEntry = false;
 			$scope.weight();
+			console.debug($scope.selection);
 			if (rel == 2) {
                 var selection = {};
                 for(var k in $scope.selection) {
@@ -337,6 +338,13 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 				selection.materialId = null;
                 $scope.selection = selection;
 			}
+			else {
+				$scope.showTransporters = true;
+				$scope.showVehicles = true;
+				$scope.showSite = true;
+				$scope.showMaterials = true;
+				$scope.showSaveMaterials = true;
+			}
 			//console.log($scope.selectedRow[0]);
 			//console.log($scope.selection);
 			//loadStaticData();
@@ -354,12 +362,14 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		};
 
 		$scope.cancelEntry = function() {
+			console.log($scope.selectedRow[0]);
 			$scope.readOnly = true;
 			$scope.stopWeight();
 			$scope.attachedEntry = false;
 			clearStaticData();
 			$scope.transporterEmpty = true;
-			$scope.selection = null;
+			//$scope.selection = null;
+			$scope.selection = $scope.selectedRow[0];
 		};
 
 		$scope.linkEntry = function(value) {

@@ -51,125 +51,119 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	public MaterialsVO saveMaterial(MaterialsVO material) {
 		try {
 			Materials entity = getCoreServiceHelper().convertVOToModel(material);
-			
+			boolean firstEntry = false;
 			if (entity.getStatus() == null) {
+				firstEntry = true;
 				entity.setStatus(STATUS_MATERIAL_ENTRY_INITIATED);
 				entity.setInCreatedDate(new Timestamp(System.currentTimeMillis()));
 				entity.setVehicleInTime(entity.getInCreatedDate());
 				entity.setInCreatedBy(material.getUserId());
-			}
-			else if (STATUS_MATERIAL_ENTRY_INITIATED.equalsIgnoreCase(entity.getStatus())) {
+			} else if (STATUS_MATERIAL_ENTRY_INITIATED.equalsIgnoreCase(entity.getStatus())) {
+				firstEntry = false;
 				entity.setStatus(STATUS_MATERIAL_ENTRY_COMPLETED);
 				entity.setOutCreatedDate(new Timestamp(System.currentTimeMillis()));
 				entity.setVehicleOutTime(entity.getOutCreatedDate());
 				entity.setOutCreatedBy(material.getUserId());
 			}
-			
-			StockItems item = getCoreServiceHelper().getStockItemDao().getById(entity.getStockId());
-			Double inRate = item.getStockRateInword();
-			PrimaryGroup vendor = getCoreServiceHelper().getPrimaryGroupDao().getById(entity.getVendorId());
-			Vehicles vehicle = getCoreServiceHelper().getVehicleDao().getById(entity.getVehicleId());
-			Double volume = (vehicle.getVolume() == 0)? (vehicle.getBreadth() * vehicle.getHeight() * vehicle.getLength()) : vehicle.getVolume();
-			Double effInRate = inRate;
-			if (vendor.getPercentage() != null) {
-				effInRate = (1 + vendor.getPercentage()/100) * inRate;
+			if (!firstEntry) {
+				StockItems item = getCoreServiceHelper().getStockItemDao().getById(entity.getStockId());
+				Double inRate = item.getStockRateInword();
+				PrimaryGroup vendor = getCoreServiceHelper().getPrimaryGroupDao().getById(entity.getVendorId());
+				Vehicles vehicle = getCoreServiceHelper().getVehicleDao().getById(entity.getVehicleId());
+				Double volume = (vehicle.getVolume() == 0) ? (vehicle.getBreadth() * vehicle.getHeight() * vehicle.getLength()) : vehicle.getVolume();
+				Double effInRate = inRate;
+				if (vendor.getPercentage() != null) {
+					effInRate = (1 + vendor.getPercentage() / 100) * inRate;
+				}
+				Double effOutRate = item.getStockRate();
+				Double effRate = 0.0;
+				Double amount = 0.0;
+				Double qty = entity.getNetWt();
+
+				switch (item.getItem().getMainItemid()) {
+					case 1:
+						if (entity.getEntryType() == 1) {
+							qty = volume;
+							if (entity.getNetWt() > 5000) {
+								amount = qty * effInRate;
+							} else {
+								amount = 0.0;
+							}
+							effRate = effInRate;
+						} else {
+							// Use factor as per metric ton
+							double factor = 1.0;
+							if (item.getItem().getFactor() != null) {
+								factor = item.getItem().getFactor();
+							}
+
+							qty = (qty / 1000) * factor;
+							amount = effOutRate * qty;
+							effRate = effOutRate;
+						}
+						break;
+					case 2:
+						amount = qty * effInRate;
+						effRate = effInRate;
+						break;
+					case 3:
+					case 15:
+					case 19:
+					case 20:
+						if (entity.getEntryType() == 1) {
+							amount = entity.getAmount() != null ? entity.getAmount() : 0;
+							qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
+							if (qty != null && qty.intValue() > 0) {
+								effInRate = amount / qty;
+							} else {
+								effInRate = 0.0;
+							}
+							qty = entity.getNetWt() - qty;
+							effRate = effInRate;
+						} else {
+							qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
+							amount = effOutRate * qty;
+							effRate = effOutRate;
+						}
+						break;
+					case 12:
+						if (entity.getEntryType() == 1) {
+							amount = entity.getAmount() != null ? entity.getAmount() : 0;
+							qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
+							effRate = inRate;
+						} else {
+							qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
+							amount = effOutRate * qty;
+							effRate = effOutRate;
+						}
+						break;
+					case 16:
+						if (entity.getEntryType() == 1) {
+							amount = entity.getAmount() != null ? entity.getAmount() : 0;
+							qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
+							if (qty != null && qty.intValue() > 0) {
+								effInRate = amount / qty;
+							} else {
+								effInRate = 0.0;
+							}
+							effRate = effInRate;
+						} else {
+							qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
+							amount = effOutRate * qty;
+							effRate = effOutRate;
+						}
+						break;
+					case 14:
+						amount = entity.getAmount() != null ? entity.getAmount() : 0;
+						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
+						effRate = 0.0;
+						break;
+				}
+
+				entity.setAmount(amount);
+				entity.setRate(effRate);
+				entity.setQuantity(qty.intValue());
 			}
-			Double effOutRate = item.getStockRate();
-			Double effRate = 0.0;
-			Double amount = 0.0;
-			Double qty = entity.getNetWt();
-			
-			switch(item.getItem().getMainItemid()) {
-				case 1: 
-					if (entity.getEntryType() == 1) {
-						qty = volume;
-						if (entity.getNetWt() > 5000) {
-							amount = qty * effInRate;
-						}
-						else {
-							amount = 0.0; 
-						}
-						effRate = effInRate;
-					}
-					else {
-						// Use factor as per metric ton
-						double factor = 1.0;
-						if (item.getItem().getFactor() != null) {
-							factor = item.getItem().getFactor();
-						}
-						
-						qty = (qty/1000) * factor;
-						amount = effOutRate * qty;
-						effRate = effOutRate;
-					}
-					break;
-				case 2: 
-					amount = qty * effInRate; 
-					effRate = effInRate;
-					break;
-				case 3:
-				case 15:
-				case 19:
-				case 20:
-					if (entity.getEntryType() == 1) {
-						amount = entity.getAmount() != null ? entity.getAmount() : 0;
-						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
-						if (qty != null && qty.intValue() > 0) {
-							effInRate = amount / qty; 
-						}
-						else {
-							effInRate = 0.0;
-						}
-						qty = entity.getNetWt() - qty;
-						effRate = effInRate;
-					}
-					else {
-						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
-						amount = effOutRate * qty;
-						effRate = effOutRate;
-					}
-					break;
-				case 12:
-					if (entity.getEntryType() == 1) {
-						amount = entity.getAmount() != null ? entity.getAmount() : 0;
-						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
-						effRate = inRate; 
-					}
-					else {
-						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
-						amount = effOutRate * qty;
-						effRate = effOutRate;
-					}
-					break;
-				case 16:
-					if (entity.getEntryType() == 1) {
-						amount = entity.getAmount() != null ? entity.getAmount() : 0;
-						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
-						if (qty != null && qty.intValue() > 0) {
-							effInRate = amount / qty; 
-						}
-						else {
-							effInRate = 0.0;
-						}
-						effRate = effInRate;
-					}
-					else {
-						qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
-						amount = effOutRate * qty;
-						effRate = effOutRate;
-					}
-					break;
-				case 14:
-					amount = entity.getAmount() != null ? entity.getAmount() : 0;
-					qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
-					effRate = 0.0;
-					break;
-			}
-			
-			entity.setAmount(amount);
-			entity.setRate(effRate);
-			entity.setQuantity(qty.intValue());
-			
 			getCoreServiceHelper().getMaterialDao().saveOrUpdate(entity);
 			
 			if (material.getParentMaterialId() != null) {

@@ -211,9 +211,9 @@ public class CoreServiceHelper {
 		}
 		
 		if (materials.getVendorId() != null) {
-			Vibhag vibhag = getVibhagDao().getById(materials.getVendorId());
-			if (vibhag != null) {
-				materialsVo.setVendorName(vibhag.getVibhagName());
+			PrimaryGroup vendor = getPrimaryGroupDao().getById(materials.getVendorId());
+			if (vendor != null) {
+				materialsVo.setVendorName(vendor.getVendorName());
 			}
 		}
 		
@@ -530,7 +530,9 @@ public class CoreServiceHelper {
 		user.setUpdatedDate(new Timestamp(System.currentTimeMillis()));
 		user.setComments(userVo.getComments());
 		user.getUserLogin().setFirstLogin(userVo.isFirstLogin());
-		user.setAddress(convertVOToModel(userVo.getAddress()));
+		if (userVo.getAddress() != null) {
+			user.setAddress(convertVOToModel(userVo.getAddress()));
+		}
 		
 		return user;
 	}
@@ -669,29 +671,27 @@ public class CoreServiceHelper {
 	
 	public boolean isAuthMachine() {
 		HttpClient client = new HttpClient();
-
-	    // Create a method instance.
-	    GetMethod method = new GetMethod(PropertyUtil.getInstance().getProperty("mbUrl"));
-	    
-	 // Provide custom retry handler is necessary
-	    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
-	    		new DefaultHttpMethodRetryHandler(3, false));
-
+		GetMethod method = null;
 	    try {
-	      // Execute the method.
-	      int statusCode = client.executeMethod(method);
+			// Create a method instance.
+			method = new GetMethod(PropertyUtil.getInstance().getProperty("mbUrl"));
 
-	      if (statusCode != HttpStatus.SC_OK) {
-	    	  log.debug("Method failed: " + method.getStatusLine());
-	      }
+			// Provide custom retry handler is necessary
+			method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+			// Execute the method.
+			int statusCode = client.executeMethod(method);
 
-	      // Read the response body.
-	      byte[] responseBody = method.getResponseBody();
+			if (statusCode != HttpStatus.SC_OK) {
+			  log.debug("Method failed: " + method.getStatusLine());
+			}
 
-	      // Deal with the response.
-	      // Use caution: ensure correct character encoding and is not binary data
-	      String mb = (new String(responseBody));
-	      return getUserDao().checkMachineValidity(mb);
+			// Read the response body.
+			byte[] responseBody = method.getResponseBody();
+
+			// Deal with the response.
+			// Use caution: ensure correct character encoding and is not binary data
+			String mb = (new String(responseBody));
+			return getUserDao().checkMachineValidity(mb);
 	    
 	    } catch (HttpException e) {
 	    	log.error("Fatal protocol violation: " + e.getMessage());

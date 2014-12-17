@@ -10,7 +10,12 @@ import junit.framework.TestSuite;
 public class AppTest 
     extends TestCase
 {
-    /**
+    
+	 public static void main(String[] args) {
+	        
+	    }
+	
+	/**
      * Create the test case
      *
      * @param testName name of the test case
@@ -33,6 +38,9 @@ public class AppTest
      */
     public void testApp()
     {
-        assertTrue( true );
+    	String str = "Hello/World";
+        String[] arr = str.split("/");
+        System.out.println(arr[arr.length-1]);
+    	assertTrue( true );
     }
 }

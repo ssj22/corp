@@ -1,0 +1,9 @@
+Form Validation on Save
+Rate Update Screen
+User Creation and Updation
+Print Format
+Admin override on permissions/logic to show action buttons on material screen
+Link option only for entries with same vehicle
+SMS Send option for all members in a table (consolidated and timely)
+General SMS Send screen
+ForgotPWD through SMS

@@ -5,19 +5,19 @@
 	<div>
 	    <div ng-show="readOnly">
 	        <div>
-		        <div class="btn-group" has-permission="VIEW_REPORTS">
-					<button type="submit" class="btn btn-info" ng-click="createEntry()">Create Entry</button>
-		            <button type="submit" class="btn btn-warning" ng-click="editEntry(1)" ng-show="printready" >Edit Entry</button>
-					<button type="submit" class="btn btn-success" ng-click="printEntry()" ng-show="printready"  data-toggle="modal" data-target="#myModal">Print Entry</button>
-					<button type="submit" class="btn btn-warning" ng-click="linkEntry(1)" ng-show="linkready" >Link</button>
-					<button type="submit" class="btn btn-primary" ng-click="linkEntry(2)" ng-show="unlinkready" >De-Link</button>
-					<button type="submit" class="btn btn-info" ng-click="editEntry(2)" ng-show="attachready" >Attach</button>
+		        <div class="btn-group">
+					<button type="submit" class="btn btn-info" ng-click="createEntry()" has-permission="EDIT_MATERIAL_ENTRY">Create Entry</button>
+		            <button type="submit" class="btn btn-warning" ng-click="editEntry(1)" ng-show="printready" has-permission="EDIT_MATERIAL_ENTRY">Edit Entry</button>
+					<button type="submit" class="btn btn-success" ng-click="printEntry()" ng-show="printready"  data-toggle="modal" data-target="#myModal" has-permission="PRINT_MATERIAL_ENTRY">Print Entry</button>
+					<button type="submit" class="btn btn-warning" ng-click="linkEntry(1)" ng-show="linkready" has-permission="EDIT_MATERIAL_ENTRY">Link</button>
+					<button type="submit" class="btn btn-primary" ng-click="linkEntry(2)" ng-show="unlinkready" has-permission="EDIT_MATERIAL_ENTRY">De-Link</button>
+					<button type="submit" class="btn btn-info" ng-click="editEntry(2)" ng-show="attachready" has-permission="EDIT_MATERIAL_ENTRY">Attach</button>
 				</div>
 		
 		        <div class="gridFilterOptions">
-		        	<span class="label label-default " style="cursor: pointer;" ng-click="timeSelected(1)">Today</span>
-		        	<span class="label label-default " style="cursor: pointer;" ng-click="timeSelected(7)">Last 7 days</span>
-		        	<span class="label label-default " style="cursor: pointer;" ng-click="timeSelected(180)">Last 30 days</span>
+		        	<span class="label label-default " style="cursor: pointer;width: 200px; height: 40px; font-size: larger" ng-click="timeSelected(1)">Today</span>
+		        	<span class="label label-default " style="cursor: pointer;width: 200px; height: 40px; font-size: larger" ng-click="timeSelected(7)">7 days</span>
+		        	<span class="label label-default " style="cursor: pointer;width: 200px; height: 40px; font-size: larger" ng-click="timeSelected(180)">30 days</span>
 		        	&nbsp;&nbsp;&nbsp;&nbsp;
 		            <!-- <input type="radio" name="dataFilter" value="Range" ng-click="rangeDateFilter()"/> Range --> 
 		            <input id="dateFrom" type="text" ng-model="dateFrom" datepick style="width: 160px;"/> <span class="glyphicon glyphicon-transfer"></span> 
@@ -272,21 +272,19 @@
       				<h4>Jai Jawan Nagar , Yerawada Pune - 411006</h4>
       			</div>
      		</div>
-     		<div class="panel panel-info">
-			  <div class="panel-heading">
-			    
-			    <div style="float: left; margin-left: 20px;">
-      				<h3 class="panel-title">{{selection.transporterName}}</h3>
-      			</div>	
-      			<div style="margin-right: 20px;" align="right">
-      				<h3 class="panel-title">{{selection.vehicleNumber}}</h3>
-      			</div>
-			  </div>
-			  <div class="panel-body">
-			  	<table border="1" style="width: 100%;">
+     		<div class="panel panel-info" data-ng-repeat="(fromTo, entries) in materialMap">
+				<div class="panel-heading">
+
+					<div style="margin-left: 20px;">
+						<h3 class="panel-title">{{fromTo}}</h3>
+					</div>
+
+				</div>
+			    <div class="panel-body">
+			  	  <table border="1" style="width: 100%;">
 		    		<thead>
 		    			<tr style="margin-left: 5px;">
-		    				<th width="130px"> &nbsp; {{(selection.entryType == 1) && "From" || 'To'}}</th>
+		    				<!--<th width="130px"> &nbsp; {{(selection.entryType == 1) && "From" || 'To'}}</th>-->
 		    				<th width="70px"> S. No.</th>
 		    				<th width="160px"> Material</th>
 		    				<th width="160px"> Net Wt (in Kg)</th>
@@ -295,9 +293,8 @@
 		    				<th width="90px"> Amount</th>
 		    			</tr>
 		    		</thead>
-   		   			<tbody data-ng-repeat="(fromTo, entries) in materialMap">
+   		   			<tbody>
    		   				<tr ng-repeat="item in entries">
-	                		<td rowspan="{{entries.length}}" width="130px" style="padding-left: 5px;" ng-if="$index==0">{{fromTo}}</td>
 	                		<!-- <td colspan="6" style="padding: 0px">
 	                			<table  style="width: 100%; padding-left: 5px;">
 	                				<tbody>
@@ -315,9 +312,18 @@
 	                	</tr>
 		            </tbody>
 		    	</table>
-		    	<div>SMS: </div>
-			  </div>
-			</div>	
+		      </div>
+			</div>
+			<div class="panel-footer">
+
+				<div style="float: left; margin-left: 20px;">
+					<h3 class="panel-title"><div style="color: #808080; float: left">Transporter: &nbsp;</div> {{selection.transporterName}}</h3>
+				</div>
+				<div style="margin-right: 20px;" align="right">
+					<h3 class="panel-title"><div style="color: #808080; float: left; margin-left: 430px;">Vehicle: &nbsp;</div>
+						{{selection.vehicleNumber}}</h3>
+				</div>
+			</div>
 			<div class="panel panel-info">
 			  <div class="panel-heading">
 			  	<h3 class="panel-title">Office Use only</h3>

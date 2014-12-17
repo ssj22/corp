@@ -1,0 +1,14 @@
+1. Open Terminal
+2. Type "ifconfig" to check the ip address. Usually this is the inet address.
+3. Run "sudo firewall-cmd --add-port 8080/tcp" - This will open port 8080 on firewall of linux
+4. "cd tomcat/bin"
+5. "sudo ./startup.sh"
+6. Access application at "http://<ipaddress>:8080/corp".
+
+
+
+Other Applications
+1. Type "modem-manager-gui" in search after clicking on activities - for SMS.
+2. "mysql-workbench" for DB.
+
+

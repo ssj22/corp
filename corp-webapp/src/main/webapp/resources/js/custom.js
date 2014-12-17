@@ -6,10 +6,18 @@ myApp.config(function($idleProvider, $keepaliveProvider) {
     $idleProvider.warningDuration(10); // in seconds
     $keepaliveProvider.interval(20*60); // in minutes
     $keepaliveProvider.http('rest/dummyweight');
+
 })
-.run(function($keepalive){
+.run(function($keepalive, $http, $rootScope){
     // start watching when the app runs. also starts the $keepalive service by default.
     $keepalive.start();
+		$http({
+			method : 'GET',
+			url : 'rest/logindata'
+		}).then(function(response) {
+			$rootScope.loginuser = response.data.user;
+			$rootScope.isAdmin = $rootScope.loginuser.adminUser;
+		});
 });
 
 myApp.config(function($httpProvider) {
@@ -120,16 +128,15 @@ myApp.factory('permissions', function($rootScope, $http) {
 		},
 		hasPermission : function(permission) {
 			//console.log("Inside HasPermission, before call " + permissionList);
+			//console.log($rootScope.loginuser.privileges);
 			if (permissionList == null) {
-				console.log("permissionList is null. Hence calling logindata");
+				//console.log("permissionList is null. Hence calling logindata");
 				$http({
 					method : 'GET',
-					url : 'rest/logindata'
+					url : 'rest/privileges?userId=' + $rootScope.loginuser.userId
 				}).then(function(response) {
 					//console.log("Rest Call Completed");
-					$rootScope.loginuser = response.data.user;
-					//console.log($rootScope.loginuser.privileges);
-					permissionList = $rootScope.loginuser.privileges;
+					permissionList = response.data;
 					$rootScope.$broadcast('permissionsChanged');
 					//console.log($rootScope.loginuser.firstName);
 					//angular.bootstrap(document, [ 'myApp' ]);
@@ -186,6 +193,7 @@ myApp.directive(
 
 					function toggleVisibilityBasedOnPermission() {
 						var hasPermission = permissions.hasPermission(value);
+						//console.log("Reached Toggle Visibility for element " + element[0].innerText + " with value = " + value + " and hasPermission = " + hasPermission);
 						//console.log("hasPermission is " + hasPermission + " for value = " + value);
 						if (hasPermission && !notPermissionFlag
 								|| !hasPermission && notPermissionFlag)
@@ -237,7 +245,7 @@ myApp.controller("ReportsCtrl", function($scope, $http) {
 
 myApp.controller("ViewCtrl", function($scope, $http, $location, $rootScope, permissions, RestService, $window) {
 	$scope.logout = function() {
-		console.log("logoutRequest called after spring logout success");
+		//console.log("logoutRequest called after spring logout success");
 		$http.post('j_spring_security_logout', {}).success(function() {
 	    	 	
 	    	$window.location.reload();
@@ -257,18 +265,7 @@ myApp.controller("ViewCtrl", function($scope, $http, $location, $rootScope, perm
 		}
 	});
 	//console.log($rootScope.loading);
-	console.log("before logindata")
-	$http({
-		method : 'GET',
-		url : 'rest/logindata'
-	}).then(function(response) {
-		$rootScope.loginuser = response.data.user;
-		//console.log($rootScope.loginuser.privileges);
-		//permissionList = response.data.user.privileges;
-	//	console.log($rootScope.loginuser.firstName);
-		//angular.bootstrap(document, [ 'myApp' ]);
-	});
-	
+	//console.log("before logindata")
 	RestService.getCount();
 	
 	$http.get('rest/tabs').then(function(response) {

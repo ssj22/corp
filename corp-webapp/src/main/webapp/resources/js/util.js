@@ -33,10 +33,9 @@ angular.module('myApp')
 				displayName : 'Stock',
 				width : '160px'
 			}, {
-				field : 'transportName',
-				displayName : 'Transport',
-				width : '90px',
-				visible : false
+				field : 'transporterName',
+				displayName : 'Transporter',
+				width : '160px'
 			}, {
 				field : 'vehicleNumber',
 				displayName : 'Vehicle',

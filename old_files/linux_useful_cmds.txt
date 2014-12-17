@@ -1,0 +1,8 @@
+Command to open 8080 on firewall
+sudo firewall-cmd --add-port 8080/tcp
+
+dmesg | grep tty
+
+WARNING:  RXTX Version mismatch
+
+systemctl start mysqld.service
