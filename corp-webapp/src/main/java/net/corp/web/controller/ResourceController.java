@@ -233,7 +233,16 @@ public class ResourceController {
 		}
 		return null;
 	}
-	
+
+	@RequestMapping(value="/logForMaterial", method=RequestMethod.GET)
+	public @ResponseBody String getLogForMaterial(
+			@RequestParam(value = "s") String stockName,
+			@RequestParam(value = "t") String transporterName,
+			@RequestParam(value = "v") String vibhagName,
+			@RequestParam(value = "st") String siteName) {
+		return materialService.readLogEntry(stockName, transporterName, vibhagName, siteName);
+	}
+
 	@RequestMapping(value="/stockItems", method=RequestMethod.GET)
 	public @ResponseBody List<StockItems> getStockItems(
 			@RequestParam(value = "name", required = false) String stockItemName) {

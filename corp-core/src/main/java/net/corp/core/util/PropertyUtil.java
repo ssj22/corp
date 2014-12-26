@@ -40,8 +40,8 @@ public class PropertyUtil {
 		InputStream input = null;
 		 
 		try {
-			//input = new FileInputStream("/home/vpurandare/tomcat/conf/config.properties");
-			input = new FileInputStream("F:/Servers/apache-tomcat-7.0.55/conf/config.properties");
+			input = new FileInputStream("/home/vpurandare/tomcat/conf/config.properties");
+			//input = new FileInputStream("F:/Servers/apache-tomcat-7.0.55/conf/config.properties");
 	 		// load a properties file
 			prop.load(input);
 	  

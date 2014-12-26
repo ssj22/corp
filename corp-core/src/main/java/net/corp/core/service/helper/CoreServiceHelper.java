@@ -3,6 +3,7 @@ package net.corp.core.service.helper;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.corp.core.dao.AddressDAO;
@@ -322,7 +323,7 @@ public class CoreServiceHelper {
 			logbook.setPhone(logVo.getPhone());
 		}
 		
-		logbook.setUpdateDate(new Timestamp(System.currentTimeMillis()));
+		//logbook.setUpdateDate(new Timestamp(System.currentTimeMillis()));
 		
 		if (logVo.getLogMaterials() != null && !logVo.getLogMaterials().isEmpty()) {
 			for (LogMaterialVO logMaterialVo: logVo.getLogMaterials()) {
@@ -578,10 +579,11 @@ public class CoreServiceHelper {
 		return tabs;
 	}
 	
-	public LogVO getLogFromSms(String phone, String sms) {
+	public LogVO getLogFromSms(String phone, String sms, Date date) {
 		LogVO logVo = new LogVO();
 		logVo.setMsg(sms);
 		logVo.setPhone(phone);
+		logVo.setUpdateDate(new Timestamp(date.getTime()));
         int len = phone.length();
         if (len > 10) {
             logVo.setPhone(phone.substring(len - 10, len));

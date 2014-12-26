@@ -206,3 +206,15 @@ ul>li{
     50% { opacity: 0.0; }
     100% { opacity: 1.0; }
 }
+
+.newentrytrue {
+    background-image: url("../img/pending.GIF");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.newentryfalse {
+    background-image: url("../img/symbol2.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+}

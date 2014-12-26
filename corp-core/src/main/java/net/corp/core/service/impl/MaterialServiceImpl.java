@@ -84,11 +84,15 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 					case 1:
 						if (entity.getEntryType() == 1) {
 							qty = volume;
-							if (entity.getNetWt() > 5000) {
-								amount = qty * effInRate;
-							} else {
-								amount = 0.0;
+							Double density = 1.52;
+							Double calcVol = material.getNetWt() / density;
+							if (calcVol < volume) {
+								Double newHeight = vehicle.getHeight() - (calcVol/(vehicle.getBreadth() * vehicle.getLength()));
+								material.setHeightCorrection(newHeight);
+								qty = calcVol;
 							}
+
+							amount = qty * effInRate;
 							effRate = effInRate;
 						} else {
 							// Use factor as per metric ton
@@ -165,6 +169,8 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 				entity.setQuantity(qty.intValue());
 			}
 			getCoreServiceHelper().getMaterialDao().saveOrUpdate(entity);
+
+			getCoreServiceHelper().getLogMaterialDao().updateMaterialLog(entity.getMaterialId(), entity.getStatus(), entity.getLogMaterialId());
 			
 			if (material.getParentMaterialId() != null) {
 				List<Integer> list = new ArrayList<Integer>();
@@ -402,9 +408,28 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	}
 
 	@Override
-	public boolean saveLog(String phone, String sms) {
+	public String readLogEntry(String stockName, String transporterName, String vibhagName, String siteName) {
+		List<LogMaterial> list = getCoreServiceHelper().getLogMaterialDao().findLogByVibhag(null, vibhagName, true);
+		Integer rtnVal = 0;
+		for (LogMaterial logMaterial: list) {
+			if (logMaterial.getLog().getSiteName().equals(siteName) &&
+					logMaterial.getLog().getTransport().getVendorName().equals(transporterName) &&
+					logMaterial.getItem().getStockItemname().equals(stockName) ) {
+				if (rtnVal == 0 || rtnVal > logMaterial.getLogMaterialId()) {
+					rtnVal = logMaterial.getLogMaterialId();
+				}
+			}
+		}
+		if (rtnVal == 0) {
+			return null;
+		}
+		return rtnVal.toString();
+	}
+
+	@Override
+	public boolean saveLog(String phone, String sms, Date date) {
 		try {
-			LogVO logVo = getCoreServiceHelper().getLogFromSms(phone, sms);
+			LogVO logVo = getCoreServiceHelper().getLogFromSms(phone, sms, date);
 			logVo.setNewEntry(true);
 			saveLog(logVo);
 		} catch (Exception e) {

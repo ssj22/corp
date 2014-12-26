@@ -35,8 +35,9 @@ public interface MaterialService {
 	List<Vehicles> searchVehicleByTransport(String transportName);
 	
 	boolean saveLog(LogVO logVo);
-	boolean saveLog(String phone, String sms);
+	boolean saveLog(String phone, String sms, Date date);
 	boolean completeLogMaterial(Integer materialId);
+	String readLogEntry(String stockName, String transporterName, String vibhagName, String siteName);
 	boolean updateLogMaterial(MaterialsVO materialsVo);
 	boolean updateLogEntry(String vehicleNumber, Timestamp gateInTime, Timestamp gateOutTime);
 	LogVO fetchLogByVehicleNumber(String vehicleNumber);
@@ -44,4 +45,5 @@ public interface MaterialService {
 	List<LogVO> fetchLogsByCriteria(Integer time, Date from, Date to);
 	Map<String, Map<String, List<String>>> fetchStaticDataForVibhag(String vibhagName);
 	List<String> fetchEligVibhags();
+
 }

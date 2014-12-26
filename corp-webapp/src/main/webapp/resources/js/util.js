@@ -81,6 +81,11 @@ angular.module('myApp')
 		getLogColumnDefs: function() {
 			var columnDefs = [
 			{
+				field : 'newEntry',
+				displayName : 'Complete',
+				width : '90px',
+				cellTemplate: '<div class="newentry{{row.entity.newEntry}}">&nbsp;</div>'
+			}, {
 				field : 'phone',
 				displayName : 'Phone',
 				width : '160px'
@@ -91,10 +96,15 @@ angular.module('myApp')
 			}, {
 				field : 'msg',
 				displayName : 'SMS',
-				width : '540px'
+				width : '230px'
 			}, {
 				field : 'updateDate',
 				displayName : 'SMS Received Time',
+				cellFilter : 'date:\"dd-MMM-yyyy @ h:mma\"',
+				width : '220px'
+			}, {
+				field : 'gateInTime',
+				displayName : 'SMS Update Time',
 				cellFilter : 'date:\"dd-MMM-yyyy @ h:mma\"',
 				width : '220px'
 			}];

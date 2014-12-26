@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import net.corp.core.dao.LogMaterialDAO;
+import net.corp.core.model.LogBook;
 import net.corp.core.model.LogMaterial;
 
 import org.hibernate.Criteria;
@@ -107,21 +108,47 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 	}
 
 	@Override
-	public boolean updateMaterialLog(Integer materialId, String status, Integer stockId) {
+	public boolean updateMaterialLog(Integer materialId, String status, Integer logMaterialId) {
 		StringBuffer str = new StringBuffer("UPDATE d_log_material set MATERIAL_ID = " + materialId);
 		if ("COMPLETED".equalsIgnoreCase(status)) {
 			str.append(" , COMPLETE = 1 ");
 		}
-		str.append(" WHERE STOCK_ITEM_ID = " + stockId);
+		str.append(" WHERE LOG_MATERIAL_ID = " + logMaterialId);
 		SQLQuery query = getSession().createSQLQuery(str.toString());
 		query.executeUpdate();
+
+		LogMaterial lm = getById(logMaterialId);
+		List<LogMaterial> list = findByCriteria(Restrictions.eq("logId", lm.getLog().getLogId()));
+		boolean read = true;
+		for (LogMaterial log: list) {
+			if (!log.isComplete()) {
+				read = false;
+				break;
+			}
+		}
+
+		if (read) {
+			query = getSession().createSQLQuery("UPDATE d_log_book set NEW_ENTRY = 0 WHERE LOG_ID = " + lm.getLog().getLogId());
+			query.executeUpdate();
+		}
+
 		return true;
 	}
 
 	@Override
 	public boolean completeMaterialLog(Integer materialId) {
-		SQLQuery query = getSession().createSQLQuery("UPDATE d_log_material set COMPLETE = 1 WHERE MATERIAL_ID = " + materialId);
+		List<LogMaterial> lm = findLogByMaterialId(materialId);
+		SQLQuery query = null;
+		if (lm != null) {
+			LogMaterial mat = lm.get(0);
+			LogBook log = mat.getLog();
+			query = getSession().createSQLQuery("UPDATE d_log_book set NEW_ENTRY = 0 WHERE LOG_ID = " + log.getLogId());
+			query.executeUpdate();
+		}
+
+		query = getSession().createSQLQuery("UPDATE d_log_material set COMPLETE = 1 WHERE MATERIAL_ID = " + materialId);
 		query.executeUpdate();
+
 		return true;
 	}
 	

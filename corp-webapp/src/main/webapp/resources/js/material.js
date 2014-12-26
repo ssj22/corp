@@ -174,6 +174,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 				$rootScope.loading++;
 					
 				RestService.getStockItemNames().success(function(data) {
+					//console.log(data);
 					var stockList = [];
 					var stockMap = {};
 					for (var i = 0, l = data.length; i < l; i++) {
@@ -199,6 +200,11 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 			
 			if ($scope.stocklist.indexOf(value) > -1) {
 				$scope.showSaveMaterials = true;
+				var sel = $scope.selection;
+				RestService.getLogForMaterial(value, sel.transporterName, sel.vibhagName, sel.siteName).success(function(data){
+					console.log(data);
+					sel.logMaterialId = data;
+				});
 				$scope.checkAddl();
 			}
 			else {
@@ -265,7 +271,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 				url : 'rest/materials?rel=' + materiaId
 			}).then(function(response) {
 				$scope.printMaterials = response.data;
-				console.log("printMaterials length = " + $scope.printMaterials.length);
+				//console.log("printMaterials length = " + $scope.printMaterials.length);
 				var tmp={};
 				for(i=0;i<$scope.printMaterials.length;i++){
 				   var fromTo = $scope.printMaterials[i].vibhagName;
@@ -421,6 +427,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 									$scope.myData,
 									$scope.pagingOptions.currentPage,
 									$scope.pagingOptions.pageSize);
+					$scope.gridOptions.selectAll(false);
 				});
 		};
 		
@@ -440,6 +447,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 					$rootScope.loading--;
 					$scope.totalServerItems = $scope.myData.length;
 					$scope.setPagingData($scope.myData,$scope.pagingOptions.currentPage,$scope.pagingOptions.pageSize);
+					$scope.gridOptions.selectAll(false);
 				});
 		};
 
@@ -641,7 +649,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 			selectedItems : $scope.selectedRow,
 			afterSelectionChange : selcFunc = function() {
 				var selection = $scope.selectedRow;
-				//console.log("Entered with selection length = " + selection.length );
+				console.log("Entered with selection length = " + selection.length );
 				$scope.linkready = false;
 				$scope.unlinkready = false;
 				$scope.printready = false;

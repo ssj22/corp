@@ -129,6 +129,8 @@ myApp.factory('permissions', function($rootScope, $http) {
 		hasPermission : function(permission) {
 			//console.log("Inside HasPermission, before call " + permissionList);
 			//console.log($rootScope.loginuser.privileges);
+			if ($rootScope.loginuser == undefined || $rootScope.loginuser.userId == undefined) {return;}
+
 			if (permissionList == null) {
 				//console.log("permissionList is null. Hence calling logindata");
 				$http({

@@ -7,6 +7,7 @@ import org.smslib.*;
 import org.smslib.Message.MessageTypes;
 
 import java.io.IOException;
+import java.util.Date;
 
 public class InboundNotification implements IInboundMessageNotification {
 	private static final Logger log = Logger.getLogger(InboundNotification.class);
@@ -20,8 +21,12 @@ public class InboundNotification implements IInboundMessageNotification {
 		
 		String msgText = msg.getText();
 		String phone = msg.getOriginator();
+        Date date = msg.getDate();
+        if (date == null) {
+            date = new Date();
+        }
 		log.info("Message received from "+ phone + ", Content = " + msgText);
-		getMaterialService().saveLog(phone, msgText);
+		getMaterialService().saveLog(phone, msgText, date);
 
         try
         {

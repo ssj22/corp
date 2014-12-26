@@ -1,6 +1,7 @@
-angular.module('myApp').controller("LogCtrl", function($scope, $http, $interval, RestService, CorpService, Util, $rootScope, $route) {
+angular.module('myApp').controller("LogCtrl", function($scope, $http, $interval, RestService, CorpService, Util, $rootScope, $route, $window) {
 	$scope.myData = [];
-	
+	$scope.selectedRow = [];
+	$scope.showDetails = false;
 	$scope.timeSelected = function(time) {
 		// console.log("Inside timeselected" + $scope.timeSel);
 		$scope.pagingOptions.currentPage = 1;
@@ -133,6 +134,12 @@ angular.module('myApp').controller("LogCtrl", function($scope, $http, $interval,
 		}
 	}, true);
 
+	$scope.selectRow = function() {
+		//console.log("SelectRow called " + $scope.selectedRow);
+		//$scope.showDetails = true;
+		//$window.alert($scope.selectedRow[0].msg);
+	}
+
 	$scope.gridOptions = {
 		data : 'myData',
 		enablePaging : true,
@@ -143,10 +150,19 @@ angular.module('myApp').controller("LogCtrl", function($scope, $http, $interval,
 		pagingOptions : $scope.pagingOptions,
 		filterOptions : $scope.filterOptions,
 		jqueryUITheme : true,
-		multiSelect : true,
+		multiSelect : false,
 		selectedItems : $scope.selectedRow,
 		afterSelectionChange : selcFunc = function() {
-			
+			var selection = $scope.selectedRow;
+			$scope.showDetails = false;
+			//console.log("Entered with selection length = " + selection.length );
+			if (selection == null || selection == "" || selection.length == 0) {
+				return;
+			}
+			else {
+				//console.log(selection[0]);
+				$scope.showDetails = true;
+			}
 		},
 		showFilter : true,
 		showColumnMenu : true,

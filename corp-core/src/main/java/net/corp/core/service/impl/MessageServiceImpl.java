@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.List;
 
 import net.corp.core.service.MaterialService;
@@ -45,7 +46,7 @@ public class MessageServiceImpl implements MessageService {
 	         String sms = rs.getString("Content");
 	         
 	         if (!getCoreServiceHelper().getLogDao().exists(sms, phone)) {
-	        	 getMaterialService().saveLog(phone, sms);
+	        	 getMaterialService().saveLog(phone, sms, new Date());
 	         }
 	      }
 	      rs.close();

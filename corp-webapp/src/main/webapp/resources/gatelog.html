@@ -1,7 +1,7 @@
 <div id="mydiv" ng-show="loading !== 0">
     <img src="resources/img/loading_icon.gif" class="ajax-loader"/>
 </div>
-<div style="margin-top: 40px;">
+<div style="margin-top: 10px;">
 	<div>
 		<div class="btn-group">
 			<br/>
@@ -20,6 +20,10 @@
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<span class="glyphicon glyphicon-refresh" style="cursor: pointer;" ng-click="rangeSelected()" ng-disabled="datafilter == 1"></span>
 		</div>
+	</div>
+	<div class="alert alert-danger"  ng-show="showDetails">
+		<a href="#" class="close" data-dismiss="alert">&times;</a>
+		{{selectedRow[0].msg}}
 	</div>
 	<div class="gridStyle" ng-grid="gridOptions">
 	</div>

@@ -35,14 +35,14 @@ public class LogDAOImpl extends GenericDAOImpl<LogBook, Integer> implements LogD
 		if (time != null && time > 0) {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DAY_OF_YEAR, -1 * (time-1));
-			cal.set(Calendar.HOUR, 0);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
 			cal.set(Calendar.MINUTE, 0);
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);
 			Timestamp startDate = new Timestamp(cal.getTime().getTime());
             cal.setTimeInMillis(System.currentTimeMillis());
             cal.add(Calendar.DAY_OF_YEAR, 1);
-            cal.set(Calendar.HOUR, 0);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
@@ -56,7 +56,7 @@ public class LogDAOImpl extends GenericDAOImpl<LogBook, Integer> implements LogD
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(to);
 			cal.add(Calendar.DAY_OF_YEAR, 1);
-			cal.set(Calendar.HOUR, 0);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
 			cal.set(Calendar.MINUTE, 0);
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);

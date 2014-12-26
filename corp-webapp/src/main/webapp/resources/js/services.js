@@ -44,7 +44,11 @@ angular.module('myApp')
 					$rootScope.counts = response.data;
 				});
 			},
-			
+
+			getLogForMaterial: function(stockName, transporterName, vibhagName, siteName) {
+				return $http.get('rest/logForMaterial?s=' + stockName + '&t=' + transporterName + '&v=' + vibhagName + '&st=' + siteName);
+			},
+
 			getWeight: function() {
 				//return $http.get('rest/weight');
                 return 100;
