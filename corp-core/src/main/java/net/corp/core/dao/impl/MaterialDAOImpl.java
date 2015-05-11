@@ -91,7 +91,7 @@ public class MaterialDAOImpl extends GenericDAOImpl<Materials, Integer> implemen
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(endDate);
 			cal.add(Calendar.DAY_OF_YEAR, -1 * (time-1));
-			cal.set(Calendar.HOUR, 0);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
 			cal.set(Calendar.MINUTE, 0);
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);

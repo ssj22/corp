@@ -6,10 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.corp.core.exception.CorpException;
-import net.corp.core.model.PrimaryGroup;
-import net.corp.core.model.StockItems;
-import net.corp.core.model.Vehicles;
-import net.corp.core.model.Vibhag;
+import net.corp.core.model.*;
 import net.corp.core.vo.CountVO;
 import net.corp.core.vo.LogVO;
 import net.corp.core.vo.MaterialsVO;
@@ -24,6 +21,9 @@ public interface MaterialService {
 	List<Vibhag> fetchAllVibhags(boolean showAll);
 	List<CountVO> fetchAllCounts() throws CorpException;
 	List<SiteVO> fetchAllSites();
+	List<VibhagTypes> fetchAllVibhagTypes();
+	List<Items> fetchAllItems();
+	List<List<Contacts>> fetchAllContacts();
 	
 	MaterialsVO saveMaterial(MaterialsVO material);
 	Integer linkMaterial(Integer type, List<String> materialIds);
@@ -34,7 +34,7 @@ public interface MaterialService {
 	List<Vibhag> searchVibhagsByName(String vibhagName);
 	List<Vehicles> searchVehicleByTransport(String transportName);
 	
-	boolean saveLog(LogVO logVo);
+	boolean saveLog(LogVO logVo, Integer attachId);
 	boolean saveLog(String phone, String sms, Date date);
 	boolean completeLogMaterial(Integer materialId);
 	String readLogEntry(String stockName, String transporterName, String vibhagName, String siteName);
@@ -46,4 +46,13 @@ public interface MaterialService {
 	Map<String, Map<String, List<String>>> fetchStaticDataForVibhag(String vibhagName);
 	List<String> fetchEligVibhags();
 
+	boolean saveVibhag(Vibhag vibhag);
+	boolean saveVibhagType(VibhagTypes vibhagTypes);
+	boolean saveVehicle(Vehicles vehicles);
+	boolean savePrimaryGroup(PrimaryGroup primaryGroup);
+	boolean saveStock(StockItems stockItems);
+	boolean saveStockType(Items items);
+	boolean saveContact(Contacts contact);
+
+    Boolean saveLog(String vibhagName, String transportName, String vehicleName, String siteName, List<String> stockNames, Boolean nightShift);
 }

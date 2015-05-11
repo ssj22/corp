@@ -12,9 +12,11 @@ public class VehicleDAOImpl extends GenericDAOImpl<Vehicles, Integer> implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Vehicles findVehicleByNumber(String vehicleNumber) {
+	public Vehicles findVehicleByNumber(String vehicleNumber, Integer vendorId) {
 		Criteria crit = getSession().createCriteria(Vehicles.class);
 		crit.add(Restrictions.eq("vehicleNumber", vehicleNumber));
+        crit.createAlias("vendor", "v");
+        crit.add(Restrictions.eq("v.vendorId", vendorId));
 		
 		List<Vehicles> list = crit.list(); 
 		
@@ -38,7 +40,8 @@ public class VehicleDAOImpl extends GenericDAOImpl<Vehicles, Integer> implements
 	@Override
 	public List<Vehicles> searchVehicleByTransport(Integer transportId) {
 		Criteria crit = getSession().createCriteria(Vehicles.class);
-		crit.add(Restrictions.eq("vendorId", transportId));
+		crit.createAlias("vendor", "v");
+		crit.add(Restrictions.eq("v.vendorId", transportId));
 		
 		return crit.list();
 	}

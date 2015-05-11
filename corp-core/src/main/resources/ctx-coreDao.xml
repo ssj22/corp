@@ -46,6 +46,14 @@
     <bean id="stockItemDao" class="net.corp.core.dao.impl.StockItemDAOImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
     </bean>
+
+    <bean id="itemDao" class="net.corp.core.dao.impl.ItemsMainDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="vibhagTypesDao" class="net.corp.core.dao.impl.VibhagTypesDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
     
     <bean id="logDao" class="net.corp.core.dao.impl.LogDAOImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
@@ -57,5 +65,9 @@
     
     <bean id="userPreferenceDao" class="net.corp.core.dao.impl.UserPreferenceDAOImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="contactDao" class="net.corp.core.dao.impl.ContactsDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 </beans>

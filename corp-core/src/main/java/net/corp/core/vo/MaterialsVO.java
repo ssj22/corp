@@ -91,13 +91,43 @@ public class MaterialsVO implements Serializable {
 	
 	private Integer logMaterialId;
 	
-	private Integer quantity;
-	
-	public Integer getQuantity() {
+	private Double quantity;
+
+    private Double quantityKl;
+
+    private Double vehicleQuantity;
+
+    private Timestamp challanDate;
+
+    public Timestamp getChallanDate() {
+        return challanDate;
+    }
+
+    public void setChallanDate(Timestamp challanDate) {
+        this.challanDate = challanDate;
+    }
+
+    public Double getVehicleQuantity() {
+        return vehicleQuantity;
+    }
+
+    public Double getQuantityKl() {
+        return quantityKl;
+    }
+
+    public void setQuantityKl(Double quantityKl) {
+        this.quantityKl = quantityKl;
+    }
+
+    public void setVehicleQuantity(Double vehicleQuantity) {
+        this.vehicleQuantity = vehicleQuantity;
+    }
+
+    public Double getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Integer quantity) {
+	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
 	}
 

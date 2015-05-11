@@ -103,9 +103,26 @@ public class Materials implements Serializable {
 	private Integer logMaterialId;
 	
 	@Column(name = "QTY")
-	private Integer quantity;
-	
-	public Integer getLogMaterialId() {
+	private Double quantity;
+
+    @Column(name = "VEHICLE_QTY")
+    private Double vehicleQuantity;
+
+    @Column(name = "QTYKL")
+    private Double quantityKl;
+
+    @Column(name = "your_chanllandt")
+    private Timestamp challanDate;
+
+    public Double getQuantityKl() {
+        return quantityKl;
+    }
+
+    public void setQuantityKl(Double quantityKl) {
+        this.quantityKl = quantityKl;
+    }
+
+    public Integer getLogMaterialId() {
 		return logMaterialId;
 	}
 
@@ -117,7 +134,15 @@ public class Materials implements Serializable {
 		return orderId;
 	}
 
-	public void setOrderId(String orderId) {
+    public Double getVehicleQuantity() {
+        return vehicleQuantity;
+    }
+
+    public void setVehicleQuantity(Double vehicleQuantity) {
+        this.vehicleQuantity = vehicleQuantity;
+    }
+
+    public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
 
@@ -273,7 +298,7 @@ public class Materials implements Serializable {
 		this.inCreatedBy = inCreatedBy;
 	}
 
-		public Integer getOutCreatedBy() {
+    public Integer getOutCreatedBy() {
 		return outCreatedBy;
 	}
 
@@ -321,12 +346,19 @@ public class Materials implements Serializable {
 		this.parentMaterialId = parentMaterialId;
 	}
 
-	public Integer getQuantity() {
+	public Double getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Integer quantity) {
+	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
 	}
-	
+
+    public Timestamp getChallanDate() {
+        return challanDate;
+    }
+
+    public void setChallanDate(Timestamp challanDate) {
+        this.challanDate = challanDate;
+    }
 }

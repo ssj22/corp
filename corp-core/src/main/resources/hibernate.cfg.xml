@@ -37,6 +37,7 @@
         
         <mapping class="net.corp.core.model.LogBook"/>
         <mapping class="net.corp.core.model.LogMaterial"/>
+        <mapping class="net.corp.core.model.Contacts"/>
         
 </session-factory>
 </hibernate-configuration>

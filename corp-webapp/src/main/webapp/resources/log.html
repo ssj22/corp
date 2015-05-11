@@ -1,0 +1,155 @@
+<div id="mydiv" ng-show="loading !== 0">
+    <img src="resources/img/loading_icon.gif" class="ajax-loader"/>
+</div>
+<div style="margin-top: 10px;" ng-show="showSms">
+	<div>
+		<div class="btn-group">
+			<button type="submit" class="btn btn-info" ng-click="broadcast()" has-permission="BROADCAST">Broadcast</button>
+            <button type="submit" class="btn btn-success" ng-click="create()" has-permission="BROADCAST">Create SMS</button>
+            <button type="submit" class="btn btn-warning" ng-click="attach()" has-permission="BROADCAST">Attach SMS</button>
+		</div>
+		<div class="gridFilterOptions">
+			<span class="label label-default " style="cursor: pointer; width: 200px; height: 40px; font-size: larger" ng-click="timeSelected(1)">Today</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<span class="label label-default " style="cursor: pointer;width: 200px; font-size: larger" ng-click="timeSelected(7)">7 days</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<span class="label label-default " style="cursor: pointer;width: 200px; height: 40px; font-size: larger" ng-click="timeSelected(180)">30 days</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			   <!-- <input type="radio" name="dataFilter" value="Range" ng-click="rangeDateFilter()"/> Range --> 
+			<input id="dateFrom" type="text" ng-model="dateFrom" datepick style="width: 160px;"/> <span class="glyphicon glyphicon-transfer"></span>
+			<input id="dateTo" type="text" ng-model="dateTo" datepick/>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<span class="glyphicon glyphicon-refresh" style="cursor: pointer;" ng-click="rangeSelected()" ng-disabled="datafilter == 1"></span>
+		</div>
+	</div>
+	<div class="alert alert-danger"  ng-show="showDetails">
+		<a href="#" class="close" data-dismiss="alert">&times;</a>
+		{{selectedRow[0].msg}}
+	</div>
+	<div class="gridStyle" ng-grid="gridOptions">
+	</div>
+	
+</div>
+<div ng-show="showCreateSms">
+    <div class ="panel panel-primary" align="left">
+        <div class="panel-heading">
+            <div class="panel-title"> Create Sms
+            </div>
+        </div>
+        <div class="panel-body" style="height: 450px; overflow: auto;">
+            <table style="width: 50%;">
+                <tr>
+                    <td align="right"><span class="label label-primary">Vibhag</span></td>
+                    <td align="center"> : </td>
+                    <td align="left">
+                        <div>
+                            <autocomplete ng-model="newSms.vibhagName" data="vibhaglist" click-activation="true"></autocomplete>
+                        </div>
+                    </td>
+                    <td align="center">&nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right"><span class="label label-primary">Transporter</span></td>
+                    <td align="center"> : </td>
+                    <td align="left">
+                        <div>
+                            <autocomplete ng-model="newSms.transportName" data="pglist" click-activation="true" on-type="transporterSelect"></autocomplete>
+                        </div>
+                    </td>
+                    <td align="center">&nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right"><span class="label label-primary">Vehicle</span></td>
+                    <td align="center"> : </td>
+                    <td align="left">
+                        <div ng-show="vehicleVisible">
+                            <autocomplete ng-model="newSms.vehicleNumber" data="vehiclelist" click-activation="true" on-type="selectVehicle"></autocomplete>
+                        </div>
+                    </td>
+                    <td align="center">&nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right"> <span class="label label-primary">Site Name</span></td>
+                    <td align="center"> : </td>
+                    <td align="left">
+                        <autocomplete ng-model="newSms.siteName" data="sitelist" click-activation="true" ng-show="showSite" on-type="siteSelect"/>
+                    </td>
+
+                    <td align="center">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="right"><span class="label label-primary">Material Type</span></td>
+                    <td align="center"> : </td>
+                    <td align="left">
+                        <autocomplete ng-model="selection.stockName" data="stocklist" click-activation="true" on-type="stockSelect" ng-show="showMaterials"/>
+                    </td>
+                    <td align="center">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="right"><span class="label label-primary">Shift</span></td>
+                    <td align="center"> : </td>
+                    <td align="left">
+                        <input type="checkbox" ng-model="newSms.shift" />
+                    </td>
+                    <td align="center">&nbsp;
+                    </td>
+                </tr>
+            </table>
+            <br/>
+
+            <div class="btn-group" align="center">
+                <button type="submit" class="btn btn-info" ng-click="cancelSms()">Cancel</button>
+                <button type="submit" class="btn btn-info" ng-click="saveSms()" ng-show="showSaveSms">Save</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-show="showSendSms">
+     <div class ="panel panel-danger" style="float: left; width: 40%" align="center">
+     	<div class="panel-heading">
+     		<div class="panel-title"> Group Contacts
+     		</div>
+     	</div>
+     	<div class="panel-body" style="height: 160px; overflow: auto;">
+     		<div class="btn-group-vertical" style="width: 100%" ng-repeat="item in groupContacts track by $index">
+			  <div class="{{item.class}}" ng-click="selItem(item)" >
+			  {{item.contactName}}</div>
+            </div>
+     	</div>
+     </div>
+
+     <div class ="panel panel-default" style="width: 48%; float: right" align="left">
+         <div class="panel-heading">
+             <div class="panel-title"> SMS
+             </div>
+         </div>
+         <div class="panel-body" style="height: 340px; overflow: auto;">
+     		<div class="btn-group-vertical" style="width: 100%">
+              <textarea placeholder="Select Contact or Enter Number" rows="2" cols="50" ng-model="numlist"></textarea>
+              <textarea placeholder="Type your message here" rows="7" cols="50"></textarea>
+              <div class="btn-group" style="width: 70%; margin-top: 10px;" >
+                  <input type="text" placeholder="Enter Groups Name to be Saved" ng-model="groupName"/>
+                  <span class="glyphicon glyphicon-refresh" style="cursor: pointer;" ng-click="saveGroup()" ng-disabled="numlist == '' || numlist == null"></span>
+                  <button type="submit" class="btn btn-primary" ng-click="sendSms()">Send</button>
+              </div>
+			</div>
+     	</div>
+     </div>
+    <div class ="panel panel-info" style="float: left; width: 40%" align="center">
+        <div class="panel-heading">
+            <div class="panel-title"> Individual Contacts
+            </div>
+        </div>
+        <div class="panel-body" style="height: 150px; overflow: auto;">
+            <div class="btn-group-vertical" style="width: 100%" ng-repeat="item in indContacts track by $index">
+                <div class="{{item.class}}" ng-click="selItem(item)">
+                    {{item.contactName}}</div>
+            </div>
+        </div>
+    </div>
+</div>			

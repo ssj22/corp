@@ -218,3 +218,15 @@ ul>li{
     background-repeat: no-repeat;
     background-position: center;
 }
+
+.checktrue {
+    background-image: url("../img/symbol2.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.checkfalse {
+    background-image: url("../img/thumbsdown.png");
+    background-repeat: no-repeat;
+    background-position: center;
+}

@@ -45,7 +45,7 @@ public class StockItems implements java.io.Serializable {
 	@Column(name = "CONV_FACT")
 	private Double convFact;
 	@Column(name = "usrid")
-	private Integer usrid;
+	private Integer userId;
 	@Column(name = "INVOICE_IND")
 	private Integer invoiceInd;
 
@@ -64,7 +64,7 @@ public class StockItems implements java.io.Serializable {
 		this.stockRateInword = stockRateInword;
 		this.unit = unit;
 		this.convFact = convFact;
-		this.usrid = usrid;
+		this.userId = usrid;
 		this.invoiceInd = invoiceInd;
 	}
 
@@ -140,12 +140,12 @@ public class StockItems implements java.io.Serializable {
 		this.convFact = convFact;
 	}
 
-	public Integer getUsrid() {
-		return this.usrid;
+	public Integer getUserId() {
+		return this.userId;
 	}
 
-	public void setUsrid(Integer usrid) {
-		this.usrid = usrid;
+	public void setUserId(Integer usrid) {
+		this.userId = usrid;
 	}
 
 	public Integer getInvoiceInd() {

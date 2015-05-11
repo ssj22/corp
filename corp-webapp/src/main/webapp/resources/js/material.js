@@ -1,5 +1,7 @@
 angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $interval, RestService, CorpService, Util, $rootScope, $route, permissions, $window) {
-		$scope.userId = $rootScope.loginuser.userId;
+        if ($rootScope.loginuser != null && $rootScope.loginuser != undefined) {
+            $scope.userId = $rootScope.loginuser.userId;
+        }
 		$scope.printready = false;
 		$scope.linkready = false;
 		$scope.unlinkready = false;
@@ -7,6 +9,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		$scope.myData = [];
 		$scope.readOnly = true;
 		$scope.transporterEmpty = true;
+        $scope.live = true;
 							
 		$scope.pglist; // List of names of Primary Groups (Vendors)
 		$scope.vibhaglist; // List of names of Vibhags (Engineers and Ward Offices)
@@ -15,6 +18,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		$scope.stockMap; // List of Stock Item Objects
 		$scope.sitelist; // List of names of Sites
 		$scope.staticMap;
+
 		var clearStaticData = function() {
 			$scope.pglist = null;$scope.vibhaglist = null;$scope.vehiclelist = null;$scope.stocklist = null;$scope.stockMap = null;$scope.sitelist = null;
 		}
@@ -29,19 +33,72 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		$scope.transporterError = false;
 		$scope.vehicleError = false;
 		$scope.stockError = false;
-		
+
+        $scope.toggleLive = function() {
+            if ($scope.live) {
+                $scope.stopWeight();
+                $scope.grossDisabled = true;
+                $scope.tareDisabled = true;
+                if ($scope.selection.entryType == 1) {
+                    if ($scope.selection.status == null || $scope.selection.status == undefined) {
+                        $scope.grossDisabled = false;
+                    }
+                    else if ($scope.selection.status == "INITIATED") {
+                        $scope.tareDisabled = false;
+                    }
+                } else {
+                    if ($scope.selection.status == null || $scope.selection.status == undefined) {
+                        $scope.tareDisabled = false;
+                    }
+                    else if ($scope.selection.status == "INITIATED") {
+                        $scope.grossDisabled = false;
+                    }
+                }
+                $scope.live = false;
+            }
+            else {
+                $scope.tareDisabled = true;
+                $scope.grossDisabled = true;
+                $scope.live = true;
+                $scope.weight();
+            }
+        }
 		
 		// STEP 1
 		$scope.selectEntryType = function() {
 			//console.log($scope.selection.entryType);
-			$scope.weight();
+			$scope.grossDisabled = true;
+            $scope.tareDisabled = true;
 			if ($scope.selection.entryType == 2) { 
 				RestService.getEligVibhags().then(function(response) {
 					//console.log(response.data);
 					$scope.vibhaglist = response.data;
 				});
-			}
+                if (!$scope.live) {
+                    if ($scope.selection.status == null || $scope.selection.status == undefined) {
+                        $scope.tareDisabled = false;
+                    }
+                    else if ($scope.selection.status == "INITIATED") {
+                        $scope.grossDisabled = false;
+                    }
+                }
+                else {
+                    $scope.weight();
+                }
+            }
 			else {
+                if (!$scope.live) {
+                    if ($scope.selection.status == null || $scope.selection.status == undefined) {
+                        $scope.grossDisabled = false;
+                    }
+                    else if ($scope.selection.status == "INITIATED") {
+                        $scope.tareDisabled = false;
+                    }
+                }
+                else {
+                    $scope.weight();
+                }
+
 				$rootScope.loading++;
 				RestService.getPGNames().success(function(data) {
 					var pgList = [];
@@ -52,10 +109,19 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 					$rootScope.loading--;
 				});
 			}
-		};
+        };
 		
 		$scope.selectVendor = function(value) {
 			if ($scope.pglist == null) {
+                $rootScope.loading++;
+                RestService.getPGNames().success(function(data) {
+                    var pgList = [];
+                    for (var i = 0, l = data.length; i < l; i++) {
+                        pgList[i] = data[i].vendorName;
+                    }
+                    $scope.pglist = pgList;
+                    $rootScope.loading--;
+                });
 				return;
 			}
 			
@@ -74,6 +140,10 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		$scope.selectVibhag = function(value) {
 			//console.log($scope.vibhaglist.indexOf(value));
 			if ($scope.vibhaglist == null) {
+                RestService.getEligVibhags().then(function(response) {
+                    //console.log(response.data);
+                    $scope.vibhaglist = response.data;
+                });
 				return;
 			}
 			
@@ -102,6 +172,15 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		
 		$scope.transporterSelect = function(value) {
 			if ($scope.pglist == null) {
+                $rootScope.loading++;
+                RestService.getPGNames().success(function(data) {
+                    var pgList = [];
+                    for (var i = 0, l = data.length; i < l; i++) {
+                        pgList[i] = data[i].vendorName;
+                    }
+                    $scope.pglist = pgList;
+                    $rootScope.loading--;
+                });
 				return;
 			}
 			
@@ -134,7 +213,18 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		}
 		
 		$scope.vehicleSelect = function(value) {
-			if ($scope.vehiclelist == null) {
+            if ($scope.vehiclelist == null) {
+                //console.log($scope.selection.transporterName);
+                $rootScope.loading++;
+                RestService.getVehicleNames($scope.selection.transporterName, 2).success(function(data) {
+                    //console.log(data);
+                    var vehicleList = [];
+                    for (var i = 0, l = data.length; i < l; i++) {
+                        vehicleList[i] = data[i].vehicleNumber;
+                    }
+                    $scope.vehiclelist = vehicleList;
+                    $rootScope.loading--;
+                });
 				return;
 			}
 			
@@ -161,6 +251,15 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		
 		$scope.siteSelect = function(value) {
 			if ($scope.sitelist == null) {
+                $rootScope.loading++;
+                RestService.getSiteNames().success(function(data) {
+                    var siteList = [];
+                    for (var i = 0, l = data.length; i < l; i++) {
+                        siteList[i] = data[i].siteName;
+                    }
+                    $scope.sitelist = siteList;
+                    $rootScope.loading--;
+                })
 				return;
 			}
 			
@@ -226,44 +325,71 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 			if ($scope.selection != null && $scope.selection.stockName != null) {
 				//console.log($scope.selection.stockName);
 				//console.log($scope.stockMap);
+                if ($scope.stockMap == null || $scope.stockMap == undefined) {
+                    $rootScope.loading++;
+                    RestService.getStockItemNames().success(function(data) {
+                        //console.log(data);
+                        var stockList = [];
+                        var stockMap = {};
+                        for (var i = 0, l = data.length; i < l; i++) {
+                            stockList[i] = data[i].stockItemname;
+                            stockMap[data[i].stockItemname] = data[i];
+                        }
+                        if ($scope.selection.entryType == 1) {
+                            $scope.stocklist = stockList;
+                        }
+
+                        $scope.stockMap = stockMap;
+                        console.log($scope.stockMap);
+                        $rootScope.loading--;
+                    });
+                }
+
+                if ($scope.stockMap == undefined) {
+                    return;
+                }
 				var stock = $scope.stockMap[$scope.selection.stockName];
 				//console.log(stock);
-				if ($scope.selection.entryType == 1) {
-					if (stock.item.inAddlInd) $scope.addl = true;
-					else $scope.addl = false;
-					
-					if (stock.item.htCorrectionInd) $scope.heightCorr = true;
-					else $scope.heightCorr = false;
-					
-					if (stock.item.qtyInd) { 
-						$scope.qtyInd = true;
-						$scope.amountInd = true;
-					}	
-					else $scope.qtyInd = false;
-					
-					if (stock.item.klInd) $scope.klInd = true;
-					else $scope.klInd = false;
-					
-					if (stock.item.invoiceInd) $scope.invoiceInd = true;
-					else $scope.invoiceInd = false;
-				}
-				else if ($scope.selection.entryType == 2) {
-					if (stock.item.outAddlInd) $scope.addl = true;
-					else $scope.addl = false;
-					
-					if (stock.item.qtyInd) $scope.qtyInd = true;
-					else $scope.qtyInd = false;
-					
-					$scope.invoiceInd = false;
-					$scope.klInd = false;
-					$scope.heightCorr = false;
-					$scope.amountInd = false;
-				}
+				$scope.addlValidation(stock);
 				
 				//console.log($scope.selection.stockName + "," + $scope.selection.inAddlInd);
 			}
 		};
-		
+
+        $scope.addlValidation = function(stock) {
+            if ($scope.selection.entryType == 1) {
+                if (stock.item.inAddlInd) $scope.addl = true;
+                else $scope.addl = false;
+
+                if (stock.item.htCorrectionInd) $scope.heightCorr = true;
+                else $scope.heightCorr = false;
+
+                if (stock.item.qtyInd) {
+                    $scope.qtyInd = true;
+                    $scope.amountInd = true;
+                }
+                else $scope.qtyInd = false;
+
+                if (stock.item.klInd) $scope.klInd = true;
+                else $scope.klInd = false;
+
+                if (stock.item.invoiceInd) $scope.invoiceInd = true;
+                else $scope.invoiceInd = false;
+            }
+            else if ($scope.selection.entryType == 2) {
+                if (stock.item.outAddlInd) $scope.addl = true;
+                else $scope.addl = false;
+
+                if (stock.item.qtyInd) $scope.qtyInd = true;
+                else $scope.qtyInd = false;
+
+                $scope.invoiceInd = false;
+                $scope.klInd = false;
+                $scope.heightCorr = false;
+                $scope.amountInd = false;
+            }
+        }
+
 		$scope.relSelected = function(materiaId) {
 			//console.log("materiaId in relSelected =" + materiaId);
 			$http({
@@ -297,29 +423,34 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 			$scope.relSelected(materialId);
 		};
 
-		$scope.editEntry = function(rel) {
-			// console.log("selectedRow = " +
+        $scope.formatDate = function(d) {
+            var dd = d.getDate();
+            var monthNames = [
+                "January", "February", "March",
+                "April", "May", "June", "July",
+                "August", "September", "October",
+                "November", "December"
+            ];
+            if ( dd < 10 ) dd = '0' + dd
+            var mm = d.getMonth()
+            return dd+' '+monthNames[mm]+', '+d.getFullYear()
+        }
+
+
+        $scope.editEntry = function(rel) {
+            $scope.readOnly = false;
 			$scope.selection = $scope.selectedRow[0];
-			if (rel == 1) {
-				$scope.grossDisabled = true;
-				$scope.tareDisabled = true;
-				if ($scope.selection.entryType == 1) {
-					if ($scope.selection.status == "INITIATED") {
-						$scope.tareDisabled = false;
-					}
-				} else {
-					if ($scope.selection.status == "INITIATED") {
-						$scope.grossDisabled = false;
-					}
-				}
-				
-			}
-			$scope.readOnly = false;
+            //console.log("invoiceDate = " + $scope.selection.invoiceDate.format("d  MM, yy"));
+            //console.log($scope.formatDate(new Date($scope.selection.invoiceDate)));
+            invoiceDate.value = $scope.formatDate(new Date($scope.selection.invoiceDate));
+            challanDate.value = $scope.formatDate(new Date($scope.selection.challanDate));
 			$scope.watchGrossWt();
 			$scope.watchTareWt();
 			$scope.attachedEntry = false;
 			$scope.weight();
-			console.debug($scope.selection);
+            $scope.grossDisabled = true;
+            $scope.tareDisabled = true;
+
 			if (rel == 2) {
                 var selection = {};
                 for(var k in $scope.selection) {
@@ -354,6 +485,12 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 			//console.log($scope.selectedRow[0]);
 			//console.log($scope.selection);
 			//loadStaticData();
+
+            $http.get("rest/stockItems?name="+$scope.selection.stockName).then(function(response) {
+                console.log(response);
+                $scope.addlValidation(response.data[0]);
+            });
+
 		};
 
 		$scope.createEntry = function() {
@@ -365,10 +502,10 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 			$scope.attachedEntry = false;
 			$scope.transporterEmpty = true;
 			//loadStaticData();
-		};
+        };
 
 		$scope.cancelEntry = function() {
-			console.log($scope.selectedRow[0]);
+			//console.log($scope.selectedRow[0]);
 			$scope.readOnly = true;
 			$scope.stopWeight();
 			$scope.attachedEntry = false;
@@ -395,8 +532,11 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		};
 							
 		$scope.saveEntry = function() {
-			$scope.selection.userId = $rootScope.userId;
-			$rootScope.loading++;
+            $scope.selection.invoiceDate = new Date(invoiceDate.value).getTime();
+            $scope.selection.challanDate = new Date(challanDate.value).getTime();
+            $scope.selection.userId = $rootScope.userId;
+            console.log($scope.selection);
+            $rootScope.loading++;
 			RestService.saveEntry($scope.selection).then(function(response) {
 				$scope.stopWeight();
 				$rootScope.loading--;
@@ -406,6 +546,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 				$scope.getPagedDataAsync(
 						$scope.pagingOptions.pageSize,
 						$scope.pagingOptions.currentPage);
+                $window.location.reload();
 			});
 		};
 			
@@ -435,6 +576,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		
 		$scope.rangeSelected = function() {
 			// console.log("Inside timeselected" + $scope.timeSel);
+            console.log("dateFrom = " + dateFrom.value);
 			$scope.pagingOptions.currentPage = 1;
 			$scope.timeSel = null;
 			$rootScope.loading++;
@@ -463,40 +605,42 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		};
 
 		$scope.getWeight = function() {
+
             console.log("Get Weight Called");
-			/*RestService.getWeight().then(
-				function(response) {
-					if ($scope.selection == undefined) {
-						return;
-					}
-					
-					if ($scope.selection.entryType == 1) {
-						if ($scope.selection.status == null) {
-							$scope.selection.grossWt = response.data;
-							$scope.selection.tareWt = null;
-						} else if ($scope.selection.status == "INITIATED") {
-							$scope.selection.tareWt = response.data;
-						}
-					} else {
-						if ($scope.selection.status == null) {
-							$scope.selection.tareWt = response.data;
-							$scope.selection.grossWt = null;
-						} else if ($scope.selection.status == "INITIATED") {
-							$scope.selection.grossWt = response.data;
-						}
-					}
-				});*/
-		};
+            RestService.getWeight().then(
+                function (response) {
+                    if ($scope.selection == undefined) {
+                        return;
+                    }
+
+                    if ($scope.selection.entryType == 1) {
+                        if ($scope.selection.status == null) {
+                            $scope.selection.grossWt = response.data;
+                            $scope.selection.tareWt = null;
+                        } else if ($scope.selection.status == "INITIATED") {
+                            $scope.selection.tareWt = response.data;
+                        }
+                    } else {
+                        if ($scope.selection.status == null) {
+                            $scope.selection.tareWt = response.data;
+                            $scope.selection.grossWt = null;
+                        } else if ($scope.selection.status == "INITIATED") {
+                            $scope.selection.grossWt = response.data;
+                        }
+                    }
+                });
+        };
 
 		var stop;
 		$scope.weight = function() {
-			if (angular.isDefined(stop))
-				return;
-
-			/*stop = $interval(function() {
-				$scope.getWeight();
-			}, 1000);*/
-		};
+            console.log($scope.live);
+			if (angular.isDefined(stop) || (!$scope.live && $scope.selection.status != "COMPLETED")) {
+                return;
+            }
+            stop = $interval(function () {
+                $scope.getWeight();
+            }, 1000);
+        };
 
 		$scope.stopWeight = function() {
 			if (angular.isDefined(stop)) {

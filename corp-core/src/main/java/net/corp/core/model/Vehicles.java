@@ -4,11 +4,7 @@ package net.corp.core.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -39,37 +35,30 @@ public class Vehicles implements java.io.Serializable {
 	
 	@Column(name = "HEIGHT")
 	private Double height;
-	
-	@Column(name = "VENDOR_ID")
-	private Integer vendorId;
-	
-	@Column(name = "date_id")
-	private Integer dateId;
+
+	@ManyToOne
+	@JoinColumn(name = "VENDOR_ID")
+	private PrimaryGroup vendor;
 	
 	@Column(name = "VOLUME")
 	private Double volume;
 	
 	@Column(name = "userid")
-	private Integer userid;
+	private Integer userId;
 	
-	@Column(name = "dt")
-	private Date dt;
-
 	public Vehicles() {
 	}
 
-	public Vehicles(String vehicleNumber, Double lenght, Double bredth,
-			Double height, Integer vendorId, Integer dateId, Double volume,
-			Integer userid, Date dt) {
+	public Vehicles(String vehicleNumber, Double length, Double breadth,
+			Double height, PrimaryGroup vendor, Integer dateId, Double volume,
+			Integer userId, Date dt) {
 		this.vehicleNumber = vehicleNumber;
-		this.length = lenght;
-		this.breadth = bredth;
+		this.length = length;
+		this.breadth = breadth;
 		this.height = height;
-		this.vendorId = vendorId;
-		this.dateId = dateId;
+		this.vendor = vendor;
 		this.volume = volume;
-		this.userid = userid;
-		this.dt = dt;
+		this.userId = userId;
 	}
 
 	public Integer getVehicleId() {
@@ -112,20 +101,12 @@ public class Vehicles implements java.io.Serializable {
 		this.height = height;
 	}
 
-	public Integer getVendorId() {
-		return this.vendorId;
+	public PrimaryGroup getVendor() {
+		return this.vendor;
 	}
 
-	public void setVendorId(Integer vendorId) {
-		this.vendorId = vendorId;
-	}
-
-	public Integer getDateId() {
-		return this.dateId;
-	}
-
-	public void setDateId(Integer dateId) {
-		this.dateId = dateId;
+	public void setVendor(PrimaryGroup vendor) {
+		this.vendor = vendor;
 	}
 
 	public Double getVolume() {
@@ -136,20 +117,12 @@ public class Vehicles implements java.io.Serializable {
 		this.volume = volume;
 	}
 
-	public Integer getUserid() {
-		return this.userid;
+	public Integer getUserId() {
+		return this.userId;
 	}
 
-	public void setUserid(Integer userid) {
-		this.userid = userid;
-	}
-
-	public Date getDt() {
-		return this.dt;
-	}
-
-	public void setDt(Date dt) {
-		this.dt = dt;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 }

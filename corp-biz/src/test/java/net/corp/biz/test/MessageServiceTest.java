@@ -37,7 +37,7 @@ public class MessageServiceTest {
 	@Test
 	public void testSaveLogs() {
 		try {
-			getMaterialService().saveLog("9689931970", "D$MH 12 RA 7245$MOTILAL DYUT UDYOG SAMUH$20 M.M. METAL@2000@KG,BITUMEN 60/70 GRADE@400@KL$ABINAVA SHALA KARVE ROAD");
+			getMaterialService().saveLog("9689931970", "D$MH 12 RA 7245$MOTILAL DYUT UDYOG SAMUH$20 M.M. METAL@2000@KG,BITUMEN 60/70 GRADE@400@KL$ABINAVA SHALA KARVE ROAD", null);
 			//Thread.sleep(10000);
 		}catch(Exception e) {
 			e.printStackTrace();

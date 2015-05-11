@@ -38,7 +38,7 @@ public class PrimaryGroup implements java.io.Serializable {
 	@Column(name = "number")
 	private String number;
 	@Column(name = "usrid")
-	private Integer usrid;
+	private Integer userId;
 	@Column(name = "persentage")
 	private Double percentage;
 
@@ -54,7 +54,7 @@ public class PrimaryGroup implements java.io.Serializable {
 		this.yearId = yearId;
 		this.givenCode = givenCode;
 		this.number = number;
-		this.usrid = usrid;
+		this.userId = usrid;
 		this.percentage = percentage;
 	}
 
@@ -114,12 +114,12 @@ public class PrimaryGroup implements java.io.Serializable {
 		this.number = number;
 	}
 
-	public Integer getUsrid() {
-		return this.usrid;
+	public Integer getUserId() {
+		return userId;
 	}
 
-	public void setUsrid(Integer usrid) {
-		this.usrid = usrid;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	public Double getPercentage() {

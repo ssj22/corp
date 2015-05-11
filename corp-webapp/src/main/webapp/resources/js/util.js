@@ -21,6 +21,12 @@ angular.module('myApp')
 				width : '70px',
 				visible : false
 			}, {
+                field : 'challanDate',
+                displayName : 'Challan Date',
+                cellFilter : 'date:\"dd-MMM-yyyy @ h:mma\"',
+                width : '220px',
+                visible : false
+            }, {
 				field : 'status',
 				displayName : 'Status',
 				width : '130px'
@@ -52,16 +58,16 @@ angular.module('myApp')
 				width : '220px',
 				visible : false
 			}, {
-				field : 'grossWt',
-				displayName : 'GrossWt',
+				field : 'qty',
+				displayName : 'Quantity',
 				width : '90px'
 			}, {
 				field : 'netWt',
 				displayName : 'NetWt',
 				width : '90px'
 			}, {
-				field : 'tareWt',
-				displayName : 'TareWt',
+				field : 'amount',
+				displayName : 'Amount',
 				width : '90px'
 			}, {
 				field : 'vibhagName',
@@ -69,26 +75,205 @@ angular.module('myApp')
 				width : '130px',
 				visible : false
 			}, {
+                field : 'invoiceNo',
+                displayName : 'Invoice No',
+                width : '130px',
+                visible : false
+            }, {
+                field : 'invoiceDate',
+                displayName : 'Invoice Date',
+                cellFilter : 'date:\"dd-MMM-yyyy @ h:mma\"',
+                width : '220px',
+                visible : false
+            }, {
 				field : 'orderId',
 				displayName : 'Order ID',
 				width : '90px',
 				visible : false
 			} ];
-			
+
 			return columnDefs;
+		},
+		
+		getSetupColumnDefs: function(num) {
+			console.log(num);
+			if (num == 1) {
+				var columnDefs = [
+					{
+						field : 'vibhagId',
+						displayName : 'Id',
+						width : '70px'
+					}, {
+						field : 'vibhagName',
+						displayName : 'Vibhag Name',
+						width : '340px'
+					}, {
+						field : 'vibhagType.vibhagTypeName',
+						displayName : 'Vibhag Type',
+						width : '220px'
+					}, {
+						field : 'phone',
+						displayName : 'Phone',
+						width : '160px'
+					}	
+				];
+			}	
+			else if (num == 11) {
+				var columnDefs = [
+				{
+					field : 'vibhagTypeId',
+					displayName : 'Vibhag Type Id',
+					width : '160px'
+				},
+				{
+					field : 'vibhagTypeName',
+					displayName : 'Vibhag Type Name',
+					width : '610px'
+				}];
+			}	
+			else if (num == 2) {
+				var columnDefs = [
+					{
+						field : 'vehicleNumber',
+						displayName : 'Number',
+						width : '160px'
+					}, {
+						field : 'vendor.vendorName',
+						displayName : 'Vendor Name',
+						width : '270px'
+					}, {
+						field : 'height',
+						displayName : 'Height',
+						width : '130px'
+					}, {
+						field : 'length',
+						displayName : 'Length',
+						width : '130px'
+					}, {
+						field : 'breadth',
+						displayName : 'Breadth',
+						width : '130px'
+					}, {
+						field : 'volume',
+						displayName : 'Volume',
+						width : '160px'
+					}	
+				];
+			}
+			else if (num == 3) {
+				var columnDefs = [
+					{
+						field : 'vendorId',
+						displayName : 'Id',
+						width : '70px'
+					}, {
+						field : 'vendorName',
+						displayName : 'Vendor Name',
+						width : '340px'
+					}, {
+						field : 'phoneNo',
+						displayName : 'Vendor Phone',
+						width : '220px'
+					}, {
+						field : 'percentage',
+						displayName : '%',
+						width : '70px'
+					}, {
+						field : 'givenCode',
+						displayName : 'Code',
+						width : '70px'
+					}, {
+						field : 'number',
+						displayName : 'Number',
+						width : '70px'
+					}, {
+						field : 'address',
+						displayName : 'Address',
+						width : '270px'
+					}	
+				];
+			}
+			else if (num == 4) {
+				var columnDefs = [
+					{
+						field : 'stockItemname',
+						displayName : 'Stock Name',
+						width : '220px'
+					}, {
+						field : 'stockRate',
+						displayName : 'Rate Out',
+						width : '130px'
+					}, {
+						field : 'stockRateInword',
+						displayName : 'Rate In',
+						width : '130px'
+					}, {
+						field : 'convFact',
+						displayName : 'Factor',
+						width : '130px'
+					}, {
+						field : 'item.mainItemname',
+						displayName : 'Item Name',
+						width : '160px'
+					}	
+				];
+			}
+			else if (num == 44) {
+				var columnDefs = [{
+					field : 'mainItemname',
+					displayName : 'Item Name',
+					width : '220px'
+				},
+				{
+					field : 'outAddlInd',
+					displayName : 'Addl Outward',
+					width : '130px',
+					cellTemplate: '<div class="check{{row.entity.outAddlInd}}">&nbsp;</div>'
+				},
+				{
+					field : 'inAddlInd',
+					displayName : 'Addl Inward',
+					width : '130px',
+					cellTemplate: '<div class="check{{row.entity.inAddlInd}}">&nbsp;</div>'
+				},
+				{
+					field : 'invoiceInd',
+					displayName : 'Invoice',
+					width : '90px',
+					cellTemplate: '<div class="check{{row.entity.invoiceInd}}">&nbsp;</div>'
+				},
+				{
+					field : 'klInd',
+					displayName : 'KL',
+					width : '40px',
+					cellTemplate: '<div class="check{{row.entity.klInd}}">&nbsp;</div>'
+				},
+				{
+					field : 'qtyInd',
+					displayName : 'Quantity',
+					width : '90px',
+					cellTemplate: '<div class="check{{row.entity.qtyInd}}">&nbsp;</div>'
+				},
+				{
+					field : 'factor',
+					displayName : 'Factor',
+					width : '70px'
+				}];
+			}
+			return columnDefs;	
 		},
 		
 		getLogColumnDefs: function() {
 			var columnDefs = [
 			{
 				field : 'newEntry',
-				displayName : 'Complete',
-				width : '90px',
+				displayName : 'Status',
+				width : '70px',
 				cellTemplate: '<div class="newentry{{row.entity.newEntry}}">&nbsp;</div>'
 			}, {
 				field : 'phone',
 				displayName : 'Phone',
-				width : '160px'
+				width : '130px'
 			}, {
 				field : 'vibhagName',
 				displayName : 'Vibhag Name',

@@ -50,8 +50,8 @@ angular.module('myApp')
 			},
 
 			getWeight: function() {
-				//return $http.get('rest/weight');
-                return 100;
+				return $http.get('rest/weight');
+                //return 100;
 			},
 			
 			saveEntry: function(selection) {

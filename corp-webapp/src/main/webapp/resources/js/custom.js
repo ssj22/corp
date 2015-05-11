@@ -221,14 +221,17 @@ myApp.config([ "$routeProvider", function($routeProvider) {
 	}).when("/Reports", {
 		templateUrl : "resources/reports.html",
 		controller : "ReportsCtrl"
+	}).when("/Users", {
+		templateUrl : "resources/users.html",
+		controller : "UserCtrl"
 	}).when("/Setup", {
 		templateUrl : "resources/setup.html",
 		controller : "SetupCtrl"
 	}).when("/Log", {
-		templateUrl : "resources/gatelog.html",
+		templateUrl : "resources/log.html",
 		controller : "LogCtrl"
 	}).when("/logout", {
-		templateUrl : "login.jsp"
+		templateUrl : "login.html"
 	})
 	.otherwise({
 		

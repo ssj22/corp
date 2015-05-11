@@ -1,16 +1,14 @@
 package net.corp.web.controller;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import net.corp.auth.AuthUser;
 import net.corp.core.exception.CorpException;
-import net.corp.core.model.PrimaryGroup;
-import net.corp.core.model.StockItems;
-import net.corp.core.model.Vehicles;
-import net.corp.core.model.Vibhag;
+import net.corp.core.model.*;
 import net.corp.core.service.MaterialService;
 import net.corp.core.service.MessageService;
 import net.corp.core.service.UserService;
@@ -49,7 +47,7 @@ public class ResourceController {
 	
 	@Autowired
 	MessageService messageService;
-	
+
 	@RequestMapping(value="/logindata", method=RequestMethod.GET)
 	public @ResponseBody AuthUser getLoggedInUser() {
 		SecurityContext context = SecurityContextHolder.getContext();
@@ -219,7 +217,27 @@ public class ResourceController {
 		}
 		return null;
 	}
-	
+
+	@RequestMapping(value="/vehicles", method=RequestMethod.POST)
+	public @ResponseBody Boolean saveVehicle(@RequestBody Vehicles vehicles) {
+		return materialService.saveVehicle(vehicles);
+	}
+
+	@RequestMapping(value="/vibhagTypes", method=RequestMethod.POST)
+	public @ResponseBody Boolean saveVibhagTypes(@RequestBody VibhagTypes vibhagType) {
+		return materialService.saveVibhagType(vibhagType);
+	}
+
+	@RequestMapping(value="/vibhagTypes", method=RequestMethod.GET)
+	public @ResponseBody List<VibhagTypes> getVibhagTypes() {
+		return materialService.fetchAllVibhagTypes();
+	}
+
+	@RequestMapping(value="/vibhags", method=RequestMethod.POST)
+	public @ResponseBody Boolean saveVibhag(@RequestBody Vibhag vibhag) {
+		return materialService.saveVibhag(vibhag);
+	}
+
 	@RequestMapping(value="/vibhags", method=RequestMethod.GET)
 	public @ResponseBody List<Vibhag> getVibhags(
 			@RequestParam(value = "name", required = false) String vibhagName) {
@@ -243,6 +261,31 @@ public class ResourceController {
 		return materialService.readLogEntry(stockName, transporterName, vibhagName, siteName);
 	}
 
+	@RequestMapping(value="/items", method=RequestMethod.POST)
+	public @ResponseBody Boolean saveItems(@RequestBody Items items) {
+		return materialService.saveStockType(items);
+	}
+
+	@RequestMapping(value="/items", method=RequestMethod.GET)
+	public @ResponseBody List<Items> getItems() {
+		return materialService.fetchAllItems();
+	}
+
+	@RequestMapping(value="/contacts", method=RequestMethod.GET)
+	public @ResponseBody List<List<Contacts>> getContacts() {
+		return materialService.fetchAllContacts();
+    }
+
+	@RequestMapping(value="/contacts", method=RequestMethod.POST)
+	public @ResponseBody Boolean saveContacts(@RequestBody Contacts contact) {
+		return materialService.saveContact(contact);
+	}
+
+	@RequestMapping(value="/stockItems", method=RequestMethod.POST)
+	public @ResponseBody Boolean saveStockItems(@RequestBody StockItems stockItems) {
+		return materialService.saveStock(stockItems);
+	}
+
 	@RequestMapping(value="/stockItems", method=RequestMethod.GET)
 	public @ResponseBody List<StockItems> getStockItems(
 			@RequestParam(value = "name", required = false) String stockItemName) {
@@ -256,7 +299,12 @@ public class ResourceController {
 		}
 		return null;
 	}
-	
+
+	@RequestMapping(value="/primaryGroups", method=RequestMethod.POST)
+	public @ResponseBody Boolean savePrimaryGroup(@RequestBody PrimaryGroup primaryGroup) {
+		return materialService.savePrimaryGroup(primaryGroup);
+	}
+
 	@RequestMapping(value="/primaryGroups", method=RequestMethod.GET)
 	public @ResponseBody List<PrimaryGroup> getPrimaryGroups(
 			@RequestParam(value = "name", required = false) String pgName) {
@@ -306,9 +354,9 @@ public class ResourceController {
 		return materialService.fetchLogsByCriteria(time, from, to);
 	}
 	
-	@RequestMapping(value="/logs", method=RequestMethod.POST)
+	@RequestMapping(value="/logs", method=RequestMethod.PUT)
 	public @ResponseBody Boolean enterLog(
-			@RequestParam(value = "vno", required = true) String vno,
+            @RequestParam(value = "vno", required = true) String vno,
 			@RequestParam(value = "entryType", required = true) Integer entryType) {
 		Timestamp date = new Timestamp(System.currentTimeMillis());
 		if (entryType != null) {
@@ -322,4 +370,22 @@ public class ResourceController {
 		return false;
 		
 	}
+
+    @RequestMapping(value="/sms", method=RequestMethod.POST)
+    public @ResponseBody Boolean enterSms(
+            @RequestParam String vibhagName,
+            @RequestParam String transportName,
+            @RequestParam Boolean nightShift,
+            @RequestParam String vehicleName,
+            @RequestParam String siteName,
+            @RequestParam List<String> stockNames
+            ) {
+        try {
+            return materialService.saveLog(vibhagName, transportName, vehicleName, siteName, stockNames, nightShift);
+        }
+        catch (Exception e) {
+            logger.error("Exception while saving SMS: " + e.getMessage());
+            return false;
+        }
+    }
 }

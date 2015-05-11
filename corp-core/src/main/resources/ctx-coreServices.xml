@@ -36,6 +36,9 @@
 		<property name="userPreferenceDao" ref="userPreferenceDao" />
 		<property name="logDao" ref="logDao" />
 		<property name="logMaterialDao" ref="logMaterialDao" />
+		<property name="itemsMainDao" ref="itemDao"/>
+		<property name="vibhagTypesDao" ref="vibhagTypesDao" />
+		<property name="contactsDao" ref="contactDao" />
 	</bean>
 	
 	<bean id="userService" class="net.corp.core.service.impl.UserServiceImpl">

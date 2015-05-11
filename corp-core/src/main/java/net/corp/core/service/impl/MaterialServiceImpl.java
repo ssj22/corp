@@ -10,13 +10,7 @@ import java.util.Map;
 
 import net.corp.core.constants.CorpConstants;
 import net.corp.core.exception.CorpException;
-import net.corp.core.model.LogBook;
-import net.corp.core.model.LogMaterial;
-import net.corp.core.model.Materials;
-import net.corp.core.model.PrimaryGroup;
-import net.corp.core.model.StockItems;
-import net.corp.core.model.Vehicles;
-import net.corp.core.model.Vibhag;
+import net.corp.core.model.*;
 import net.corp.core.service.MaterialService;
 import net.corp.core.service.helper.CoreServiceHelper;
 import net.corp.core.vo.CountVO;
@@ -30,6 +24,101 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	
 	private CoreServiceHelper coreServiceHelper;
 	private static final Logger log = Logger.getLogger(MaterialServiceImpl.class);
+
+	@Override
+	public List<Items> fetchAllItems() {
+		return getCoreServiceHelper().getItemsMainDao().findAll();
+	}
+
+	@Override
+	public List<VibhagTypes> fetchAllVibhagTypes() {
+		return getCoreServiceHelper().getVibhagTypesDao().findAll();
+	}
+
+	@Override
+	public List<List<Contacts>> fetchAllContacts() {
+		List<List<Contacts>> rtnList = new ArrayList<List<Contacts>>();
+        rtnList.add(getCoreServiceHelper().getContactsDao().findGroupContacts());
+        rtnList.add(getCoreServiceHelper().getContactsDao().findIndividualContacts());
+        return rtnList;
+	}
+
+	@Override
+	public boolean saveContact(Contacts contact) {
+		try {
+			getCoreServiceHelper().getContactsDao().saveOrUpdate(contact);
+			return true;
+		} catch (Exception e) {
+			log.error("Exception while saving Contact: " + e.getMessage());
+		}
+		return false;
+	}
+
+	@Override
+	public boolean saveVibhag(Vibhag vibhag) {
+		try {
+			getCoreServiceHelper().getVibhagDao().saveOrUpdate(vibhag);
+			return true;
+		} catch (Exception e) {
+			log.error("Exception while saving vibhag: " + e.getMessage());
+		}
+		return false;
+	}
+
+	@Override
+	public boolean saveVibhagType(VibhagTypes vibhagTypes) {
+		try {
+			getCoreServiceHelper().getVibhagTypesDao().saveOrUpdate(vibhagTypes);
+			return true;
+		} catch (Exception e) {
+			log.error("Exception while saving vibhag types: " + e.getMessage());
+		}
+		return false;
+	}
+
+	@Override
+	public boolean saveVehicle(Vehicles vehicles) {
+		try {
+			getCoreServiceHelper().getVehicleDao().saveOrUpdate(vehicles);
+			return true;
+		} catch (Exception e) {
+			log.error("Exception while saving vehicles: " + e.getMessage());
+		}
+		return false;
+	}
+
+	@Override
+	public boolean savePrimaryGroup(PrimaryGroup primaryGroup) {
+		try {
+			getCoreServiceHelper().getPrimaryGroupDao().saveOrUpdate(primaryGroup);
+			return true;
+		} catch (Exception e) {
+			log.error("Exception while saving Vendor: " + e.getMessage());
+		}
+		return false;
+	}
+
+	@Override
+	public boolean saveStock(StockItems stockItems) {
+		try {
+			getCoreServiceHelper().getStockItemDao().saveOrUpdate(stockItems);
+			return true;
+		} catch (Exception e) {
+			log.error("Exception while saving Stock Item: " + e.getMessage());
+		}
+		return false;
+	}
+
+	@Override
+	public boolean saveStockType(Items items) {
+		try {
+			getCoreServiceHelper().getItemsMainDao().saveOrUpdate(items);
+			return true;
+		} catch (Exception e) {
+			log.error("Exception while saving Item Type: " + e.getMessage());
+		}
+		return false;
+	}
 
 	@Override
 	public Integer linkMaterial(Integer type, List<String> materialIds) {
@@ -79,19 +168,23 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 				Double effRate = 0.0;
 				Double amount = 0.0;
 				Double qty = entity.getNetWt();
-
+                Double qtyKl = qty;
 				switch (item.getItem().getMainItemid()) {
 					case 1:
 						if (entity.getEntryType() == 1) {
-							qty = volume;
-							Double density = 1.52;
-							Double calcVol = material.getNetWt() / density;
+							log.info("Qty=" + qty);
+							Double density = 1.52 * 1000;
+							Double calcVol = qty / density;
+                            log.info("calcVol=" + calcVol);
 							if (calcVol < volume) {
 								Double newHeight = vehicle.getHeight() - (calcVol/(vehicle.getBreadth() * vehicle.getLength()));
-								material.setHeightCorrection(newHeight);
+								material.setHeightCorrection(newHeight - vehicle.getHeight());
 								qty = calcVol;
 							}
-
+                            else {
+                                qty = volume;
+                            }
+                            log.info("Qty=" + qty);
 							amount = qty * effInRate;
 							effRate = effInRate;
 						} else {
@@ -122,7 +215,6 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 							} else {
 								effInRate = 0.0;
 							}
-							qty = entity.getNetWt() - qty;
 							effRate = effInRate;
 						} else {
 							qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
@@ -133,27 +225,27 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 					case 12:
 						if (entity.getEntryType() == 1) {
 							amount = entity.getAmount() != null ? entity.getAmount() : 0;
-							qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
+							qtyKl = entity.getQuantityKl() != null ? (1.0 * entity.getQuantityKl()) : 0;
 							effRate = inRate;
 						} else {
-							qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
-							amount = effOutRate * qty;
+							qtyKl = entity.getQuantityKl() != null ? (1.0 * entity.getQuantityKl()) : 0;
+							amount = effOutRate * qtyKl;
 							effRate = effOutRate;
 						}
 						break;
 					case 16:
 						if (entity.getEntryType() == 1) {
 							amount = entity.getAmount() != null ? entity.getAmount() : 0;
-							qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
-							if (qty != null && qty.intValue() > 0) {
-								effInRate = amount / qty;
+							qtyKl = entity.getQuantityKl() != null ? (1.0 * entity.getQuantityKl()) : 0;
+							if (qtyKl != null && qtyKl.intValue() > 0) {
+								effInRate = amount / qtyKl;
 							} else {
 								effInRate = 0.0;
 							}
 							effRate = effInRate;
 						} else {
-							qty = entity.getQuantity() != null ? (1.0 * entity.getQuantity()) : 0;
-							amount = effOutRate * qty;
+							qtyKl = entity.getQuantityKl() != null ? (1.0 * entity.getQuantityKl()) : 0;
+							amount = effOutRate * qtyKl;
 							effRate = effOutRate;
 						}
 						break;
@@ -163,15 +255,17 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 						effRate = 0.0;
 						break;
 				}
-
+                log.info("Before Setting Qty=" + qty);
 				entity.setAmount(amount);
 				entity.setRate(effRate);
-				entity.setQuantity(qty.intValue());
+				entity.setQuantity(qty);
+                entity.setQuantityKl(qtyKl);
+                entity.setVehicleQuantity(volume);
 			}
 			getCoreServiceHelper().getMaterialDao().saveOrUpdate(entity);
-
-			getCoreServiceHelper().getLogMaterialDao().updateMaterialLog(entity.getMaterialId(), entity.getStatus(), entity.getLogMaterialId());
-			
+            if (entity.getEntryType().intValue() == 2) {
+                getCoreServiceHelper().getLogMaterialDao().updateMaterialLog(entity.getMaterialId(), entity.getStatus(), entity.getLogMaterialId());
+            }
 			if (material.getParentMaterialId() != null) {
 				List<Integer> list = new ArrayList<Integer>();
 				list.add(material.getMaterialId());
@@ -254,7 +348,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 		List<Vehicles> vehicles = getCoreServiceHelper().getVehicleDao().findAll();
 		if (vehicles != null && !vehicles.isEmpty()) {
 			for (Vehicles vehicle: vehicles) {
-				vehicle.setVehicleNumber(vehicle.getVehicleNumber().replace(" ", "-"));
+				vehicle.setVehicleNumber(vehicle.getVehicleNumber());
 			}
 		}
 		return vehicles;
@@ -431,7 +525,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 		try {
 			LogVO logVo = getCoreServiceHelper().getLogFromSms(phone, sms, date);
 			logVo.setNewEntry(true);
-			saveLog(logVo);
+			saveLog(logVo, null);
 		} catch (Exception e) {
 			log.error("Exception while saving raw logs: " + e.getMessage(), e);
 			return false;
@@ -439,15 +533,41 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 		
 		return true;
 	}
-	
-	@Override
-	public boolean saveLog(LogVO logVo) {
+
+    @Override
+    public Boolean saveLog(String vibhagName, String transportName, String vehicleName, String siteName, List<String> stockNames, Boolean nightShift) {
+        Vibhag vibhag = getCoreServiceHelper().getVibhagDao().findVibhagByName(vibhagName);
+        if (vibhag != null) {
+            StringBuffer str = new StringBuffer();
+            str.append(nightShift?"N":"D");
+            str.append("$" + vehicleName);
+            str.append("$" + transportName);
+            str.append("$");
+            boolean first = true;
+            for (String stock: stockNames) {
+                if (first) {
+                    str.append(",");
+                    first = false;
+                }
+                str.append(stock + "@2@U");
+            }
+            str.append("$" + siteName);
+            return saveLog(vibhag.getPhone(), str.toString(), new Date());
+        }
+        else {
+            return false;
+        }
+
+    }
+
+    @Override
+	public boolean saveLog(LogVO logVo, Integer attachId) {
 		try {
 			List<LogMaterial> logMaterials = getCoreServiceHelper().convertVOToModel(logVo);
 			if (logMaterials != null && !logMaterials.isEmpty()) {
 				LogBook logbook = logMaterials.get(0).getLog();
 				if (logbook.getVehicle() != null && logbook.getTransport() != null && 
-						logbook.getVehicle().getVendorId().intValue() != logbook.getTransport().getVendorId().intValue()) {
+						logbook.getVehicle().getVendor().getVendorId().intValue() != logbook.getTransport().getVendorId().intValue()) {
 					logbook.setValid(false);
 				}
 				

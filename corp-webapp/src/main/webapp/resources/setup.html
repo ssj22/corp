@@ -1,65 +1,176 @@
-<accordion close-others="true">
-   <accordion-group heading="User Setup" is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
-   	 <div>
-	   	 <div style="width: 48%; float: left; padding-bottom: 5px;">
-	   	 	<button type="button" style="width: 200px; height: 40px; font-size: larger" class="btn btn-info btn-sm" ng-click="createUser()" >Create User</button><br/><br/>
-	   	 	<button type="button" style="width: 200px; height: 40px; font-size: larger" class="btn btn-warning btn-sm" ng-click="editUser()" >Search User</button>
-	   	 </div>
-	   	 <div style="float:right; width: 48%; padding-bottom: 10px;" >
-			 <div class="alert alert-success alert-dismissible" role="alert" ng-show="savesuccess">
-				 <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				 <strong>Success!</strong> User {{selectedUser.firstName}} {{selectedUser.lastName}} has been saved with username {{selectedUser.phone}}
-			 </div>
-			 <autocomplete ng-model="typed" data="users" on-select="loadPermissions" click-activation="true" ng-show="searchUserFlag" attr-placeholder="Search User by Name"></autocomplete>
-	   	 </div>
-	 </div>
-   	 <br/>
-   	 <div ng-show="userActionFlag">
-	   	 <div class="panel panel-primary" style="width: 100%">
-	   	 	<div class="panel-body">
-	   	 	<input type="text" placeholder="Enter First Name" ng-model="selectedUser.firstName" style="width: 30%"/> &nbsp; 
-	   	 	<input type="text" placeholder="Enter Last Name" ng-model="selectedUser.lastName" style="width: 30%"/>
-	   	 	&nbsp;&nbsp;
-	   	 	<input type="tel" placeholder="Enter Phone Number here" ng-model="selectedUser.phone" style="width: 30%"/>&nbsp;&nbsp;
-	   	 	<input type="checkbox" value="" ng-model="selectedUser.admin"/> Admin
-	   	 	</div> 	
-	   	 </div>
-	   	 	
-	     <div class ="panel panel-default" style="float: left; width: 48%" align="center">
-	     	<div class="panel-heading">
-	     		<div class="panel-title"> Available Permissions <button type="button" class="btn btn-success btn-sm" ng-click="selectAllPriv()"><span class="glyphicon glyphicon-fast-forward"></span></button>
-	     		</div>
-	     	</div>
-	     	<div class="panel-body" style="height: 200px; overflow: auto;">
-	     		<div class="btn-group-vertical" style="width: 100%">
-				  <div class="btn btn-default" ng-repeat="item in items track by $index" ng-click="selItem(item)">
-				  {{item}}</div>
-				</div>
-	     	</div>
-	     </div>
-	     <div class ="panel panel-default" style="width: 48%; float: right" align="center">
-	     	<div class="panel-heading">
-	     		<div class="panel-title">  <button type="button" class="btn btn-danger btn-sm" ng-click="deselectAllPriv()"><span class="glyphicon glyphicon-fast-backward"></span></button>
-	     		Selected Permissions
-	     		</div>
-	     	</div>
-	     	<div class="panel-body" style="height: 200px; overflow: auto;">
-	     		<div class="btn-group-vertical" style="width: 100%">
-				  <div class="btn btn-default" ng-repeat="item in selItems track by $index" ng-click="unSelItem(item)">
-				  {{item}}</div>
-				</div>
-	     	</div>
-	     </div>
-	     <div class="btn-group" style="margin-top: 10px; ">
-			<button type="submit" class="btn btn-primary" ng-click="savePermissions()">Save</button>
-		</div>
-     </div>
-   </accordion-group>
-   
-   <accordion-group heading="Material Rate Screen">
-   	<div align="center">
-	    <img alt="Under Construction" src="resources/img/underconstruction.gif" align="middle">
-	</div>	  
-   </accordion-group>
-   
- </accordion>
+<div id="mydiv" ng-show="loading !== 0">
+    <img src="resources/img/loading_icon.gif" class="ajax-loader"/>
+</div>
+
+<div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+					<a href="#Setup" ng-click="setEntity(1)">Vibhags</a>
+				</li>
+                <li class="sidebar-brand">
+					<a href="#Setup" ng-click="setEntity(11)">Vibhag Types</a>
+				</li>
+                <li class="sidebar-brand">
+					<a href="#Setup" ng-click="setEntity(2)">Vehicles</a>
+                </li>
+                <li class="sidebar-brand">
+					<a href="#Setup" ng-click="setEntity(3)">Vendors</a>
+                </li>
+                <li class="sidebar-brand">
+					<a href="#Setup" ng-click="setEntity(4)">Stocks</a>
+                </li>
+                <li class="sidebar-brand">
+					<a href="#Setup" ng-click="setEntity(44)">Item Main</a>
+				</li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+						<div style="width: 100%">
+							<div class="btn-group" ng-show="!editMode">
+							<button type="submit" class="btn btn-info" ng-click="createEntry()" has-permission="EDIT_MATERIAL_ENTRY">Create {{entity}}</button>
+				            <button type="submit" class="btn btn-warning" ng-click="editEntry(1)" ng-show="editready" has-permission="EDIT_MATERIAL_ENTRY">Edit {{entity}}</button>
+							</div>
+					        <form name="form" ng-show="editMode">
+					            <div class="panel panel-primary">
+								  <div class="panel-heading">
+								    <h3 class="panel-title">{{entity}} Setup Information</h3>
+								  </div>
+								  <div class="panel-body">
+								    <div style="float:left; width: 30%">
+							            <table>
+							            	<tr>
+						                        <td align="right"><span class="label label-primary">{{entity}}</span></td>
+						                        <td align="center"> : </td>
+						                        <td align="left">
+												<input type="text" ng-model="selection.vibhagName" name="vibhagName" ng-show="num == 1"/>
+												<input type="text" ng-model="selection.vibhagTypeName" name="vibhagTypeName" ng-show="num == 11"/>
+					                            <input type="text" ng-model="selection.vehicleNumber" name="vehicleName" ng-show="num == 2"/>
+												<input type="text" ng-model="selection.vendorName" name="vendorName" ng-show="num == 3"/>
+												<input type="text" ng-model="selection.stockItemname" name="stockItemName" ng-show="num == 4"/>
+												<input type="text" ng-model="selection.mainItemname" name="mainItemname" ng-show="num == 44"/>
+						                        </td>
+						                        <td align="center">&nbsp;                        	
+												</td>
+						                    </tr>
+							                <tr ng-show="num != 11">
+							                    <td align="right">
+													<span class="label label-primary" ng-show="num == 1">Vibhag Phone</span>
+													<span class="label label-primary" ng-show="num == 2">Vehicle Breadth</span>
+													<span class="label label-primary" ng-show="num == 3">Vendor Phone</span>
+													<span class="label label-primary" ng-show="num == 4">Stock Outward Rate</span>
+													<span class="label label-primary" ng-show="num == 44">In Additional Indicator</span>
+												</td>
+							                    <td align="center"> : </td>
+							                    <td align="left">
+													<input type="text" ng-model="selection.phone" name="vibhagPhone" ng-show="num == 1"/>
+													<input type="text" ng-model="selection.breadth" name="vehicleBreadth" ng-show="num == 2"/>
+													<input type="text" ng-model="selection.phoneNo" name="vendorPhone" ng-show="num == 3"/>
+													<input type="text" ng-model="selection.stockRate" name="stockRate" ng-show="num == 4"/>
+													<input type="checkbox" ng-model="selection.inAddlInd" ng-show="num == 44">
+												</td>
+				                                <td align="left">&nbsp;</td>
+							                </tr>
+							                <tr ng-show="num > 1 && num != 11">
+							                    <td align="right">
+													<span class="label label-primary" ng-show="num == 2">Vehicle Height</span>
+													<span class="label label-primary" ng-show="num == 3">Vendor Number</span>
+													<span class="label label-primary" ng-show="num == 4">Conversion Factor</span>
+													<span class="label label-primary" ng-show="num == 44">Quantity Indicator</span>
+												</td>
+							                    <td align="center"> : </td>
+							                    <td align="left">
+													<input type="text" ng-model="selection.height" name="vibhagHeight" ng-show="num == 2"/>
+													<input type="text" ng-model="selection.number" name="vendorNumber" ng-show="num == 3"/>
+													<input type="text" ng-model="selection.convFact" name="stockConvFact" ng-show="num == 4"/>
+													<input type="checkbox" ng-model="selection.qtyInd" ng-show="num == 44">
+												</td>
+				                                <td align="left">&nbsp;</td>
+							                </tr>
+							            </table>
+							            </div>
+							            <div style="width: 60%; float: right;">
+							                <table>
+												<tr ng-show="num != 11">
+													<td align="right">
+														<span class="label label-primary" ng-show="num == 1">Vibhag Type</span>
+														<span class="label label-primary" ng-show="num == 2">Vendor</span>
+														<span class="label label-primary" ng-show="num == 3">Percentage</span>
+														<span class="label label-primary" ng-show="num == 4">Stock Type</span>
+														<span class="label label-primary" ng-show="num == 44">Out Additional Indicator</span>
+														
+														<td align="center"> : </td>
+														<td align="left">
+															<autocomplete ng-model="selection.vibhagType.vibhagTypeName" data="vibhagTypelist" on-type="vibhagTypeSelect" click-activation="true" ng-show="num == 1"/>
+															<autocomplete ng-model="selection.vendor.vendorName" data="pgList" on-type="vendorSelect" click-activation="true" ng-show="num == 2"/>
+															<autocomplete ng-model="selection.item.mainItemname" data="stockTypelist" on-type="stockTypeSelect" click-activation="true" ng-show="num == 4"/>
+														<input type="text" ng-model="selection.percentage" name="vendorPercentage" ng-show="num == 3"/>
+														<input type="checkbox" ng-model="selection.outAddlInd" ng-show="num == 44">
+														</td>
+														<td align="center">&nbsp;</td>
+													</tr>
+								                
+												<tr ng-show="num > 1 && num != 11">
+								                    <td align="right">
+														<span class="label label-primary" ng-show="num == 2">Vehicle Length</span>
+														<span class="label label-primary" ng-show="num == 3">Vendor Given Code</span>
+														<span class="label label-primary" ng-show="num == 4">Stock Inward Rate</span>
+														<span class="label label-primary" ng-show="num == 44">Invoice Indicator</span>
+													</td>
+								                    <td align="center"> : </td>
+								                    <td align="left">
+														<input type="text" ng-model="selection.length" name="vehicleLength" ng-show="num == 2"/>
+														<input type="text" ng-model="selection.givenCode" name="vendorCode" ng-show="num == 3"/>
+														<input type="text" ng-model="selection.stockRateInword" name="stockInRate" ng-show="num == 4"/>
+														<input type="checkbox" ng-model="selection.invoiceInd" ng-show="num == 44">
+														
+													</td>
+					                                <td align="left">&nbsp;</td>
+								                </tr>
+							                    
+												<tr ng-show="num == 2 || num == 3 || num == 44">
+													<td align="right">
+														<span class="label label-primary" ng-show="num == 2">Vehicle Volume</span>
+														<span class="label label-primary" ng-show="num == 3">Vendor Address</span>
+														<span class="label label-primary" ng-show="num == 44">Kilo Litres Indicator</span>
+													</td>
+													<td align="center"> : </td>
+													<td align="left">
+													<input type="text" ng-model="selection.volume" name="vehicleVolume" ng-show="num == 2"/>
+													<textarea rows="5" style="width: 200px" ng-model="selection.address" name="vendorAddress" ng-show="num == 3"/>
+													<input type="checkbox" ng-model="selection.klInd" ng-show="num == 44">
+													</td>
+													<td align="left">&nbsp;</td>
+												</tr>
+							                </table>
+					            		</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+								  <div class="panel-body">
+								    <div class="btn-group" align="center">
+					                    <button type="submit" class="btn btn-info" ng-click="cancelEntry()">Cancel</button>
+					                    <button type="submit" class="btn btn-info" ng-click="saveEntry()" ng-show="saveReady">Save</button>
+					                </div>
+								  </div>
+								</div>
+					        </form>
+							<div class="gridStyle" ng-grid="gridOptions" ng-show="!editMode"> 
+							</div>
+						</div>
+				    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->

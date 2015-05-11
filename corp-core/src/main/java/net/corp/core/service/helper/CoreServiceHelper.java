@@ -6,19 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import net.corp.core.dao.AddressDAO;
-import net.corp.core.dao.LogDAO;
-import net.corp.core.dao.LogMaterialDAO;
-import net.corp.core.dao.MaterialDAO;
-import net.corp.core.dao.PrimaryGroupDAO;
-import net.corp.core.dao.PrivilegeDAO;
-import net.corp.core.dao.RoleDAO;
-import net.corp.core.dao.StockItemDAO;
-import net.corp.core.dao.UserAuthorizationDAO;
-import net.corp.core.dao.UserDAO;
-import net.corp.core.dao.UserPreferenceDAO;
-import net.corp.core.dao.VehicleDAO;
-import net.corp.core.dao.VibhagDAO;
+import net.corp.core.dao.*;
 import net.corp.core.model.Address;
 import net.corp.core.model.LogBook;
 import net.corp.core.model.LogMaterial;
@@ -63,12 +51,39 @@ public class CoreServiceHelper {
 	private MaterialDAO materialDao;
 	private VehicleDAO vehicleDao;
 	private StockItemDAO stockItemDao;
+	private ItemsMainDAO itemsMainDao;
 	private VibhagDAO vibhagDao;
+	private VibhagTypesDAO vibhagTypesDao;
 	private PrimaryGroupDAO primaryGroupDao;
 	private UserPreferenceDAO userPreferenceDao;
 	private LogDAO logDao;
 	private LogMaterialDAO logMaterialDao;
-	
+	private ContactsDAO contactsDao;
+
+	public ContactsDAO getContactsDao() {
+		return contactsDao;
+	}
+
+	public void setContactsDao(ContactsDAO contactsDao) {
+		this.contactsDao = contactsDao;
+	}
+
+	public ItemsMainDAO getItemsMainDao() {
+		return itemsMainDao;
+	}
+
+	public void setItemsMainDao(ItemsMainDAO itemsMainDao) {
+		this.itemsMainDao = itemsMainDao;
+	}
+
+	public VibhagTypesDAO getVibhagTypesDao() {
+		return vibhagTypesDao;
+	}
+
+	public void setVibhagTypesDao(VibhagTypesDAO vibhagTypesDao) {
+		this.vibhagTypesDao = vibhagTypesDao;
+	}
+
 	public LogDAO getLogDao() {
 		return logDao;
 	}
@@ -200,7 +215,7 @@ public class CoreServiceHelper {
 		if (materials.getVehicleId() != null) {
 			Vehicles vehicle = getVehicleDao().getById(materials.getVehicleId());
 			if (vehicle != null) {
-				materialsVo.setVehicleNumber(vehicle.getVehicleNumber().replace(" ", "-"));
+				materialsVo.setVehicleNumber(vehicle.getVehicleNumber());
 			}
 		}
 		
@@ -310,7 +325,7 @@ public class CoreServiceHelper {
 			logbook.setValid(false);
 		}	
 		else {	
-			Vehicles vehicle = getVehicleDao().findVehicleByNumber(logVo.getVehicleNumber());
+			Vehicles vehicle = getVehicleDao().findVehicleByNumber(logVo.getVehicleNumber(), logbook.getTransport().getVendorId());
 			logbook.setVehicle(vehicle);
 		}
 		
@@ -421,38 +436,37 @@ public class CoreServiceHelper {
 			materials = getMaterialDao().getById(materialVo.getMaterialId());
 		}
 		BeanUtils.copyProperties(materialVo, materials);
-		
-		if (materialVo.getVehicleNumber() != null) {
-			Vehicles vehicle = getVehicleDao().findVehicleByNumber(materialVo.getVehicleNumber().replace("-", " "));
-			if (vehicle != null && ((materialVo.getVehicleId() == null) || (vehicle.getVehicleId() != materialVo.getVehicleId()))) {
-				materials.setVehicleId(vehicle.getVehicleId());
-			}
-		}
+
+        if (materialVo.getVendorName() != null) {
+            PrimaryGroup vendor = getPrimaryGroupDao().findPrimaryGroupByName(materialVo.getVendorName());
+            if (vendor != null) {
+                materials.setVendorId(vendor.getVendorId());
+            }
+        }
 		
 		if (materialVo.getVibhagName() != null) {
 			Vibhag vibhag = getVibhagDao().findVibhagByName(materialVo.getVibhagName());
-			if (vibhag != null && ((materialVo.getVibhagId() == null) || (vibhag.getVibhagId() != materialVo.getVibhagId()))) {
+			if (vibhag != null) {
 				materials.setVibhagId(vibhag.getVibhagId());
-			}
-		}
-		
-		if (materialVo.getVendorName() != null) {
-			PrimaryGroup vendor = getPrimaryGroupDao().findPrimaryGroupByName(materialVo.getVendorName());
-			if (vendor != null && ((materialVo.getVendorId() == null) || (vendor.getVendorId() != materialVo.getVendorId()))) {
-				materials.setVendorId(vendor.getVendorId());
 			}
 		}
 		
 		if (materialVo.getTransporterName() != null) {
 			PrimaryGroup pg = getPrimaryGroupDao().findPrimaryGroupByName(materialVo.getTransporterName());
-			if (pg != null && ((materialVo.getVendorId() == null) || (pg.getVendorId() != materialVo.getTransportId()))) {
+			if (pg != null) {
 				materials.setTransportId(pg.getVendorId());
+                if (materialVo.getVehicleNumber() != null) {
+                    Vehicles vehicle = getVehicleDao().findVehicleByNumber(materialVo.getVehicleNumber(), materials.getTransportId());
+                    if (vehicle != null) {
+                        materials.setVehicleId(vehicle.getVehicleId());
+                    }
+                }
 			}
 		}
 		
 		if (materialVo.getStockName() != null) {
 			StockItems stockItems = getStockItemDao().findStockByName(materialVo.getStockName());
-			if (stockItems != null && ((materialVo.getStockId() == null) || (stockItems.getStockId() != materialVo.getStockId()))) {
+			if (stockItems != null) {
 				materials.setStockId(stockItems.getStockId());
 			}
 		}
@@ -563,18 +577,25 @@ public class CoreServiceHelper {
 		tabs.add(tab3);
 		
 		TabsVO tab4 = new TabsVO();
-		tab4.setTabName("Setup");
-		tab4.setTabDesc("Setup");
+		tab4.setTabName("Users");
+		tab4.setTabDesc("Users");
 		tab4.setTabPermission("EDIT_USER");
 		tab4.setTabOrder(4);
 		tabs.add(tab4);
-		
+
 		TabsVO tab5 = new TabsVO();
-		tab5.setTabName("Log");
-		tab5.setTabDesc("Log");
-		tab5.setTabPermission("HOME");
+		tab5.setTabName("Setup");
+		tab5.setTabDesc("Setup");
+		tab5.setTabPermission("VIEW_SETUP");
 		tab5.setTabOrder(5);
 		tabs.add(tab5);
+
+		TabsVO tab6 = new TabsVO();
+		tab6.setTabName("Log");
+		tab6.setTabDesc("Log");
+		tab6.setTabPermission("HOME");
+		tab6.setTabOrder(6);
+		tabs.add(tab6);
 		
 		return tabs;
 	}

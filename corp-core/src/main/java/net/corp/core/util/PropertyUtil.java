@@ -40,8 +40,9 @@ public class PropertyUtil {
 		InputStream input = null;
 		 
 		try {
-			input = new FileInputStream("/home/vpurandare/tomcat/conf/config.properties");
-			//input = new FileInputStream("F:/Servers/apache-tomcat-7.0.55/conf/config.properties");
+			input = new FileInputStream(System.getProperty("catalina.base") + "/conf/config.properties");
+			log.info(System.getProperty("catalina.base"));
+		    //input = new FileInputStream("/Users/sushiljoshi/servers/apache-tomcat-7.0.57/conf/config.properties");
 	 		// load a properties file
 			prop.load(input);
 	  

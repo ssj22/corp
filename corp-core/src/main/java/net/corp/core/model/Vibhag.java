@@ -1,10 +1,6 @@
 package net.corp.core.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -31,8 +27,9 @@ public class Vibhag implements java.io.Serializable {
 	private String addressId;
 	@Column(name = "PHONE")
 	private String phone;
-	@Column(name = "VIBHAG_TYPE_ID")
-	private Integer vibhagTypeId;
+	@JoinColumn(name = "VIBHAG_TYPE_ID")
+	@ManyToOne
+	private VibhagTypes vibhagType;
 	@Column(name = "CREATED_DATE")
 	private Integer createdDate;
 	@Column(name = "CREATED_BY")
@@ -50,13 +47,13 @@ public class Vibhag implements java.io.Serializable {
 	}
 
 	public Vibhag(String vibhagName, String contactPerson, String addressId,
-			String phone, Integer vibhagTypeId, Integer createdDate,
+			String phone, VibhagTypes vibhagTypeId, Integer createdDate,
 			Integer createdBy, Integer phoneExt, Integer phoneAreaCd) {
 		this.vibhagName = vibhagName;
 		this.contactPerson = contactPerson;
 		this.addressId = addressId;
 		this.phone = phone;
-		this.vibhagTypeId = vibhagTypeId;
+		this.vibhagType = vibhagType;
 		this.createdDate = createdDate;
 		this.createdBy = createdBy;
 		this.phoneExt = phoneExt;
@@ -103,14 +100,6 @@ public class Vibhag implements java.io.Serializable {
 		this.phone = phone;
 	}
 
-	public Integer getVibhagTypeId() {
-		return this.vibhagTypeId;
-	}
-
-	public void setVibhagTypeId(Integer vibhagTypeId) {
-		this.vibhagTypeId = vibhagTypeId;
-	}
-
 	public Integer getCreatedDate() {
 		return this.createdDate;
 	}
@@ -143,4 +132,11 @@ public class Vibhag implements java.io.Serializable {
 		this.phoneAreaCd = phoneAreaCd;
 	}
 
+	public VibhagTypes getVibhagType() {
+		return vibhagType;
+	}
+
+	public void setVibhagType(VibhagTypes vibhagType) {
+		this.vibhagType = vibhagType;
+	}
 }
