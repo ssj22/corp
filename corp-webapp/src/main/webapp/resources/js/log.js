@@ -126,8 +126,8 @@ angular.module('myApp').controller("LogCtrl", function($scope, $http, $interval,
 	};
 
 	$scope.pagingOptions = {
-		pageSizes : [ 10, 50, 100 ],
-		pageSize : 10,
+		pageSizes : [ 500, 1000, 5000 ],
+		pageSize : 500,
 		currentPage : 1
 	};
 
@@ -313,6 +313,7 @@ angular.module('myApp').controller("LogCtrl", function($scope, $http, $interval,
     }
 
     $scope.stockSelect = function(value) {
+        console.log(value);
         if ($scope.stocklist == null) {
             return;
         }
@@ -354,7 +355,10 @@ angular.module('myApp').controller("LogCtrl", function($scope, $http, $interval,
 
     $scope.saveSms = function() {
         var stocks = [];
-        stocks.push($scope.newSms.stockItemName);
+        //console.log($scope.newSms.stockName);
+        stocks.push($scope.newSms.stockName);
+        //console.log(stocks);
+
         $http({
             method : 'POST',
             url : 'rest/sms?vibhagName='+$scope.newSms.vibhagName+
@@ -375,12 +379,12 @@ angular.module('myApp').controller("LogCtrl", function($scope, $http, $interval,
     }
 
     $scope.cancelSms = function() {
-        $scope.showDetails = true;
+        $scope.showDetails = false;
         $scope.showSendSms = false;
         $scope.showCreateSms = false;
         $scope.vehicleVisible = false;
         $scope.showSite = false;
-        $scope.showSms = false;
+        $scope.showSms = true;
         $scope.showSaveSms = false;
         $scope.showMaterials = false;
 
@@ -390,7 +394,7 @@ angular.module('myApp').controller("LogCtrl", function($scope, $http, $interval,
 
 	$scope.gridOptions = {
 		data : 'myData',
-		enablePaging : true,
+		enablePaging : false,
 		showFooter : true,
 		enableColumnReordering : true,
 		enableColumnResize : true,

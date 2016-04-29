@@ -1,18 +1,17 @@
 package net.corp.core.dao.impl;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 import net.corp.core.dao.LogMaterialDAO;
 import net.corp.core.model.LogBook;
 import net.corp.core.model.LogMaterial;
-
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> implements LogMaterialDAO {
 
@@ -37,6 +36,7 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 		Criteria crit = getSession().createCriteria(LogMaterial.class);
 		crit.createAlias("log", "logbook");
 		crit.createAlias("logbook.vibhag", "vib");
+		crit.add(Restrictions.eq("logbook.valid", 1));
 		if (vibhagPhone != null) {
 			crit.add(Restrictions.eq("vib.phone", vibhagPhone));
 		}
@@ -118,7 +118,10 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 		query.executeUpdate();
 
 		LogMaterial lm = getById(logMaterialId);
-		List<LogMaterial> list = findByCriteria(Restrictions.eq("logId", lm.getLog().getLogId()));
+        Criteria crit = getSession().createCriteria(LogMaterial.class);
+        crit.createAlias("log", "lg");
+        crit.add(Restrictions.eq("lg.logId", lm.getLog().getLogId()));
+		List<LogMaterial> list = crit.list();
 		boolean read = true;
 		for (LogMaterial log: list) {
 			if (!log.isComplete()) {

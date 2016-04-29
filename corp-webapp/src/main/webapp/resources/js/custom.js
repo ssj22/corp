@@ -53,7 +53,7 @@ myApp.config(function($httpProvider) {
   $httpProvider.responseInterceptors.push(interceptor);
 });
 
-myApp.run(['$rootScope', '$http', function(scope, $http) {
+myApp.run(['$rootScope', '$http', 'permissions', function(scope, $http, permissions) {
  
   /**
    * Holds all the requests which failed due to 401 response.
@@ -115,7 +115,16 @@ myApp.run(['$rootScope', '$http', function(scope, $http) {
     });
   }
   ping();
- 
+
+	$http.get('rest/tabs').then(function(response) {
+		console.log("Inside rest/tabs");
+		scope.tabs = response.data;
+	});
+	scope.tabClass = "nav navbar-nav nav-tabs";
+    scope.isTabActive = function(route) {
+        return route === $location.path();
+    };
+	permissions.setPermissions(permissionList);
 }]);
 
 myApp.factory('permissions', function($rootScope, $http) {
@@ -249,6 +258,7 @@ myApp.controller("ReportsCtrl", function($scope, $http) {
 });
 
 myApp.controller("ViewCtrl", function($scope, $http, $location, $rootScope, permissions, RestService, $window) {
+
 	$scope.logout = function() {
 		//console.log("logoutRequest called after spring logout success");
 		$http.post('j_spring_security_logout', {}).success(function() {
@@ -259,7 +269,8 @@ myApp.controller("ViewCtrl", function($scope, $http, $location, $rootScope, perm
 	
 	$rootScope.loading = 0;
 	$scope.$watch(function() {
-		//console.log($location.path());	
+		//console.log($location.path());
+
 	    return $location.path();
 	 }, function(){
 		if ($location.path() == "/Home") {
@@ -272,14 +283,9 @@ myApp.controller("ViewCtrl", function($scope, $http, $location, $rootScope, perm
 	//console.log($rootScope.loading);
 	//console.log("before logindata")
 	RestService.getCount();
-	
-	$http.get('rest/tabs').then(function(response) {
-		$scope.tabs = response.data;
-	});
-	
-	$scope.tabClass = "nav navbar-nav nav-tabs";
 
-	$scope.loadTab = function(order) {
+
+    $scope.loadTab = function(order) {
 		//console.log($scope.tabs[order].tabName);
 	};
 

@@ -11,5 +11,7 @@ public interface VibhagDAO extends GenericDAO<Vibhag, Integer> {
 	Vibhag findVibhagByPhone(String phone);
 	
 	List<Vibhag> searchVibhagsByName(String vibhagName);
+
+	List<Vibhag> findActiveVibhags();
 	 
 }

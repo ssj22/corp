@@ -52,6 +52,7 @@ public class SMSServlet extends HttpServlet implements CorpConstants {
 			if (commTest) {
 				CommTest.main(null);
 			}
+
 			ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 			InboundNotification inboundNotification = (InboundNotification) context.getBean("inboundNotification");
 			OutboundNotification outboundNotification = (OutboundNotification) context.getBean("outboundNotification");
@@ -74,7 +75,7 @@ public class SMSServlet extends HttpServlet implements CorpConstants {
 			Integer serialPollInt = Integer.parseInt(PropertyUtil.getInstance().getProperty(PROP_SERIAL_POLL_INT));
 						
 			SerialModemGateway gateway = new SerialModemGateway(commId, port, baudRate, "ZTE", "CE1588");
-			
+            System.setProperty("gnu.io.rxtx.SerialPorts", port);
 			gateway.setInbound(true);
 			gateway.setOutbound(true);
 			gateway.setSimPin(simPin);

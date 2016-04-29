@@ -15,7 +15,7 @@ public class VibhagDAOImpl extends GenericDAOImpl<Vibhag, Integer> implements Vi
 	public Vibhag findVibhagByName(String vibhagName) {
 		Criteria crit = getSession().createCriteria(Vibhag.class);
 		crit.add(Restrictions.eq("vibhagName", vibhagName));
-		
+		crit.add(Restrictions.eq("active", true));
 		List<Vibhag> list = crit.list(); 
 		
 		if (list != null && !list.isEmpty()) {
@@ -30,8 +30,14 @@ public class VibhagDAOImpl extends GenericDAOImpl<Vibhag, Integer> implements Vi
 	public List<Vibhag> searchVibhagsByName(String vibhagName) {
 		Criteria crit = getSession().createCriteria(Vibhag.class);
 		crit.add(Restrictions.ilike("vibhagName", vibhagName));
-		
+		crit.add(Restrictions.eq("active", true));
 		return crit.list(); 
+	}
+
+	public List<Vibhag> findActiveVibhags() {
+		Criteria crit = getSession().createCriteria(Vibhag.class);
+		crit.add(Restrictions.eq("active", true));
+		return crit.list();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -39,7 +45,7 @@ public class VibhagDAOImpl extends GenericDAOImpl<Vibhag, Integer> implements Vi
 	public Vibhag findVibhagByPhone(String phone) {
 		Criteria crit = getSession().createCriteria(Vibhag.class);
 		crit.add(Restrictions.eq("phone", phone));
-		
+		crit.add(Restrictions.eq("active", true));
 		List<Vibhag> list = crit.list(); 
 		
 		if (list != null && !list.isEmpty()) {

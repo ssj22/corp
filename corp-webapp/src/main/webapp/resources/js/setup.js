@@ -192,8 +192,8 @@ angular.module('myApp').controller("SetupCtrl", function($scope, RestService, Ut
 	};
 
 	$scope.pagingOptions = {
-		pageSizes : [ 10, 50, 100, 500 ],
-		pageSize : 100,
+		pageSizes : [ 500, 1000, 5000 ],
+		pageSize : 500,
 		currentPage : 1
 	};
     
@@ -275,7 +275,7 @@ angular.module('myApp').controller("SetupCtrl", function($scope, RestService, Ut
 	  
   	$scope.gridOptions = {
   		data : 'myData',
-		enablePaging : true,
+		enablePaging : false,
 		showFooter : true,
 		enableColumnReordering : true,
 		enableColumnResize : true,

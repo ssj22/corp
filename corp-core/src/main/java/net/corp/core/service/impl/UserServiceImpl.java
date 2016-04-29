@@ -1,22 +1,11 @@
 package net.corp.core.service.impl;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.corp.core.dao.AddressDAO;
 import net.corp.core.dao.PrivilegeDAO;
 import net.corp.core.dao.UserAuthorizationDAO;
 import net.corp.core.dao.UserDAO;
 import net.corp.core.exception.CorpException;
-import net.corp.core.model.Address;
-import net.corp.core.model.MapUserAuthorization;
-import net.corp.core.model.Privileges;
-import net.corp.core.model.UserPreference;
-import net.corp.core.model.Users;
+import net.corp.core.model.*;
 import net.corp.core.service.MessageService;
 import net.corp.core.service.UserService;
 import net.corp.core.service.helper.CoreServiceHelper;
@@ -25,9 +14,11 @@ import net.corp.core.vo.AddressVO;
 import net.corp.core.vo.TabsVO;
 import net.corp.core.vo.UserPreferenceVO;
 import net.corp.core.vo.UserVO;
-
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
+
+import java.sql.Timestamp;
+import java.util.*;
 
 public class UserServiceImpl implements UserService {
 	private static final Logger LOGGER = Logger.getLogger(UserServiceImpl.class);
@@ -251,6 +242,7 @@ public class UserServiceImpl implements UserService {
 			String encPass = EncryptionUtil.encodePassword(rawPass);
 			user.getUserLogin().setPassword(encPass);
 			user.getUserLogin().setFirstLogin(true);
+			user.setActive(true);
 			user.getUserLogin().setUsername(user.getPhone().toString());
 			getUserDao().saveOrUpdate(user);
 			

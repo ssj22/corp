@@ -4,7 +4,7 @@
 <log4j:configuration debug="false" xmlns:log4j="http://jakarta.apache.org/log4j/">
   	
   	<appender name="CORP-SPRING" class="org.apache.log4j.RollingFileAppender">
-	    <param name="File" value="${catalina.home}/logs/CORP/CORP-spring.log"/>
+	    <param name="File" value="${catalina.base}/logs/CORP/CORP-spring.log"/>
 	    <param name="Append" value="true"/>
 	    <param name="Threshold" value="WARN"/>
 	    <param name="MaxFileSize" value="100MB"/>
@@ -15,7 +15,7 @@
   	</appender> 
   	
   	<appender name="CORP-HIBERNATE" class="org.apache.log4j.RollingFileAppender">
-	    <param name="File" value="${catalina.home}/logs/CORP/CORP-hibernate.log"/>
+	    <param name="File" value="${catalina.base}/logs/CORP/CORP-hibernate.log"/>
 	    <param name="Append" value="true"/>
 	    <param name="Threshold" value="WARN"/>
 	    <param name="MaxFileSize" value="100MB"/>
@@ -26,7 +26,7 @@
   	</appender> 
   	
 <appender name="CORP-ERRORS" class="org.apache.log4j.RollingFileAppender">
-	    <param name="File" value="${catalina.home}/logs/CORP/CORP-error.log"/>
+	    <param name="File" value="${catalina.base}/logs/CORP/CORP-error.log"/>
 	    <param name="Append" value="true"/>
 	    <param name="Threshold" value="ERROR"/>
 	    <param name="MaxFileSize" value="100MB"/>
@@ -37,7 +37,7 @@
   	</appender> 
   	
   	<appender name="CORP-DEBUG" class="org.apache.log4j.RollingFileAppender">
-	    <param name="File" value="${catalina.home}/logs/CORP/CORP-debug.log"/>
+	    <param name="File" value="${catalina.base}/logs/CORP/CORP-debug.log"/>
 	    <param name="Append" value="true"/>
 	    <param name="Threshold" value="DEBUG"/>
 	    <param name="MaxFileSize" value="100MB"/>

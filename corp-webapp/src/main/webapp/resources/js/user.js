@@ -61,15 +61,16 @@ angular.module('myApp').controller("UserCtrl", function($scope, RestService, $ht
 	  };
 	  
 	  $scope.savePermissions = function() {
+		  console.log("selectedUser = " + $scope.selectedUser.firstName);
 		  var privMap = {};
 		  $scope.users = {};
 		  $scope.searchUserFlag = false;
 		  for (i = 0; i < $scope.selItems.length; i++) {
-			  console.log($scope.selItems[i]);
+			  //console.log($scope.selItems[i]);
 			  privMap[$scope.selItems[i]] = $scope.itemMap[$scope.selItems[i]];
 		  }
 		  $scope.selectedUser.privileges = privMap;
-		  //console.log(user);
+		  console.log("selectedUser = " + $scope.selectedUser.privileges);
 		  $http({
 				method : 'POST',
 				url : 'rest/users?by=' + $rootScope.loginuser.userId,
@@ -81,7 +82,7 @@ angular.module('myApp').controller("UserCtrl", function($scope, RestService, $ht
 				$scope.userActionFlag = false; 
 		  });
 		  $scope.savesuccess = true;
-		  $window.location.reload();
+		  //$window.location.reload();
 	  }
 	  
 	  $scope.selItem = function(item) {

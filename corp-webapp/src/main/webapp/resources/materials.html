@@ -17,7 +17,7 @@
 		        <div class="gridFilterOptions">
 		        	<span class="label label-default " style="cursor: pointer;width: 200px; height: 40px; font-size: larger" ng-click="timeSelected(1)">Today</span>
 		        	<span class="label label-default " style="cursor: pointer;width: 200px; height: 40px; font-size: larger" ng-click="timeSelected(7)">7 days</span>
-		        	<span class="label label-default " style="cursor: pointer;width: 200px; height: 40px; font-size: larger" ng-click="timeSelected(180)">30 days</span>
+		        	<span class="label label-default " style="cursor: pointer;width: 200px; height: 40px; font-size: larger" ng-click="timeSelected(400)">30 days</span>
 		        	&nbsp;&nbsp;&nbsp;&nbsp;
 		            <!-- <input type="radio" name="dataFilter" value="Range" ng-click="rangeDateFilter()"/> Range --> 
 		            <input id="dateFrom" type="text" ng-model="dateFrom" datepick style="width: 160px;"/> <span class="glyphicon glyphicon-transfer"></span>
@@ -206,13 +206,13 @@
 			                    <td align="center">&nbsp;</td>
 			                </tr>
 			                <tr ng-show="qtyInd">
-			                    <td align="right"><span class="label label-default">Quantity (in Metric tonnes)</span></td>
+			                    <td align="right"><span class="label label-default">Quantity (in Kg)</span></td>
 			                    <td align="center"> : </td>
 			                    <td align="left"><input type="text" ng-model="selection.quantity" name="quantityTN"/></td>
 			                    <td align="left">&nbsp;</td>
 			                </tr>
 			                <tr ng-show="klInd">
-			                    <td align="right"><span class="label label-default">Quantity (in Kilo Litres)</span></td>
+			                    <td align="right"><span class="label label-default">Quantity (in Litres)</span></td>
 			                    <td align="center"> : </td>
 			                    <td align="left"><input type="text" ng-model="selection.quantityKl" name="quantityKL"/></td>
 			                    <td align="left">&nbsp;</td>
@@ -287,7 +287,7 @@
 				<div class="panel-heading">
 
 					<div style="margin-left: 20px;">
-						<h3 class="panel-title">{{fromTo}}</h3>
+						<h3 class="panel-title">{{selection.entryType == 1 ? "From: " : "To: "}}{{fromTo}}</h3>
 					</div>
 
 				</div>
@@ -304,7 +304,7 @@
 		    				<th width="70px"> Amount</th>
 		    			</tr>
 		    		</thead>
-   		   			<tbody>
+   		   			<tbody style="font-size: 20px;">
    		   				<tr ng-repeat="item in entries">
 	                		<!-- <td colspan="6" style="padding: 0px">
 	                			<table  style="width: 100%; padding-left: 5px;">
@@ -313,7 +313,7 @@
 	                					<td width="70px">{{item.materialId}}</td>
 					    				<td width="160px">{{item.stockName}}</td>
 					    				<td width="160px">{{item.grossWt}} - {{item.tareWt}} = {{item.netWt}}</td>
-					    				<td width="90px">{{item.quantity}}</td>
+					    				<td width="90px">{{(item.quantity > 0)?item.quantity:item.quantityKl}}</td>
 					    				<td width="90px">{{item.rate}}</td>
 					    				<td width="90px">{{item.amount}}</th>
 					    			<!-- </tr>	
@@ -328,40 +328,40 @@
 			<div class="panel-footer">
                 <div>
                     <div style="float: left; margin-left: 20px;">
-                        <h3 class="panel-title"><div style="color: #808080; float: left">Transporter: &nbsp;</div> {{selection.transporterName}}</h3>
+                        <h3 class="panel-title"><div style="color: #808080; float: left">Transporter: &nbsp;</div> <div style="font-size: 18px; float: left;">{{selection.transporterName}}</div></h3>
                     </div>
                     <div style="margin-right: 20px; float: right" align="left">
                         <h3 class="panel-title"><div style="color: #808080; float: left;">Vehicle Details: &nbsp;</div>
-                            {{selection.vehicleNumber}}</h3>
+							<div style="font-size: 18px; float: left;">{{selection.vehicleNumber}}</div></h3>
                     </div>
                 </div><br/>
                 <div>
                     <div style="float: left; margin-left: 20px;">
-                        <h3 class="panel-title"><div style="color: #808080; float: left">Vehicle In Time: &nbsp;</div> {{selection.vehicleInTime | date:"dd-MMM-yyyy @ h:mma"}}</h3>
+                        <h3 class="panel-title"><div style="color: #808080; float: left">Vehicle In Time: &nbsp;</div> <div style="font-size: 18px; float: left;">{{selection.vehicleInTime | date:"dd-MMM-yyyy @ h:mma"}}</div></h3>
                     </div>
                     <div style="margin-right: 20px; float: right" align="left">
                         <h3 class="panel-title"><div style="color: #808080; float: left;">Vehicle Out Time: &nbsp;</div>
-                            {{selection.vehicleOutTime | date:"dd-MMM-yyyy @ h:mma"}}</h3>
+							<div style="font-size: 18px; float: left;">{{selection.vehicleOutTime | date:"dd-MMM-yyyy @ h:mma"}}</div></h3>
                     </div>
                 </div><br/>
                 <div ng-show="selection.entryType==1">
                     <div style="float: left; margin-left: 20px;">
                         <h3 class="panel-title"><div style="color: #808080; float: left">
-                            Challan Number: &nbsp;</div> {{selection.challanNo}}</h3>
+                            Challan Number: &nbsp;</div> <div style="font-size: 18px; float: left;">{{selection.challanNo}}</div></h3>
                     </div>
                     <div style="margin-right: 20px; float: right" align="left">
                         <h3 class="panel-title"><div style="color: #808080; float: left;">Challan Date: &nbsp;</div>
-                            {{selection.challanDate | date:"dd-MMM-yyyy @ h:mma"}}</h3>
+							<div style="font-size: 18px; float: left;">{{selection.challanDate | date:"dd-MMM-yyyy"}}</div></h3>
                     </div>
                 </div><br/>
                 <div ng-show="selection.entryType==1">
                     <div style="float: left; margin-left: 20px;">
                         <h3 class="panel-title"><div style="color: #808080; float: left">
-                            Difference weight: &nbsp;</div> {{selection.netWt-selection.quantity}}</h3>
+                            Difference weight: &nbsp;</div> <div style="font-size: 18px; float: left;">{{selection.netWt-selection.quantity}}</div></h3>
                     </div>
                     <div style="float: left; margin-left: 20px;" ng-show="selection.invoiceNo != null">
                         <h3 class="panel-title"><div style="color: #808080; float: left">
-                            Invoice No: &nbsp;</div> {{selection.invoiceNo}}</h3>
+                            Invoice No: &nbsp;</div> <div style="font-size: 18px; float: left;">{{selection.invoiceNo}}</div></h3>
                     </div>
                 </div><br/>
 

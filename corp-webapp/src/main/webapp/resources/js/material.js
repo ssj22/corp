@@ -599,8 +599,8 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 		};
 
 		$scope.pagingOptions = {
-			pageSizes : [ 10, 50, 100 ],
-			pageSize : 10,
+			pageSizes : [ 500, 1000, 5000 ],
+			pageSize : 500,
 			currentPage : 1
 		};
 
@@ -781,7 +781,7 @@ angular.module('myApp').controller("MaterialsCtrl", function($scope, $http, $int
 
 		$scope.gridOptions = {
 			data : 'myData',
-			enablePaging : true,
+			enablePaging : false,
 			showFooter : true,
 			enableColumnReordering : true,
 			enableColumnResize : true,

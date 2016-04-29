@@ -118,8 +118,9 @@
 														<td align="center">&nbsp;</td>
 													</tr>
 								                
-												<tr ng-show="num > 1 && num != 11">
+												<tr ng-show="num != 11">
 								                    <td align="right">
+														<span class="label label-primary" ng-show="num == 1">Active</span>
 														<span class="label label-primary" ng-show="num == 2">Vehicle Length</span>
 														<span class="label label-primary" ng-show="num == 3">Vendor Given Code</span>
 														<span class="label label-primary" ng-show="num == 4">Stock Inward Rate</span>
@@ -131,7 +132,7 @@
 														<input type="text" ng-model="selection.givenCode" name="vendorCode" ng-show="num == 3"/>
 														<input type="text" ng-model="selection.stockRateInword" name="stockInRate" ng-show="num == 4"/>
 														<input type="checkbox" ng-model="selection.invoiceInd" ng-show="num == 44">
-														
+														<input type="checkbox" ng-model="selection.active" ng-show="num == 1">
 													</td>
 					                                <td align="left">&nbsp;</td>
 								                </tr>

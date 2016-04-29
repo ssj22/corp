@@ -13,7 +13,7 @@
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			<span class="label label-default " style="cursor: pointer;width: 200px; font-size: larger" ng-click="timeSelected(7)">7 days</span>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<span class="label label-default " style="cursor: pointer;width: 200px; height: 40px; font-size: larger" ng-click="timeSelected(180)">30 days</span>
+			<span class="label label-default " style="cursor: pointer;width: 200px; height: 40px; font-size: larger" ng-click="timeSelected(400)">30 days</span>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			   <!-- <input type="radio" name="dataFilter" value="Range" ng-click="rangeDateFilter()"/> Range --> 
@@ -85,12 +85,12 @@
                     <td align="right"><span class="label label-primary">Material Type</span></td>
                     <td align="center"> : </td>
                     <td align="left">
-                        <autocomplete ng-model="selection.stockName" data="stocklist" click-activation="true" on-type="stockSelect" ng-show="showMaterials"/>
+                        <autocomplete ng-model="newSms.stockName" data="stocklist" click-activation="true" on-type="stockSelect" ng-show="showMaterials"/>
                     </td>
                     <td align="center">&nbsp;</td>
                 </tr>
                 <tr>
-                    <td align="right"><span class="label label-primary">Shift</span></td>
+                    <td align="right"><span class="label label-primary">Night Shift</span></td>
                     <td align="center"> : </td>
                     <td align="left">
                         <input type="checkbox" ng-model="newSms.shift" />

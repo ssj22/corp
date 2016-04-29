@@ -6,3 +6,8 @@ dmesg | grep tty
 WARNING:  RXTX Version mismatch
 
 systemctl start mysqld.service
+
+For Making SMS work on Linux
+- Open all serial ports by adding user to the group inside /dev
+- If still doesn’t work, remove modem-manager using yum or apt-get
+- Make sure that rxtx installation is proper and no manual copying of jar files

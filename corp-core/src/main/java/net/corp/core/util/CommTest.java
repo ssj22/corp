@@ -28,6 +28,10 @@ public class CommTest
 		return CommPortIdentifier.getPortIdentifiers();
 	}
 
+    public CommTest() {
+
+    }
+
 	public static void main(String[] args)
 	{
 		System.out.println("\nSearching for devices...");

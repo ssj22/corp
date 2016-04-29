@@ -1,13 +1,5 @@
 package net.corp.core.service.impl;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.corp.core.constants.CorpConstants;
 import net.corp.core.exception.CorpException;
 import net.corp.core.model.*;
@@ -17,8 +9,11 @@ import net.corp.core.vo.CountVO;
 import net.corp.core.vo.LogVO;
 import net.corp.core.vo.MaterialsVO;
 import net.corp.core.vo.SiteVO;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import java.sql.Timestamp;
+import java.util.*;
 
 public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	
@@ -157,13 +152,16 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 			if (!firstEntry) {
 				StockItems item = getCoreServiceHelper().getStockItemDao().getById(entity.getStockId());
 				Double inRate = item.getStockRateInword();
-				PrimaryGroup vendor = getCoreServiceHelper().getPrimaryGroupDao().getById(entity.getVendorId());
+                Double effInRate = inRate;
+                if (entity.getVendorId() != null) {
+                    PrimaryGroup vendor = getCoreServiceHelper().getPrimaryGroupDao().getById(entity.getVendorId());
+                    if (vendor.getPercentage() != null) {
+                        effInRate = (1 + vendor.getPercentage() / 100) * inRate;
+                    }
+                }
 				Vehicles vehicle = getCoreServiceHelper().getVehicleDao().getById(entity.getVehicleId());
 				Double volume = (vehicle.getVolume() == 0) ? (vehicle.getBreadth() * vehicle.getHeight() * vehicle.getLength()) : vehicle.getVolume();
-				Double effInRate = inRate;
-				if (vendor.getPercentage() != null) {
-					effInRate = (1 + vendor.getPercentage() / 100) * inRate;
-				}
+
 				Double effOutRate = item.getStockRate();
 				Double effRate = 0.0;
 				Double amount = 0.0;
@@ -188,10 +186,12 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 							amount = qty * effInRate;
 							effRate = effInRate;
 						} else {
+                            log.info("Qty=" + qty);
 							// Use factor as per metric ton
 							double factor = 1.0;
 							if (item.getItem().getFactor() != null) {
 								factor = item.getItem().getFactor();
+                                log.info("factor=" + factor);
 							}
 
 							qty = (qty / 1000) * factor;
@@ -370,7 +370,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	@Override
 	public List<Vibhag> fetchAllVibhags(boolean showAll) {
 		if (showAll) {
-			return getCoreServiceHelper().getVibhagDao().findAll();
+			return getCoreServiceHelper().getVibhagDao().findActiveVibhags();
 		}
 		return null;
 	}
@@ -540,18 +540,18 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
         if (vibhag != null) {
             StringBuffer str = new StringBuffer();
             str.append(nightShift?"N":"D");
-            str.append("$" + vehicleName);
-            str.append("$" + transportName);
+            str.append("$" + StringUtils.trim(vehicleName));
+            str.append("$" + StringUtils.trim(transportName));
             str.append("$");
             boolean first = true;
             for (String stock: stockNames) {
-                if (first) {
+                if (!first) {
                     str.append(",");
-                    first = false;
                 }
-                str.append(stock + "@2@U");
+                first = false;
+                str.append(StringUtils.trim(stock) + "@2@U");
             }
-            str.append("$" + siteName);
+            str.append("$" + StringUtils.trim(siteName));
             return saveLog(vibhag.getPhone(), str.toString(), new Date());
         }
         else {

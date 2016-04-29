@@ -38,6 +38,8 @@ public class Vibhag implements java.io.Serializable {
 	private Integer phoneExt;
 	@Column(name = "PHONE_AREA_CD")
 	private Integer phoneAreaCd;
+	@Column(name = "ACTIVE")
+	private boolean active;
 
 	public Vibhag() {
 	}
@@ -138,5 +140,13 @@ public class Vibhag implements java.io.Serializable {
 
 	public void setVibhagType(VibhagTypes vibhagType) {
 		this.vibhagType = vibhagType;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }
