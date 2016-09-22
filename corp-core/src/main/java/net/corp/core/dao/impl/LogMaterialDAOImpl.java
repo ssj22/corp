@@ -26,7 +26,7 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 		}
 		if (outTime != null) {
 			crit.add(Restrictions.eq("logbook.gateOutTime", outTime));
-		}	
+		}
 		return crit.list();
 	}
 
@@ -36,7 +36,7 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 		Criteria crit = getSession().createCriteria(LogMaterial.class);
 		crit.createAlias("log", "logbook");
 		crit.createAlias("logbook.vibhag", "vib");
-		crit.add(Restrictions.eq("logbook.valid", 1));
+		crit.add(Restrictions.eq("logbook.valid", Boolean.TRUE));
 		if (vibhagPhone != null) {
 			crit.add(Restrictions.eq("vib.phone", vibhagPhone));
 		}
@@ -154,7 +154,7 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 
 		return true;
 	}
-	
+
 	private void addTodayCriteria(Criteria crit, String fieldName) {
 		Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -172,12 +172,12 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
         crit.add(Restrictions.ge(fieldName, startDate));
         crit.add(Restrictions.le(fieldName, endDate));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<LogMaterial> findLogMaterialEntries(Integer time, Date from, Date to, Integer shift) {
-		
+
 		Criteria criteria = getSession().createCriteria(LogMaterial.class);
-		
+
 		if (time != null && time > 0) {
 			Timestamp endDate = new Timestamp(System.currentTimeMillis());
 			Calendar cal = Calendar.getInstance();
@@ -197,14 +197,14 @@ public class LogMaterialDAOImpl extends GenericDAOImpl<LogMaterial, Integer> imp
 			criteria.add(Restrictions.ge("gateInTime", startDate));
 			criteria.add(Restrictions.le("gateInTime", endDate));
 		}
-		
+
 		if (shift > 0) {
 			criteria.add(Restrictions.eq("nightShift", (shift == 2)));
 		}
-		
+
 		criteria.addOrder(Order.desc("gateInTime"));
-		
+
 		return criteria.list();
 	}
-	
+
 }

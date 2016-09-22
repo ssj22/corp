@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 public class MaterialServiceImpl implements MaterialService, CorpConstants {
-	
+
 	private CoreServiceHelper coreServiceHelper;
 	private static final Logger log = Logger.getLogger(MaterialServiceImpl.class);
 
@@ -122,7 +122,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 			int id = Integer.parseInt(strId);
 			children.add(id);
 		}
-		
+
 		if (type.intValue() == 1) {
 			return getCoreServiceHelper().getMaterialDao().linkMaterial(children);
 		}
@@ -272,14 +272,14 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 				list.add(material.getParentMaterialId());
 				getCoreServiceHelper().getMaterialDao().linkMaterial(list);
 			}
-			
+
 			material.setMaterialId(entity.getMaterialId());
 		}
 		catch(Exception e) {
 			log.error("Exception while saving Material: " + e.getMessage(), e);
 			return null;
 		}
-		
+
 		return material;
 	}
 
@@ -287,8 +287,8 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	public List<MaterialsVO> fetchAllMaterialEntries(Integer pageSize, Integer pageNumber, Integer time, boolean more, Date from, Date to, Integer materialId) throws CorpException {
 		List<MaterialsVO> rtnList = new ArrayList<MaterialsVO>();
 		List<Materials> tempList = null;
-		if ((time == null || time == 0) 
-				&& (pageSize == null || pageNumber == null || 
+		if ((time == null || time == 0)
+				&& (pageSize == null || pageNumber == null ||
 					pageSize == 0 || pageNumber == 0)
 				&& (from == null || to == null)
 				&& materialId == null){
@@ -299,14 +299,14 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 		}
 		else {
 			tempList = getCoreServiceHelper().getMaterialDao().findPaginatedMaterialEntries(pageNumber, pageSize, time, more, from, to);
-		}	
-		
+		}
+
 		if (tempList != null && !tempList.isEmpty()) {
 			for (Materials material: tempList) {
 				rtnList.add(getCoreServiceHelper().convertModelToVO(material));
 			}
 		}
-		
+
 		return rtnList;
 	}
 
@@ -314,7 +314,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	public List<SiteVO> fetchAllSites() {
 		return getCoreServiceHelper().getMaterialDao().findAllSites();
 	}
-	
+
 	@Override
 	public List<CountVO> fetchAllCounts() throws CorpException {
 		List<CountVO> list = new ArrayList<CountVO>();
@@ -323,26 +323,26 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 		countVo.setTodayInCount(dayCountList.get(0));
 		countVo.setTodayOutCount(dayCountList.get(1));
 		countVo.setTodayCount(dayCountList.get(0) + dayCountList.get(1));
-		
+
 		List<Long> weekCountList = getCoreServiceHelper().getMaterialDao().findAllCounts(7);
 		countVo.setWeekInCount(weekCountList.get(0));
 		countVo.setWeekOutCount(weekCountList.get(1));
 		countVo.setWeekCount(weekCountList.get(0) + weekCountList.get(1));
-		
+
 		List<Long> monthCountList = getCoreServiceHelper().getMaterialDao().findAllCounts(30);
 		countVo.setMonthInCount(monthCountList.get(0));
 		countVo.setMonthOutCount(monthCountList.get(1));
 		countVo.setMonthCount(monthCountList.get(0) + monthCountList.get(1));
-		
+
 		List<Long> countList = getCoreServiceHelper().getMaterialDao().findAllCounts(null);
 		countVo.setTotalInCount(countList.get(0));
 		countVo.setTotalOutCount(countList.get(1));
 		countVo.setTotalCount(countList.get(0) + countList.get(1));
-		
+
 		list.add(countVo);
 		return list;
 	}
-	
+
 	@Override
 	public List<Vehicles> fetchAllVehicles() {
 		List<Vehicles> vehicles = getCoreServiceHelper().getVehicleDao().findAll();
@@ -353,12 +353,12 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 		}
 		return vehicles;
 	}
-	
+
 	@Override
 	public List<StockItems> fetchAllStockItems(boolean showAll) {
 		return getCoreServiceHelper().getStockItemDao().findAll();
 	}
-	
+
 	@Override
 	public List<PrimaryGroup> fetchAllPrimaryGroups(boolean showAll) {
 		if (showAll) {
@@ -366,7 +366,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<Vibhag> fetchAllVibhags(boolean showAll) {
 		if (showAll) {
@@ -374,7 +374,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<String> fetchEligVibhags() {
 		List<String> rtnList = new ArrayList<String>();
@@ -413,7 +413,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 						sList = new ArrayList<String>();
 						subMap.put("s", sList);
 					}
-					
+
 					if (subMap.containsKey("i")) {
 						iList = subMap.get("i");
 					}
@@ -421,7 +421,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 						iList = new ArrayList<String>();
 						subMap.put("i", iList);
 					}
-					
+
 					if (subMap.containsKey("v")) {
 						vList = subMap.get("v");
 					}
@@ -440,8 +440,8 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 					subMap.put("s", sList);
 					tmap.put(tName, subMap);
 				}
-				
-				
+
+
 				if (!vList.contains(vName)) {
 					vList.add(vName);
 				}
@@ -452,8 +452,8 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 					iList.add(iName);
 				}
 			}
-		}	
-		
+		}
+
 		return tmap;
 	}
 
@@ -461,7 +461,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	public List<Vehicles> searchVehicleByName(String vehicleName) {
 		return getCoreServiceHelper().getVehicleDao().searchVehicleByName(vehicleName);
 	}
-	
+
 	@Override
 	public List<Vehicles> searchVehicleByTransport(String transportName) {
 		PrimaryGroup pg = getCoreServiceHelper().getPrimaryGroupDao().findPrimaryGroupByName(transportName);
@@ -485,7 +485,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	public List<Vibhag> searchVibhagsByName(String vibhagName) {
 		return getCoreServiceHelper().getVibhagDao().searchVibhagsByName(vibhagName);
 	}
-	
+
 	@Override
 	public boolean completeLogMaterial(Integer logMaterialId) {
 		try {
@@ -530,7 +530,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 			log.error("Exception while saving raw logs: " + e.getMessage(), e);
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -566,13 +566,13 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 			List<LogMaterial> logMaterials = getCoreServiceHelper().convertVOToModel(logVo);
 			if (logMaterials != null && !logMaterials.isEmpty()) {
 				LogBook logbook = logMaterials.get(0).getLog();
-				if (logbook.getVehicle() != null && logbook.getTransport() != null && 
+				if (logbook.getVehicle() != null && logbook.getTransport() != null &&
 						logbook.getVehicle().getVendor().getVendorId().intValue() != logbook.getTransport().getVendorId().intValue()) {
-					logbook.setValid(false);
+					logbook.setValid(Boolean.FALSE);
 				}
-				
+
 				getCoreServiceHelper().getLogDao().saveOrUpdate(logbook);
-				
+
 				for (LogMaterial entity: logMaterials) {
 					entity.setLog(logbook);
 					getCoreServiceHelper().getLogMaterialDao().saveOrUpdate(entity);
@@ -582,7 +582,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 			log.error("Exception while saving logs: " + e.getMessage(), e);
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -600,7 +600,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 		}
 		return true;
 	}
-	
+
 	public boolean updateLogEntry(String vehicleNumber, Timestamp gateInTime, Timestamp gateOutTime) {
 		try {
 			LogVO logVo = fetchLogByVehicleNumber(vehicleNumber);
@@ -632,7 +632,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 			return fetchLogByVehicleNumber(vehicleNo);
 		}
 	}
-	
+
 	@Override
 	public List<LogVO> fetchLogsByCriteria(Integer time, Date from, Date to) {
 		List<LogVO> logVos = new ArrayList<LogVO>();
@@ -642,7 +642,7 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 				logVos.add(getCoreServiceHelper().convertModelToVO(log));
 			}
 		}
-		
+
 		return logVos;
 	}
 
@@ -658,5 +658,5 @@ public class MaterialServiceImpl implements MaterialService, CorpConstants {
 	public void setCoreServiceHelper(CoreServiceHelper coreServiceHelper) {
 		this.coreServiceHelper = coreServiceHelper;
 	}
-	
+
 }
